@@ -30,6 +30,7 @@ public class QuScore extends IdEntity {
 	// 是否显示 0不显示
 	private Integer visibility = 1;
 
+	// getter and setter
 	public String getQuId() {
 		return quId;
 	}
@@ -70,6 +71,7 @@ public class QuScore extends IdEntity {
 		this.visibility = visibility;
 	}
 
+	// 答题数
 	private int anCount;
 
 	@Transient
@@ -81,6 +83,7 @@ public class QuScore extends IdEntity {
 		this.anCount = anCount;
 	}
 
+	// 平均分
 	public float avgScore=0f;
 	@Transient
 	public float getAvgScore() {

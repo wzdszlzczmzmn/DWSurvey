@@ -20,22 +20,25 @@ import net.diaowen.common.base.entity.IdEntity;
 @Table(name="t_question_logic")
 public class QuestionLogic extends IdEntity{
 	//cgQuId,cgQuItem,skQuId,skType
-	//回答选择的题ID
+	// 关联的题目 id
 	private String ckQuId;
 	//回答选择题的选项ID  （0任意选项）
+	// 回答的选项
 	private String cgQuItemId;
-	//要跳转的题  (end1提前结束-计入结果  end2提前结束-不计结果)
+	//要跳转到的题  (end1提前结束-计入结果  end2提前结束-不计结果)
 	private String skQuId;
 	//逻辑类型  (1=跳转,2显示)
 	private String logicType="1";
 	//评分题 ge大于，le小于
 	private String geLe;
+	// 评分
 	private Integer scoreNum;
 	//创建时间
 	private Date createDate=new Date();
 	//是否显示  1显示 0不显示
 	private Integer visibility=1;
 
+	// getter and setter
 	public String getCkQuId() {
 		return ckQuId;
 	}
@@ -72,7 +75,6 @@ public class QuestionLogic extends IdEntity{
 	public void setVisibility(Integer visibility) {
 		this.visibility = visibility;
 	}
-
 	public String getGeLe() {
 	    return geLe;
 	}

@@ -39,6 +39,11 @@ public class QuScoreManagerImpl extends BaseServiceImpl<QuScore, String> impleme
 		this.baseDao=quScoreDao;
 	}
 
+	/**
+	 * 根据评分题的 id 查找其下的选项
+	 * @param quId 问题 id
+	 * @return
+	 */
 	public List<QuScore> findByQuId(String quId){
 		/*Page<QuScore> page=new Page<QuScore>();
 		page.setOrderBy("orderById");
@@ -53,14 +58,21 @@ public class QuScoreManagerImpl extends BaseServiceImpl<QuScore, String> impleme
 		Root root = criteriaQuery.from(QuScore.class);
 		criteriaQuery.select(root);
 		Predicate eqQuId = criteriaBuilder.equal(root.get("quId"),quId);
+		// 只查询可见的选项
 		Predicate eqVisibility = criteriaBuilder.equal(root.get("visibility"),1);
 		criteriaQuery.where(eqQuId,eqVisibility);
 		criteriaQuery.orderBy(criteriaBuilder.asc(root.get("orderById")));
 		return quScoreDao.findAll(criteriaQuery);
 	}
 
+	/**
+	 * 根据评分题 id 找到其下序号为 1 的选项
+	 * @param quId
+	 * @return
+	 */
 	public int getOrderById(String quId){
 		Criterion criterion=Restrictions.eq("quId", quId);
+		// TODO: typo 应为 quScore
 		QuScore quRadio=quScoreDao.findFirst("orderById", false, criterion);
 		if(quRadio!=null){
 			return quRadio.getOrderById();
@@ -73,7 +85,13 @@ public class QuScoreManagerImpl extends BaseServiceImpl<QuScore, String> impleme
 	/*******************************************************************8
 	 * 更新操作
 	 */
-
+	/**
+	 *  根据选项 id 设置选项的说明。如果 quItemId 为 null 或空字符串，则新增一个选项
+	 * @param quId 选项关联的问题 id
+	 * @param quItemId
+	 * @param optionName 选项说明
+	 * @return
+	 */
 	@Override
 	@Transactional
 	public QuScore upOptionName(String quId,String quItemId, String optionName) {
@@ -97,6 +115,12 @@ public class QuScoreManagerImpl extends BaseServiceImpl<QuScore, String> impleme
 		}
 	}
 
+	/**
+	 * 为多项填空题添加多个选项
+	 * @param quId
+	 * @param quScores
+	 * @return
+	 */
 	@Override
 	@Transactional
 	public List<QuScore> saveManyOptions(String quId,List<QuScore> quScores) {
@@ -111,6 +135,7 @@ public class QuScoreManagerImpl extends BaseServiceImpl<QuScore, String> impleme
 		return quScores;
 	}
 
+	// 根据 id 删除对应选项。（软删除，设置 visibility 为 0）
 	@Override
 	@Transactional
 	public void ajaxDelete(String quItemId) {
@@ -119,6 +144,7 @@ public class QuScoreManagerImpl extends BaseServiceImpl<QuScore, String> impleme
 		quScoreDao.save(quScore);
 	}
 
+	// 没用
 	@Override
 	@Transactional
 	public void saveAttr(String quItemId) {

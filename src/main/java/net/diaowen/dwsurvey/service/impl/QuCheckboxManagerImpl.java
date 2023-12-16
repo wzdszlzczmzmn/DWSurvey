@@ -39,6 +39,11 @@ public class QuCheckboxManagerImpl extends BaseServiceImpl<QuCheckbox, String> i
 		this.baseDao=quCheckboxDao;
 	}
 
+	/**
+	 * 根握多选题 id 查找它的选项
+	 * @param quId
+	 * @return
+	 */
 	public List<QuCheckbox> findByQuId(String quId){
 
 		/*
@@ -55,6 +60,7 @@ public class QuCheckboxManagerImpl extends BaseServiceImpl<QuCheckbox, String> i
 		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(QuCheckbox.class);
 		Root root = criteriaQuery.from(QuCheckbox.class);
 		criteriaQuery.select(root);
+		// 设置查询条件
 		Predicate eqQuId = criteriaBuilder.equal(root.get("quId"),quId);
 		Predicate eqVisibility = criteriaBuilder.equal(root.get("visibility"),1);
 		criteriaQuery.where(eqQuId,eqVisibility);
@@ -64,8 +70,14 @@ public class QuCheckboxManagerImpl extends BaseServiceImpl<QuCheckbox, String> i
 	}
 
 
+	/**
+	 * 根据多选题 id 查找它的最后一个选项的序号
+	 * @param quId
+	 * @return
+	 */
 	public int getOrderById(String quId){
 		Criterion criterion=Restrictions.eq("quId", quId);
+		// 倒序排序，取最后一个选项的序号
 		QuCheckbox quCheckbox=quCheckboxDao.findFirst("orderById", false, criterion);
 		if(quCheckbox!=null){
 			return quCheckbox.getOrderById();
@@ -76,11 +88,18 @@ public class QuCheckboxManagerImpl extends BaseServiceImpl<QuCheckbox, String> i
 	/*******************************************************************8
 	 * 更新操作
 	 */
-
+	/**
+	 *  根据选项 id 设置选项的说明。如果 quItemId 为 null 或空字符串，则新增一个选项
+	 * @param quId 选项关联的问题 id
+	 * @param quItemId
+	 * @param optionName 选项说明
+	 * @return
+	 */
 	@Override
 	@Transactional
 	public QuCheckbox upOptionName(String quId,String quItemId, String optionName) {
 		if(quItemId!=null && !"".equals(quItemId)){
+			// 根据 id 查询选项
 			QuCheckbox quCheckbox=quCheckboxDao.get(quItemId);
 			quCheckbox.setOptionName(optionName);
 			quCheckboxDao.save(quCheckbox);
@@ -100,6 +119,12 @@ public class QuCheckboxManagerImpl extends BaseServiceImpl<QuCheckbox, String> i
 		}
 	}
 
+	/**
+	 * 给多选题添加多个选项
+	 * @param quId
+	 * @param quCheckboxs
+	 * @return
+	 */
 	@Override
 	@Transactional
 	public List<QuCheckbox> saveManyOptions(String quId,List<QuCheckbox> quCheckboxs) {
@@ -114,6 +139,7 @@ public class QuCheckboxManagerImpl extends BaseServiceImpl<QuCheckbox, String> i
 		return quCheckboxs;
 	}
 
+	// 根据 id 删除对应选项。（软删除，设置 visibility 为 0）
 	@Override
 	@Transactional
 	public void ajaxDelete(String quItemId) {
@@ -122,6 +148,11 @@ public class QuCheckboxManagerImpl extends BaseServiceImpl<QuCheckbox, String> i
 		quCheckboxDao.save(quCheckbox);
 	}
 
+	/**
+	 * 根据选项 id 设置选项是否是说明
+	 * @param quItemId
+	 * @param isNote
+	 */
 	@Override
 	@Transactional
 	public void saveAttr(String quItemId, String isNote) {

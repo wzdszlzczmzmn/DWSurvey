@@ -42,7 +42,7 @@ public class QuRadioManagerImpl extends BaseServiceImpl<QuRadio, String> impleme
 	 */
 
 	/**
-	 * 得到某一题的选项
+	 * 得到单选题下的所有选项
 	 */
 	public List<QuRadio> findByQuId(String quId){
 		/*Page<QuRadio> page=new Page<QuRadio>();
@@ -65,6 +65,7 @@ public class QuRadioManagerImpl extends BaseServiceImpl<QuRadio, String> impleme
 		return quRadioDao.findAll(criteriaQuery);
 	}
 
+	// 查找多项填空题的最后一个选项的序号。如果找不到，则返回 0
 	public int getOrderById(String quId){
 		Criterion criterion=Restrictions.eq("quId", quId);
 		QuRadio quRadio=quRadioDao.findFirst("orderById", false, criterion);
@@ -80,6 +81,13 @@ public class QuRadioManagerImpl extends BaseServiceImpl<QuRadio, String> impleme
 	 * 更新操作
 	 */
 
+	/**
+	 *  根据选项 id 设置选项的说明。如果 quItemId 为 null 或空字符串，则新增一个选项
+	 * @param quId 选项关联的问题 id
+	 * @param quItemId
+	 * @param optionName 选项说明
+	 * @return
+	 */
 	@Override
 	@Transactional
 	public QuRadio upOptionName(String quId,String quItemId, String optionName) {
@@ -103,6 +111,12 @@ public class QuRadioManagerImpl extends BaseServiceImpl<QuRadio, String> impleme
 		}
 	}
 
+	/**
+	 * 为单选题添加多个选项
+	 * @param quId
+	 * @param quRadios
+	 * @return
+	 */
 	@Override
 	@Transactional
 	public List<QuRadio> saveManyOptions(String quId,List<QuRadio> quRadios) {
@@ -117,6 +131,7 @@ public class QuRadioManagerImpl extends BaseServiceImpl<QuRadio, String> impleme
 		return quRadios;
 	}
 
+	// 根据 id 删除对应选项。（软删除，设置 visibility 为 0）
 	@Override
 	@Transactional
 	public void ajaxDelete(String quItemId) {
@@ -131,6 +146,11 @@ public class QuRadioManagerImpl extends BaseServiceImpl<QuRadio, String> impleme
 		quRadioDao.quOrderByIdDel1(quId, orderById);
 	}
 
+	/**
+	 * 根据选项 id 设置选项是否是说明
+	 * @param quItemId
+	 * @param isNote
+	 */
 	@Override
 	@Transactional
 	public void saveAttr(String quItemId, String isNote) {

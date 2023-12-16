@@ -37,7 +37,15 @@ import javax.persistence.criteria.Root;
 @Repository
 public class QuestionDaoImpl extends BaseDaoImpl<Question, String> implements QuestionDao {
 
+	/**
+	 *	查询题库或问卷中的问题
+	 *
+	 * @param qubankId 题库或问卷 id
+	 * @param tag  1题库  2问卷
+	 * @return
+	 */
 	public List<Question> findByBelongTag(String qubankId,String tag){
+		// 分页
 		Page<Question> page=new Page<Question>();
 		page.setOrderBy("orderById");
 		page.setOrderDir("asc");
@@ -59,9 +67,11 @@ public class QuestionDaoImpl extends BaseDaoImpl<Question, String> implements Qu
 		return findAll(criteriaQuery);
 	}
 
+	// 更新问题
 	public void update(Question entity ){
 		super.save(entity);
 	}
+
 	/**
 	 * 保存题目DAO入口
 	 */
@@ -70,17 +80,24 @@ public class QuestionDaoImpl extends BaseDaoImpl<Question, String> implements Qu
 		Session session=getSession();
 		saveQuestion(entity, session);
 	}
+
+	/**
+	 * 新增或更新问题
+	 *
+	 * @param entity
+	 * @param session
+	 */
 	private void saveQuestion(Question entity, Session session) {
 		boolean isnew=false;
 		String id=entity.getId();
-		String belongId=entity.getBelongId();
+		String belongId=entity.getBelongId(); // 所属问卷或题库
 		int orderById=entity.getOrderById();
 		if(id==null || "".equals(id)){//如果是新增的题目，则根据已有的题来设置排序号
 			isnew=true;
 		}
 		//保存题目的题干部分
 		session.saveOrUpdate(entity);
-		//判断题目类型
+		//判断题目类型，根据不同类型调用不同的函数进行相应处理（不同的题目的选项不同）
 		QuType quType=entity.getQuType();
 		if(quType==QuType.RADIO || quType==QuType.COMPRADIO){
 			saveRadio(entity, session);
@@ -100,13 +117,15 @@ public class QuestionDaoImpl extends BaseDaoImpl<Question, String> implements Qu
 		if(questionLogics!=null){
 			for (QuestionLogic questionLogic : questionLogics) {
 				String qulogicId=questionLogic.getId();
-				if("".equals(qulogicId)){
+				if("".equals(qulogicId)){	// 新增问题逻辑
 					questionLogic.setId(null);
 				}
 				questionLogic.setCkQuId(entity.getId());
+				// 更新逻辑
 				session.saveOrUpdate(questionLogic);
 			}
 		}
+		// 新增一个问题后，需要对问题重新排序
 		if(isnew){
 			quOrderByIdAdd1(belongId, orderById);
 		}
@@ -140,7 +159,7 @@ public class QuestionDaoImpl extends BaseDaoImpl<Question, String> implements Qu
 		}
 	}
 	/**
-	 * 保存大题
+	 * 保存大题及其下所属的各个小题
 	 * @param entity
 	 * @param session
 	 */
@@ -231,6 +250,11 @@ public class QuestionDaoImpl extends BaseDaoImpl<Question, String> implements Qu
 		}
 	}
 
+	/**
+	 * 删除一个题目后，需要更新其余题目的排序号
+	 * @param belongId 要更新排序号的问卷或题库的 id
+	 * @param orderById 排序号比 orderById 大的问题的排序号都要 -1
+	 */
 	public void quOrderByIdDel1(String belongId,Integer orderById){
 		if(belongId!=null && !"".equals(belongId)){
 			String sql="update t_question set order_by_id=order_by_id-1 where belong_id=? and order_by_id>=?";

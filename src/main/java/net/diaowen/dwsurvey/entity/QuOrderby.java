@@ -7,7 +7,7 @@ import javax.persistence.Transient;
 import net.diaowen.common.base.entity.IdEntity;
 
 /**
- * 评分题 行选项
+ * 排序题 行选项
  * @author KeYuan
  * @date 2013下午12:14:26
  *
