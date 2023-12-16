@@ -45,15 +45,6 @@ public class QuRadioManagerImpl extends BaseServiceImpl<QuRadio, String> impleme
 	 * 得到单选题下的所有选项
 	 */
 	public List<QuRadio> findByQuId(String quId){
-		/*Page<QuRadio> page=new Page<QuRadio>();
-		page.setOrderBy("orderById");
-		page.setOrderDir("asc");
-
-		List<PropertyFilter> filters=new ArrayList<PropertyFilter>();
-		filters.add(new PropertyFilter("EQS_quId", quId));
-		filters.add(new PropertyFilter("EQI_visibility", "1"));
-		return findAll(page, filters);
-		*/
 		CriteriaBuilder criteriaBuilder=quRadioDao.getSession().getCriteriaBuilder();
 		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(QuRadio.class);
 		Root root = criteriaQuery.from(QuRadio.class);

@@ -45,17 +45,6 @@ public class QuCheckboxManagerImpl extends BaseServiceImpl<QuCheckbox, String> i
 	 * @return
 	 */
 	public List<QuCheckbox> findByQuId(String quId){
-
-		/*
-		Page<QuCheckbox> page=new Page<QuCheckbox>();
-		page.setOrderBy("orderById");
-		page.setOrderDir("asc");
-		List<PropertyFilter> filters=new ArrayList<PropertyFilter>();
-		filters.add(new PropertyFilter("EQS_quId", quId));
-		filters.add(new PropertyFilter("EQI_visibility", "1"));
-		return findAll(page, filters);
-		*/
-
 		CriteriaBuilder criteriaBuilder=quCheckboxDao.getSession().getCriteriaBuilder();
 		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(QuCheckbox.class);
 		Root root = criteriaQuery.from(QuCheckbox.class);

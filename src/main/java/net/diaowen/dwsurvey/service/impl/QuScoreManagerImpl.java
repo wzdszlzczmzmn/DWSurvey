@@ -45,14 +45,6 @@ public class QuScoreManagerImpl extends BaseServiceImpl<QuScore, String> impleme
 	 * @return
 	 */
 	public List<QuScore> findByQuId(String quId){
-		/*Page<QuScore> page=new Page<QuScore>();
-		page.setOrderBy("orderById");
-		page.setOrderDir("asc");
-
-		List<PropertyFilter> filters=new ArrayList<PropertyFilter>();
-		filters.add(new PropertyFilter("EQS_quId", quId));
-		filters.add(new PropertyFilter("EQI_visibility", "1"));
-		return findAll(page, filters);*/
 		CriteriaBuilder criteriaBuilder=quScoreDao.getSession().getCriteriaBuilder();
 		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(QuScore.class);
 		Root root = criteriaQuery.from(QuScore.class);

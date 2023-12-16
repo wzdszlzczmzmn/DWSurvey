@@ -50,12 +50,6 @@ public class QuestionDaoImpl extends BaseDaoImpl<Question, String> implements Qu
 		page.setOrderBy("orderById");
 		page.setOrderDir("asc");
 
-		/*List<PropertyFilter> filters=new ArrayList<PropertyFilter>();
-		filters.add(new PropertyFilter("EQS_belongId", qubankId));
-		filters.add(new PropertyFilter("EQI_tag", tag));
-		filters.add(new PropertyFilter("NEI_quTag", "3"));
-		return findAll(page, filters);*/
-
 		CriteriaBuilder criteriaBuilder=getSession().getCriteriaBuilder();
 		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(Question.class);
 		Root root = criteriaQuery.from(Question.class);

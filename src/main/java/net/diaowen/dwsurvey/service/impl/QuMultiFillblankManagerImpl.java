@@ -39,15 +39,6 @@ public class QuMultiFillblankManagerImpl extends BaseServiceImpl<QuMultiFillblan
 
 	// 根据 id 查找多项填空题
 	public List<QuMultiFillblank> findByQuId(String quId){
-		/*Page<QuMultiFillblank> page=new Page<QuMultiFillblank>();
-		page.setOrderBy("orderById");
-		page.setOrderDir("asc");
-
-		List<PropertyFilter> filters=new ArrayList<PropertyFilter>();
-		filters.add(new PropertyFilter("EQS_quId", quId));
-		filters.add(new PropertyFilter("EQI_visibility", "1"));
-		return findAll(page, filters);
-		*/
 		CriteriaBuilder criteriaBuilder=quMultiFillblankDao.getSession().getCriteriaBuilder();
 		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(QuMultiFillblank.class);
 		Root root = criteriaQuery.from(QuMultiFillblank.class);

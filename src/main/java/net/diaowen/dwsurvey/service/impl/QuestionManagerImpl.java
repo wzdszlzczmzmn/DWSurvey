@@ -513,14 +513,6 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 		// 问卷中的题
 		Criterion criterion2=Restrictions.eq("tag", 2);
 
-//		Criterion criterion31=Restrictions.ne("quType", QuType.FILLBLANK);
-//		Criterion criterion32=Restrictions.ne("quType", QuType.MULTIFILLBLANK);
-//		Criterion criterion33=Restrictions.ne("quType", QuType.ANSWER);
-//
-////		Criterion criterion3=Restrictions.or(criterion31, criterion32);
-//		//where s=2 and (fds !=1 or fds!=2 )
-//		return questionDao.find(criterion1,criterion2,criterion31,criterion32,criterion33);
-
 		// 排除所有填空题、多项填空题、多行填空题、多选题、矩阵填空题、矩阵单选题、枚举题、排序题、评分题
 		Criterion criterion31=Restrictions.ne("quType", QuType.FILLBLANK);
 		Criterion criterion32=Restrictions.ne("quType", QuType.MULTIFILLBLANK);

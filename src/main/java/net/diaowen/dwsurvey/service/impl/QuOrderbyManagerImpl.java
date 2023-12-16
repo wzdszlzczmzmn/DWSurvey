@@ -45,15 +45,6 @@ public class QuOrderbyManagerImpl extends BaseServiceImpl<QuOrderby, String> imp
 	 * @return
 	 */
 	public List<QuOrderby> findByQuId(String quId){
-		/*Page<QuOrderby> page=new Page<QuOrderby>();
-		page.setOrderBy("orderById");
-		page.setOrderDir("asc");
-
-		List<PropertyFilter> filters=new ArrayList<PropertyFilter>();
-		filters.add(new PropertyFilter("EQS_quId", quId));
-		filters.add(new PropertyFilter("EQI_visibility", "1"));
-		return findAll(page, filters);
-		*/
 		CriteriaBuilder criteriaBuilder=quOrderbyDao.getSession().getCriteriaBuilder();
 		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(QuOrderby.class);
 		Root root = criteriaQuery.from(QuOrderby.class);
