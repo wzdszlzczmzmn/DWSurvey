@@ -37,20 +37,13 @@ public class QuMultiFillblankManagerImpl extends BaseServiceImpl<QuMultiFillblan
 		this.baseDao=quMultiFillblankDao;
 	}
 
+	// 根据 id 查找多项填空题
 	public List<QuMultiFillblank> findByQuId(String quId){
-		/*Page<QuMultiFillblank> page=new Page<QuMultiFillblank>();
-		page.setOrderBy("orderById");
-		page.setOrderDir("asc");
-
-		List<PropertyFilter> filters=new ArrayList<PropertyFilter>();
-		filters.add(new PropertyFilter("EQS_quId", quId));
-		filters.add(new PropertyFilter("EQI_visibility", "1"));
-		return findAll(page, filters);
-		*/
 		CriteriaBuilder criteriaBuilder=quMultiFillblankDao.getSession().getCriteriaBuilder();
 		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(QuMultiFillblank.class);
 		Root root = criteriaQuery.from(QuMultiFillblank.class);
 		criteriaQuery.select(root);
+		// 设置查询条件
 		Predicate eqQuId = criteriaBuilder.equal(root.get("quId"),quId);
 		Predicate eqVisibility = criteriaBuilder.equal(root.get("visibility"),1);
 		criteriaQuery.where(eqQuId,eqVisibility);
@@ -58,6 +51,7 @@ public class QuMultiFillblankManagerImpl extends BaseServiceImpl<QuMultiFillblan
 		return quMultiFillblankDao.findAll(criteriaQuery);
 	}
 
+	// 查找多项填空题的最后一个选项的序号。如果找不到，则返回 0
 	public int getOrderById(String quId){
 		Criterion criterion=Restrictions.eq("quId", quId);
 		QuMultiFillblank quMultiFillblank=quMultiFillblankDao.findFirst("orderById", false, criterion);
@@ -73,10 +67,18 @@ public class QuMultiFillblankManagerImpl extends BaseServiceImpl<QuMultiFillblan
 	 * 更新操作
 	 */
 
+	/**
+	 *  根据选项 id 设置选项的说明。如果 quItemId 为 null 或空字符串，则新增一个选项
+	 * @param quId 选项关联的问题 id
+	 * @param quItemId
+	 * @param optionName 选项说明
+	 * @return
+	 */
 	@Override
 	@Transactional
 	public QuMultiFillblank upOptionName(String quId,String quItemId, String optionName) {
 		if(quItemId!=null && !"".equals(quItemId)){
+			// 根据 id 查询选项
 			QuMultiFillblank quMultiFillblank=quMultiFillblankDao.get(quItemId);
 			quMultiFillblank.setOptionName(optionName);
 			quMultiFillblankDao.save(quMultiFillblank);
@@ -96,6 +98,12 @@ public class QuMultiFillblankManagerImpl extends BaseServiceImpl<QuMultiFillblan
 		}
 	}
 
+	/**
+	 * 为多项填空题添加多个选项
+	 * @param quId
+	 * @param quMultiFillblanks
+	 * @return
+	 */
 	@Override
 	@Transactional
 	public List<QuMultiFillblank> saveManyOptions(String quId,List<QuMultiFillblank> quMultiFillblanks) {
@@ -110,6 +118,7 @@ public class QuMultiFillblankManagerImpl extends BaseServiceImpl<QuMultiFillblan
 		return quMultiFillblanks;
 	}
 
+	// 根据 id 删除对应选项。（软删除，设置 visibility 为 0）
 	@Override
 	@Transactional
 	public void ajaxDelete(String quItemId) {
@@ -118,6 +127,7 @@ public class QuMultiFillblankManagerImpl extends BaseServiceImpl<QuMultiFillblan
 		quMultiFillblankDao.save(quMultiFillblank);
 	}
 
+	// 没用
 	@Override
 	@Transactional
 	public void saveAttr(String quItemId) {

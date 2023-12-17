@@ -19,6 +19,11 @@ import net.diaowen.dwsurvey.entity.QuRadio;
 @Repository
 public class QuRadioDaoImpl extends BaseDaoImpl<QuRadio, String> implements QuRadioDao {
 
+	/**
+	 * 删除一个选项后，更新单选题 quId 下的选项的序号
+	 * @param quId
+	 * @param orderById
+	 */
 	public void quOrderByIdDel1(String quId,Integer orderById){
 		if(quId!=null && !"".equals(quId)){
 			String sql="update t_qu_radio set order_by_id=order_by_id-1 where qu_id=? and order_by_id>=?";

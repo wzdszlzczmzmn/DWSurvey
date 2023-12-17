@@ -39,16 +39,12 @@ public class QuOrderbyManagerImpl extends BaseServiceImpl<QuOrderby, String> imp
 		this.baseDao=quOrderbyDao;
 	}
 
+	/**
+	 * 根据 id 查找相应的排序题
+	 * @param quId
+	 * @return
+	 */
 	public List<QuOrderby> findByQuId(String quId){
-		/*Page<QuOrderby> page=new Page<QuOrderby>();
-		page.setOrderBy("orderById");
-		page.setOrderDir("asc");
-
-		List<PropertyFilter> filters=new ArrayList<PropertyFilter>();
-		filters.add(new PropertyFilter("EQS_quId", quId));
-		filters.add(new PropertyFilter("EQI_visibility", "1"));
-		return findAll(page, filters);
-		*/
 		CriteriaBuilder criteriaBuilder=quOrderbyDao.getSession().getCriteriaBuilder();
 		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(QuOrderby.class);
 		Root root = criteriaQuery.from(QuOrderby.class);
@@ -60,6 +56,7 @@ public class QuOrderbyManagerImpl extends BaseServiceImpl<QuOrderby, String> imp
 		return quOrderbyDao.findAll(criteriaQuery);
 	}
 
+	// 查找排序题最后一个选项的序号
 	public int getOrderById(String quId){
 		Criterion criterion=Restrictions.eq("quId", quId);
 		QuOrderby quOrderby=quOrderbyDao.findFirst("orderById", false, criterion);
@@ -75,6 +72,13 @@ public class QuOrderbyManagerImpl extends BaseServiceImpl<QuOrderby, String> imp
 	 * 更新操作
 	 */
 
+	/**
+	 *  根据选项 id 设置选项的说明。如果 quItemId 为 null 或空字符串，则新增一个选项
+	 * @param quId 选项关联的问题 id
+	 * @param quItemId
+	 * @param optionName 选项说明
+	 * @return
+	 */
 	@Override
 	@Transactional
 	public QuOrderby upOptionName(String quId,String quItemId, String optionName) {
@@ -98,6 +102,13 @@ public class QuOrderbyManagerImpl extends BaseServiceImpl<QuOrderby, String> imp
 		}
 	}
 
+
+	/**
+	 * 为排序题添加多个选项
+	 * @param quId
+	 * @param quOrderbys
+	 * @return
+	 */
 	@Override
 	@Transactional
 	public List<QuOrderby> saveManyOptions(String quId,List<QuOrderby> quOrderbys) {
@@ -112,6 +123,7 @@ public class QuOrderbyManagerImpl extends BaseServiceImpl<QuOrderby, String> imp
 		return quOrderbys;
 	}
 
+	// 根据 id 删除对应选项。（软删除，设置 visibility 为 0）
 	@Override
 	@Transactional
 	public void ajaxDelete(String quItemId) {
@@ -120,6 +132,7 @@ public class QuOrderbyManagerImpl extends BaseServiceImpl<QuOrderby, String> imp
 		quOrderbyDao.save(quOrderby);
 	}
 
+	// 没用
 	@Override
 	@Transactional
 	public void saveAttr(String quItemId) {

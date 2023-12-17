@@ -41,9 +41,11 @@ public class QuestionBankManagerImpl extends BaseServiceImpl<QuestionBank, Strin
 	public void setBaseDao() {
 		this.baseDao=questionBankDao;
 	}
-	
+
+	// 新增一个题库或题库目录
 	@Override
 	public void save(QuestionBank t) {
+		// 获取当前的登陆用户
 		User user = accountManager.getCurUser();
 		if(user!=null){
 			t.setUserId(user.getId());
@@ -71,11 +73,13 @@ public class QuestionBankManagerImpl extends BaseServiceImpl<QuestionBank, Strin
 		return resultList;
 	}
 
+	// 根据题库 id 查找题库
 	@Override
 	public QuestionBank getBank(String id) {
 		QuestionBank questionBank=get(id);
 		return questionBank;
 	}
+
 	@Override
 	public QuestionBank findByNameUn(String id, String parentId, String bankName) {
 		List<Criterion> criterions=new ArrayList<Criterion>();
@@ -90,7 +94,13 @@ public class QuestionBankManagerImpl extends BaseServiceImpl<QuestionBank, Strin
 		}
 		return questionBankDao.findFirst(criterions);
 	}
-	
+
+	/**
+	 * 找到与 entity 所属功能分组、行业分组相同的的已发布的题库
+	 * @param page
+	 * @param entity
+	 * @return 分页查询的结果
+	 */
 	@Override
 	public Page<QuestionBank> findPage(Page<QuestionBank> page, QuestionBank entity) {
 		page.setOrderBy("createDate");
@@ -98,8 +108,8 @@ public class QuestionBankManagerImpl extends BaseServiceImpl<QuestionBank, Strin
 		
 		List<Criterion> criterions=new ArrayList<Criterion>();
 		criterions.add(Restrictions.eq("visibility", 1));
-		criterions.add(Restrictions.eq("dirType", 2));
-		criterions.add(Restrictions.eq("bankState", 1));
+		criterions.add(Restrictions.eq("dirType", 2));	// 类型为题库
+		criterions.add(Restrictions.eq("bankState", 1)); // 状态为发布状态
 		
 		Integer bankTag = entity.getBankTag();
 		if(bankTag==null){
@@ -116,7 +126,11 @@ public class QuestionBankManagerImpl extends BaseServiceImpl<QuestionBank, Strin
 		}
 		return questionBankDao.findPageList(page, criterions);
 	}
-	
+
+	/**
+	 * 删除题库(软删除)
+	 * @param id
+	 */
 	@Override
 	@Transactional
 	public void delete(String id) {
@@ -132,6 +146,11 @@ public class QuestionBankManagerImpl extends BaseServiceImpl<QuestionBank, Strin
 			}
 		}
 	}
+
+	/**
+	 * 删除题库目录及其下的所有题库
+	 * @param questionBank
+	 */
 	@Transactional
 	public void delete(QuestionBank questionBank) {
 		String id=questionBank.getId();
@@ -142,13 +161,15 @@ public class QuestionBankManagerImpl extends BaseServiceImpl<QuestionBank, Strin
 			Criterion criterion=Restrictions.eq("parentId", questionBank.getId());
 			List<QuestionBank> banks=findList(criterion);
 			if(banks!=null){
+				// 遍历删除
 				for (QuestionBank questionBank2 : banks) {
 					delete(questionBank2);
 				}
 			}
 		}
 	}
-	
+
+	// 发布题库，设置状态为发布状态
 	@Override
 	@Transactional
 	public void executeBank(String id) {
@@ -161,7 +182,8 @@ public class QuestionBankManagerImpl extends BaseServiceImpl<QuestionBank, Strin
 		}
 		super.save(questionBank);
 	}
-	
+
+	// 设置状态为设计状态
 	@Override
 	@Transactional
 	public void closeBank(String id) {
@@ -169,13 +191,17 @@ public class QuestionBankManagerImpl extends BaseServiceImpl<QuestionBank, Strin
 		questionBank.setBankState(0);
 		super.save(questionBank);
 	}
-	
+
+	/**
+	 * 创建一个新的题库
+	 * @return
+	 */
 	public List<QuestionBank> newQuestionBank() {
 		List<QuestionBank> result=new ArrayList<QuestionBank>();
 		try{
 			QuestionBank entity=new QuestionBank();
 			Page<QuestionBank> page=new Page<QuestionBank>();
-			page.setPageSize(15);
+			page.setPageSize(15);  // 设置分页大小
 			page=findPage(page,entity);
 			result=page.getResult();
 		}catch (Exception e) {

@@ -36,6 +36,7 @@ public class QuCheckbox extends IdEntity{
 	//是否显示  0不显示
 	private Integer visibility=1;
 
+	// getter and setter
 	public String getQuId() {
 		return quId;
 	}

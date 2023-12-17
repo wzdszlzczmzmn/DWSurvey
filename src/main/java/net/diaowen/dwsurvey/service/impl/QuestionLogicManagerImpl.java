@@ -22,7 +22,8 @@ import org.springframework.stereotype.Service;
 public class QuestionLogicManagerImpl implements QuestionLogicManager {
 		@Autowired
 		private QuestionLogicDao questionLogicDao;
-	
+
+		// 根据问题 id 查找其关联的问题逻辑
 		@Override
 		public List<QuestionLogic> findByCkQuId(String ckQuId) {
 			Criterion cri1=Restrictions.eq("ckQuId", ckQuId);

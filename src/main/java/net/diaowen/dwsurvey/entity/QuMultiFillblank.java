@@ -9,6 +9,7 @@ import net.diaowen.common.CheckType;
 import net.diaowen.common.base.entity.IdEntity;
 
 /**
+ * 多项填空题的选项
  *
  * https://github.com/wkeyuan/DWSurvey
  * http://dwsurvey.net

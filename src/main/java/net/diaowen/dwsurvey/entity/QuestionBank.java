@@ -20,8 +20,9 @@ import net.diaowen.common.base.entity.IdEntity;
 @Entity
 @Table(name="t_question_bank")
 public class QuestionBank extends IdEntity{
-
+	// 所在目录的 id
 	private String parentId="";
+	// 题库名
 	private String bankName;
 	//说明
 	private String bankNote;
@@ -48,6 +49,7 @@ public class QuestionBank extends IdEntity{
 	//引用次数
 	private Integer excerptNum=0;
 
+	// getter 方法和 setter 方法
 	public String getParentId() {
 		return parentId;
 	}
@@ -129,6 +131,7 @@ public class QuestionBank extends IdEntity{
 
 	//用户名
 	private String userName;
+	// 计算出一个临时的用户名
 	@Formula("(select o.name from t_user o where o.id = user_id)")
 	public String getUserName() {
 		return userName;
