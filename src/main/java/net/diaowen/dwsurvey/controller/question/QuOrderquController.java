@@ -38,11 +38,21 @@ public class QuOrderquController{
 	@Autowired
 	private QuOrderbyManager quOrderbyManager;
 
+	/**
+	 * 处理 保存排序题 的请求，并返回一个包含结果的JSON字符串
+	 *
+	 * @param request
+	 * @param response
+	 * @return 返回一个包含结果的JSON字符串
+	 * @throws Exception
+	 */
 	@RequestMapping("/ajaxSave.do")
 	public String ajaxSave(HttpServletRequest request,HttpServletResponse response) throws Exception {
 		try{
+			// 从请求中构建并保存排序题
 			Question entity=ajaxBuildSaveOption(request);
 			questionManager.save(entity);
+			// 构建结果JSON并返回
 			String resultJson=buildResultJson(entity);
 			response.getWriter().write(resultJson);
 		}catch (Exception e) {
@@ -52,7 +62,17 @@ public class QuOrderquController{
 		return null;
 	}
 
+	/**
+	 * 处理 保存排序题 的具体逻辑
+	 * 从请求中获取问题和排序项的属性，设置这些属性的值
+	 * 最后将问题和排序项保存到数据库中
+	 *
+	 * @param request
+	 * @return 返回保存后的排序题对象
+	 * @throws UnsupportedEncodingException
+	 */
 	private Question ajaxBuildSaveOption(HttpServletRequest request) throws UnsupportedEncodingException {
+		// 从请求中获取问题和排序项的属性
 		String quId=request.getParameter("quId");
 		String belongId=request.getParameter("belongId");
 		String quTitle=request.getParameter("quTitle");
@@ -66,9 +86,11 @@ public class QuOrderquController{
 		String randOrder=request.getParameter("randOrder");
 		String cellCount=request.getParameter("cellCount");
 
+		// 对空字符串进行处理
 		if("".equals(quId)){
 			quId=null;
 		}
+		// 创建 Question 对象并设置属性
 		Question entity=questionManager.getModel(quId);
 		entity.setBelongId(belongId);
 		if(quTitle!=null){
@@ -78,6 +100,8 @@ public class QuOrderquController{
 		entity.setOrderById(Integer.parseInt(orderById));
 		entity.setTag(Integer.parseInt(tag));
 		entity.setQuType(QuType.ORDERQU);
+
+		//参数
 		isRequired=(isRequired==null || "".equals(isRequired))?"0":isRequired;
 		hv=(hv==null || "".equals(hv))?"0":hv;
 		randOrder=(randOrder==null || "".equals(randOrder))?"0":randOrder;
@@ -86,6 +110,8 @@ public class QuOrderquController{
 		entity.setHv(Integer.parseInt(hv));
 		entity.setRandOrder(Integer.parseInt(randOrder));
 		entity.setCellCount(Integer.parseInt(cellCount));
+
+		// 获取并处理排序项
 		Map<String, Object> optionNameMap=WebUtils.getParametersStartingWith(request, "optionValue_");
 		List<QuOrderby> quOrderbys=new ArrayList<QuOrderby>();
 		for (String key : optionNameMap.keySet()) {
@@ -129,11 +155,21 @@ public class QuOrderquController{
 		return entity;
 	}
 
+	/**
+	 * 构建包含问题和排序项信息的JSON字符串
+	 *
+	 * @param entity 问题对象
+	 * @return 构建好的JSON字符串
+	 */
 	public static String buildResultJson(Question entity){
 		StringBuffer strBuf=new StringBuffer();
+
+		//将问题对象的id和orderById属性添加到strBuf中
 		strBuf.append("{id:'").append(entity.getId());
 		strBuf.append("',orderById:");
 		strBuf.append(entity.getOrderById());
+
+		//将问题对象的 排序项列表 添加到strBuf中
 		strBuf.append(",quItems:[");
 		List<QuOrderby> quOrderbys=entity.getQuOrderbys();
 		for (QuOrderby quOrderby : quOrderbys) {
@@ -145,6 +181,8 @@ public class QuOrderquController{
 			strBuf.replace(strLen-1, strLen, "");
 		}
 		strBuf.append("]");
+
+		//添加quLogics（逻辑列表）属性
 		strBuf.append(",quLogics:[");
 		List<QuestionLogic> questionLogics=entity.getQuestionLogics();
 		if(questionLogics!=null){
@@ -162,7 +200,9 @@ public class QuOrderquController{
 	}
 
 	/**
-	 * 删除选项
+	 * 删除排序项
+	 * @param request
+	 * @param response
 	 * @return
 	 * @throws Exception
 	 */

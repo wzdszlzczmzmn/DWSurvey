@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import net.diaowen.common.service.BaseServiceImpl;
 
 /**
- * 排序题
+ * 排序题业务 实现类
  * @author keyuan(keyuan258@gmail.com)
  *
  * https://github.com/wkeyuan/DWSurvey
@@ -25,7 +25,7 @@ public class AnOrderManagerImpl extends BaseServiceImpl<AnOrder, String> impleme
 
 	@Autowired
 	private AnOrderDao anOrderDao;
-	
+
 	@Override
 	public void setBaseDao() {
 		this.baseDao=anOrderDao;
@@ -43,5 +43,5 @@ public class AnOrderManagerImpl extends BaseServiceImpl<AnOrder, String> impleme
 	public void findGroupStats(Question question) {
 		anOrderDao.findGroupStats(question);
 	}
-	
+
 }
