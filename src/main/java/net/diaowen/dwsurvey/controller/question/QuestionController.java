@@ -23,13 +23,14 @@ public class QuestionController{
 	private QuestionManager questionManager;
 	/**
 	 * ajax删除
-	 * @return
+	 * @return 删除成则向客户端返回 true，出现异常则返回 false
 	 * @throws Exception
 	 */
 	@RequestMapping("/ajaxDelete.do")
 	public String ajaxDelete(HttpServletRequest request,HttpServletResponse response) throws Exception {
 		String responseStr="";
 		try{
+			// 从请求中获取问题 id
 			String delQuId=request.getParameter("quId");
 			questionManager.delete(delQuId);
 			responseStr="true";

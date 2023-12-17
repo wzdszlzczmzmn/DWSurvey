@@ -14,7 +14,7 @@ import net.diaowen.common.CheckType;
 import net.diaowen.common.QuType;
 
 /**
- *
+ * 问题
  * @author keyuan
  *
  * https://github.com/wkeyuan/DWSurvey
@@ -243,12 +243,17 @@ public class Question extends IdEntity{
 	/**
 	 * 附加属性，不作映射
 	 */
+	// 如果是大题的话，其下的各个小题
 	private List<Question> questions=new ArrayList<Question>();
-	//题选项
+	// 单选题的选项
 	private List<QuRadio> quRadios=new ArrayList<QuRadio>();
+	// 多选题的选项
 	private List<QuCheckbox> quCheckboxs=new ArrayList<QuCheckbox>();
+	// 多项填空题选项
 	private List<QuMultiFillblank> quMultiFillblanks=new ArrayList<QuMultiFillblank>();
+	// 评分题选项
 	private List<QuScore> quScores=new ArrayList<QuScore>();
+	// 排序题选项
 	private List<QuOrderby> quOrderbys=new ArrayList<QuOrderby>();
 
 	private String rowContent="";
@@ -262,17 +267,22 @@ public class Question extends IdEntity{
 	private List<AnDFillblank> anDFillblanks=new ArrayList<AnDFillblank>();
 	private List<AnEnumqu> anEnumqus=new ArrayList<AnEnumqu>();
 	private AnFillblank anFillblank=new AnFillblank();
+	// 单选题答案
 	private AnRadio anRadio=new AnRadio();
+	// 是非题答案
 	private AnYesno anYesno=new AnYesno();
-
+	// 评分题答案
 	private List<AnScore> anScores=new ArrayList<AnScore>();
 	private Integer anCount=0;
+	// 排序题答案
 	private List<AnOrder> anOrders = new ArrayList<AnOrder>();
+	// 文件上传题答案
 	private List<AnUplodFile> anUplodFiles=new ArrayList<AnUplodFile>();
 
-	//逻辑设置
+	// 逻辑设置 根据回答跳转或显示某个题目
 	private List<QuestionLogic> questionLogics;
 
+	// getter and setter
 	@Transient
 	public List<QuRadio> getQuRadios() {
 		return quRadios;
