@@ -1,7 +1,6 @@
 package net.diaowen.dwsurvey.dao.impl;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 import net.diaowen.dwsurvey.dao.QuestionDao;
@@ -46,7 +45,7 @@ public class QuestionDaoImpl extends BaseDaoImpl<Question, String> implements Qu
 	 */
 	public List<Question> findByBelongTag(String qubankId,String tag){
 		// 分页
-		Page<Question> page=new Page<Question>();
+		Page<Question> page=new Page<>();
 		page.setOrderBy("orderById");
 		page.setOrderDir("asc");
 

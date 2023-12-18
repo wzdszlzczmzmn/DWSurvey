@@ -41,6 +41,10 @@ import javax.persistence.criteria.Root;
  */
 @Service("questionManager")
 public class QuestionManagerImpl extends BaseServiceImpl<Question, String> implements QuestionManager{
+	private static final String BELONG_ID = "belongId";
+	private static final String ORDER_BY_ID = "orderById";
+
+	private static final String QU_TYPE = "quType";
 
 	@Autowired
 	private QuestionDao questionDao;
@@ -84,7 +88,6 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 				if(uuid==null || "".equals(uuid)){
 					question.setId(null);
 				}
-//				question.setUserUuid(user.getId());
 				// 新增的 question 的 Id 在保存到数据库时由 JPA 生成
 				questionDao.save(question);
 			}
@@ -106,13 +109,13 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 		Root root = criteriaQuery.from(Question.class);
 		criteriaQuery.select(root);
 		// 设置查询条件
-		Predicate eqQuId = criteriaBuilder.equal(root.get("belongId"),belongId);
+		Predicate eqQuId = criteriaBuilder.equal(root.get(BELONG_ID),belongId);
 		Predicate eqTag = criteriaBuilder.equal(root.get("tag"),tag);
 		// 过滤不是大题下面的小题
 		Predicate eqQuTag = criteriaBuilder.notEqual(root.get("quTag"),3);
 		criteriaQuery.where(eqQuId,eqTag,eqQuTag);
 		// 按问题的序号升序排列
-		criteriaQuery.orderBy(criteriaBuilder.asc(root.get("orderById")));
+		criteriaQuery.orderBy(criteriaBuilder.asc(root.get(ORDER_BY_ID)));
 		return questionDao.findAll(criteriaQuery);
 
 	}
@@ -173,10 +176,6 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 	 * @return 该问题下的所有小题
 	 */
 	public List<Question> findByParentQuId(String parentQuId){
-		/*List<PropertyFilter> filters=new ArrayList<PropertyFilter>();
-		filters.add(new PropertyFilter("EQS_parentQuUuId", parentQuId));
-		return findList(filters);*/
-
 		CriteriaBuilder criteriaBuilder=questionDao.getSession().getCriteriaBuilder();
 		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(Question.class);
 		Root root = criteriaQuery.from(Question.class);
@@ -185,7 +184,7 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 		Predicate eqParentQuId = criteriaBuilder.equal(root.get("parentQuUuId"),parentQuId);
 		criteriaQuery.where(eqParentQuId);
 		// 按问题的序号升序排列
-		criteriaQuery.orderBy(criteriaBuilder.asc(root.get("orderById")));
+		criteriaQuery.orderBy(criteriaBuilder.asc(root.get(ORDER_BY_ID)));
 		return questionDao.findAll(criteriaQuery);
 
 	}
@@ -196,17 +195,16 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 	 * @return
 	 */
 	public List<Question> findByQuIds(String[] quIds, boolean b) {
-		List<Question> questions=new ArrayList<Question>();
+		List<Question> questions=new ArrayList<>();
 		// 进行判空处理
 		if(quIds==null || quIds.length<=0){
 			return questions;
 		}
 		// 构造 hql 语句
-		StringBuffer hqlBuf=new StringBuffer("from Question qu where qu.id in(");
+		StringBuilder hqlBuf= new StringBuilder("from Question qu where qu.id in(");
 		for (String quId : quIds) {
 			hqlBuf.append("'"+quId+"'").append(",");
 		}
-//		hqlBuf.append("0)");
 		String hql=hqlBuf.substring(0, hqlBuf.lastIndexOf(","))+")";
 		questions=questionDao.find(hql);
 		if(b){
@@ -243,7 +241,6 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 			Question question=get(quId);
 			//同时删除掉相应的选项
 			if(question!=null){
-				QuType quType=question.getQuType();
 				String belongId = question.getBelongId();
 				int orderById= question.getOrderById();
 				questionDao.delete(question);
@@ -280,20 +277,6 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 	// 根据 Question ID 查询 Question
 	public Question findUnById(String id){
 		return questionDao.findUniqueBy("id", id);
-	}
-
-	// 根据问卷查询其所有的 Question
-	public List<Question> findByparentQuId(String parentQuUuId){
-		CriteriaBuilder criteriaBuilder=questionDao.getSession().getCriteriaBuilder();
-		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(Question.class);
-		Root root = criteriaQuery.from(Question.class);
-		criteriaQuery.select(root);
-		// 设置查询条件
-		Predicate eqParentQuId = criteriaBuilder.equal(root.get("parentQuUuId"),parentQuUuId);
-		criteriaQuery.where(eqParentQuId);
-		// 按问题的序号升序排列
-		criteriaQuery.orderBy(criteriaBuilder.asc(root.get("orderById")));
-		return questionDao.findAll(criteriaQuery);
 	}
 
 	/**
@@ -341,8 +324,8 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 			question.setCopyFromId(quId);
 
 			// 处理大题下面的小题，每个题都要复制
-			List<Question> changeChildQuestions=findByparentQuId(quId);
-			List<Question> qulits=new ArrayList<Question>();
+			List<Question> changeChildQuestions=findByParentQuId(quId);
+			List<Question> qulits=new ArrayList<>();
 			for (Question changeQu : changeChildQuestions) {
 				Question question2=new Question();
 				// 复制所有属性
@@ -356,7 +339,7 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 				question2.setCopyFromId(changeQu.getId());
 
 				getQuestionOption(changeQu);
-				copyItems(belongId,changeQu, question2);
+				copyItems(changeQu, question2);
 
 				qulits.add(question2);
 			}
@@ -385,23 +368,22 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 		question.setCopyFromId(changeQuestion.getId());
 
 		getQuestionOption(changeQuestion);
-		copyItems(belongId,changeQuestion, question);
+		copyItems(changeQuestion, question);
 		save(question);
 	}
 
 	/**
 	 * 复制问题下的每个选项
 	 *
-	 * @param quBankUuid unused
 	 * @param changeQuestion 要复制的问题
 	 * @param question
 	 */
-	private void copyItems(String quBankUuid,Question changeQuestion, Question question) {
+	private void copyItems(Question changeQuestion, Question question) {
 		QuType quType=changeQuestion.getQuType();
 		// 单选题和复合单选题
 		if(quType==QuType.RADIO || quType==QuType.COMPRADIO){
 			List<QuRadio> changeQuRadios=changeQuestion.getQuRadios(); // 单选题选项
-			List<QuRadio> quRadios=new ArrayList<QuRadio>();
+			List<QuRadio> quRadios=new ArrayList<>();
 			// 复制每个选项
 			for (QuRadio changeQuRadio : changeQuRadios) {
 				QuRadio quRadio=new QuRadio();
@@ -412,7 +394,7 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 			question.setQuRadios(quRadios);
 		}else if(quType==QuType.CHECKBOX || quType==QuType.COMPCHECKBOX){ // 多选题和复合多选题
 			List<QuCheckbox> changeQuCheckboxs=changeQuestion.getQuCheckboxs();
-			List<QuCheckbox> quCheckboxs=new ArrayList<QuCheckbox>();
+			List<QuCheckbox> quCheckboxs=new ArrayList<>();
 			// 复制每个选项
 			for (QuCheckbox changeQuCheckbox : changeQuCheckboxs) {
 				QuCheckbox quCheckbox=new QuCheckbox();
@@ -423,7 +405,7 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 			question.setQuCheckboxs(quCheckboxs);
 		}else if(quType==QuType.MULTIFILLBLANK){ // 多项填空题
 			List<QuMultiFillblank> changeQuDFillbanks=changeQuestion.getQuMultiFillblanks();
-			List<QuMultiFillblank> quDFillbanks=new ArrayList<QuMultiFillblank>();
+			List<QuMultiFillblank> quDFillbanks=new ArrayList<>();
 			for (QuMultiFillblank changeQuDFillbank : changeQuDFillbanks) {
 				QuMultiFillblank quDFillbank=new QuMultiFillblank();
 				ReflectionUtils.copyAttr(changeQuDFillbank,quDFillbank);
@@ -434,7 +416,7 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 		}else if(quType==QuType.SCORE){
 			//评分
 			List<QuScore> changeQuScores=changeQuestion.getQuScores();
-			List<QuScore> quScores=new ArrayList<QuScore>();
+			List<QuScore> quScores=new ArrayList<>();
 			for (QuScore changeQuScore : changeQuScores) {
 				QuScore quScore=new QuScore();
 				ReflectionUtils.copyAttr(changeQuScore, quScore);
@@ -444,7 +426,7 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 			question.setQuScores(quScores);
 		}else if(quType==QuType.ORDERQU) { // 排序题
 			List<QuOrderby> changeQuOrderbys=changeQuestion.getQuOrderbys();
-			List<QuOrderby> quOrderbyList=new ArrayList<QuOrderby>();
+			List<QuOrderby> quOrderbyList=new ArrayList<>();
 			for (QuOrderby changeQuOrder : changeQuOrderbys) {
 				QuOrderby quOrderby=new QuOrderby();
 				ReflectionUtils.copyAttr(changeQuOrder, quOrderby);
@@ -464,22 +446,21 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 	 */
 	@Override
 	public List<Question> findStatsRowVarQus(SurveyDirectory survey) {
-		Criterion criterion1=Restrictions.eq("belongId", survey.getId());
+		Criterion criterion1=Restrictions.eq(BELONG_ID, survey.getId());
 		Criterion criterion2=Restrictions.eq("tag", 2);
 
 		// 排除所有填空题、多项填空题、多行填空题、多选题、矩阵填空题、矩阵单选题、枚举题、排序题、评分题
-		Criterion criterion31=Restrictions.ne("quType", QuType.FILLBLANK);
-		Criterion criterion32=Restrictions.ne("quType", QuType.MULTIFILLBLANK);
-		Criterion criterion33=Restrictions.ne("quType", QuType.ANSWER);
-		Criterion criterion34=Restrictions.ne("quType", QuType.CHENCHECKBOX);
-		Criterion criterion35=Restrictions.ne("quType", QuType.CHENFBK);
-		Criterion criterion36=Restrictions.ne("quType", QuType.CHENRADIO);
-		Criterion criterion37=Restrictions.ne("quType", QuType.ENUMQU);
-		Criterion criterion38=Restrictions.ne("quType", QuType.ORDERQU);
-		Criterion criterion39=Restrictions.ne("quType", QuType.SCORE);
+		Criterion criterion31=Restrictions.ne(QU_TYPE, QuType.FILLBLANK);
+		Criterion criterion32=Restrictions.ne(QU_TYPE, QuType.MULTIFILLBLANK);
+		Criterion criterion33=Restrictions.ne(QU_TYPE, QuType.ANSWER);
+		Criterion criterion34=Restrictions.ne(QU_TYPE, QuType.CHENCHECKBOX);
+		Criterion criterion35=Restrictions.ne(QU_TYPE, QuType.CHENFBK);
+		Criterion criterion36=Restrictions.ne(QU_TYPE, QuType.CHENRADIO);
+		Criterion criterion37=Restrictions.ne(QU_TYPE, QuType.ENUMQU);
+		Criterion criterion38=Restrictions.ne(QU_TYPE, QuType.ORDERQU);
+		Criterion criterion39=Restrictions.ne(QU_TYPE, QuType.SCORE);
 
 		return questionDao.find(criterion1,criterion2,criterion31,criterion32,criterion33,criterion34,criterion35,criterion36,criterion37,criterion38,criterion39);
-//		return null;
 	}
 
 
@@ -490,20 +471,20 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 	 */
 	@Override
 	public List<Question> findStatsColVarQus(SurveyDirectory survey) {
-		Criterion criterion1=Restrictions.eq("belongId", survey.getId());
+		Criterion criterion1=Restrictions.eq(BELONG_ID, survey.getId());
 		// 问卷中的题
 		Criterion criterion2=Restrictions.eq("tag", 2);
 
 		// 排除所有填空题、多项填空题、多行填空题、多选题、矩阵填空题、矩阵单选题、枚举题、排序题、评分题
-		Criterion criterion31=Restrictions.ne("quType", QuType.FILLBLANK);
-		Criterion criterion32=Restrictions.ne("quType", QuType.MULTIFILLBLANK);
-		Criterion criterion33=Restrictions.ne("quType", QuType.ANSWER);
-		Criterion criterion34=Restrictions.ne("quType", QuType.CHENCHECKBOX);
-		Criterion criterion35=Restrictions.ne("quType", QuType.CHENFBK);
-		Criterion criterion36=Restrictions.ne("quType", QuType.CHENRADIO);
-		Criterion criterion37=Restrictions.ne("quType", QuType.ENUMQU);
-		Criterion criterion38=Restrictions.ne("quType", QuType.ORDERQU);
-		Criterion criterion39=Restrictions.ne("quType", QuType.SCORE);
+		Criterion criterion31=Restrictions.ne(QU_TYPE, QuType.FILLBLANK);
+		Criterion criterion32=Restrictions.ne(QU_TYPE, QuType.MULTIFILLBLANK);
+		Criterion criterion33=Restrictions.ne(QU_TYPE, QuType.ANSWER);
+		Criterion criterion34=Restrictions.ne(QU_TYPE, QuType.CHENCHECKBOX);
+		Criterion criterion35=Restrictions.ne(QU_TYPE, QuType.CHENFBK);
+		Criterion criterion36=Restrictions.ne(QU_TYPE, QuType.CHENRADIO);
+		Criterion criterion37=Restrictions.ne(QU_TYPE, QuType.ENUMQU);
+		Criterion criterion38=Restrictions.ne(QU_TYPE, QuType.ORDERQU);
+		Criterion criterion39=Restrictions.ne(QU_TYPE, QuType.SCORE);
 
 		return questionDao.find(criterion1,criterion2,criterion31,criterion32,criterion33,criterion34,criterion35,criterion36,criterion37,criterion38,criterion39);
 	}

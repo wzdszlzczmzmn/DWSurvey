@@ -60,7 +60,7 @@ public class Question extends IdEntity{
 	private Integer visibility=1;
 
 	//如果是复制的题，则有复制于那一题
-	public String copyFromId;
+	private String copyFromId;
 
 	//控制性属性
 	//1水平显示 2垂直显示
@@ -244,17 +244,17 @@ public class Question extends IdEntity{
 	 * 附加属性，不作映射
 	 */
 	// 如果是大题的话，其下的各个小题
-	private List<Question> questions=new ArrayList<Question>();
+	private List<Question> questions=new ArrayList<>();
 	// 单选题的选项
-	private List<QuRadio> quRadios=new ArrayList<QuRadio>();
+	private List<QuRadio> quRadios=new ArrayList<>();
 	// 多选题的选项
-	private List<QuCheckbox> quCheckboxs=new ArrayList<QuCheckbox>();
+	private List<QuCheckbox> quCheckboxs=new ArrayList<>();
 	// 多项填空题选项
-	private List<QuMultiFillblank> quMultiFillblanks=new ArrayList<QuMultiFillblank>();
+	private List<QuMultiFillblank> quMultiFillblanks=new ArrayList<>();
 	// 评分题选项
-	private List<QuScore> quScores=new ArrayList<QuScore>();
+	private List<QuScore> quScores=new ArrayList<>();
 	// 排序题选项
-	private List<QuOrderby> quOrderbys=new ArrayList<QuOrderby>();
+	private List<QuOrderby> quOrderbys=new ArrayList<>();
 
 	private String rowContent="";
 	private String colContent="";
@@ -263,21 +263,21 @@ public class Question extends IdEntity{
 	private String[] removeOptionUuIds=null;
 	//题答卷
 	private AnAnswer anAnswer=new AnAnswer();
-	private List<AnCheckbox> anCheckboxs=new ArrayList<AnCheckbox>();
-	private List<AnDFillblank> anDFillblanks=new ArrayList<AnDFillblank>();
-	private List<AnEnumqu> anEnumqus=new ArrayList<AnEnumqu>();
+	private List<AnCheckbox> anCheckboxs=new ArrayList<>();
+	private List<AnDFillblank> anDFillblanks=new ArrayList<>();
+	private List<AnEnumqu> anEnumqus=new ArrayList<>();
 	private AnFillblank anFillblank=new AnFillblank();
 	// 单选题答案
 	private AnRadio anRadio=new AnRadio();
 	// 是非题答案
 	private AnYesno anYesno=new AnYesno();
 	// 评分题答案
-	private List<AnScore> anScores=new ArrayList<AnScore>();
+	private List<AnScore> anScores=new ArrayList<>();
 	private Integer anCount=0;
 	// 排序题答案
-	private List<AnOrder> anOrders = new ArrayList<AnOrder>();
+	private List<AnOrder> anOrders = new ArrayList<>();
 	// 文件上传题答案
-	private List<AnUplodFile> anUplodFiles=new ArrayList<AnUplodFile>();
+	private List<AnUplodFile> anUplodFiles=new ArrayList<>();
 
 	// 逻辑设置 根据回答跳转或显示某个题目
 	private List<QuestionLogic> questionLogics;
@@ -443,7 +443,7 @@ public class Question extends IdEntity{
 	}
 
 	//统计json
-	public String statJson="";
+	private String statJson="";
 	@Transient
 	public String getStatJson() {
 		return statJson;
