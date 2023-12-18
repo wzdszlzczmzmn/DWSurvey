@@ -151,11 +151,12 @@ public class QuMultiFillblank extends IdEntity{
 	 */
 	private Integer anCount;
 
-	@Transient
+
 	/**
 	 * 获取填写该选项的次数
 	 * @return 填写该选项的次数
 	 */
+	@Transient
 	public Integer getAnCount() {
 		return anCount;
 	}

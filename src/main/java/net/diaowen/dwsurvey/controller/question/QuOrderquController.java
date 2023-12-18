@@ -20,6 +20,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * 排序题 action
@@ -36,6 +37,8 @@ public class QuOrderquController{
 	private QuestionManager questionManager;
 	@Autowired
 	private QuOrderbyManager quOrderbyManager;
+
+	private final Logger logger = Logger.getLogger(QuOrderquController.class.getName());
 
 	/**
 	 * 处理 保存排序题 的请求，并返回一个包含结果的JSON字符串
@@ -55,7 +58,7 @@ public class QuOrderquController{
 			String resultJson=buildResultJson(entity);
 			response.getWriter().write(resultJson);
 		}catch (Exception e) {
-			e.printStackTrace();
+			logger.warning(e.getMessage());
 			response.getWriter().write("error");
 		}
 		return null;
@@ -213,7 +216,7 @@ public class QuOrderquController{
 			quOrderbyManager.ajaxDelete(quItemId);
 			response.getWriter().write("true");
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.warning(e.getMessage());
 			response.getWriter().write("error");
 		}
 		return null;

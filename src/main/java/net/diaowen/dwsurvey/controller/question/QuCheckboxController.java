@@ -20,6 +20,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * 多选题 action
@@ -36,6 +37,8 @@ public class QuCheckboxController {
 	private QuestionManager questionManager;
 	@Autowired
 	private QuCheckboxManager quCheckboxManager;
+
+	private final Logger logger = Logger.getLogger(QuCheckboxController.class.getName());
 
 	/**
 	 * 处理 保存多选题 的请求，并返回一个包含结果的JSON字符串
@@ -55,7 +58,7 @@ public class QuCheckboxController {
 			String resultJson=buildResultJson(entity);
 			response.getWriter().write(resultJson);
 		}catch (Exception e) {
-			e.printStackTrace();
+			logger.warning(e.getMessage());
 			response.getWriter().write("error");
 		}
 		return null;
@@ -179,7 +182,6 @@ public class QuCheckboxController {
 	 * @return 构建好的JSON字符串
 	 */
 	public static String buildResultJson(Question entity){
-		//{id:'null',quItems:[{id:'null',title:'null'},{id:'null',title:'null'}]}
 		StringBuilder strBuf=new StringBuilder();
 
 		//将问题对象的id和orderById属性添加到strBuf中
@@ -232,7 +234,7 @@ public class QuCheckboxController {
 			quCheckboxManager.ajaxDelete(quItemId);
 			response.getWriter().write("true");
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.warning(e.getMessage());
 			response.getWriter().write("error");
 		}
 		return null;

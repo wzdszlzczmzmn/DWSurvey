@@ -18,6 +18,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * 多项填空题 action
@@ -37,6 +38,7 @@ public class QuMultiFillblankController{
 	@Autowired
 	private AnDFillblankManager anDFillblankManager;
 
+	private final Logger logger = Logger.getLogger(QuMultiFillblankController.class.getName());
 	/**
 	 * 处理 保存多项填空题 的请求，并返回一个包含结果的JSON字符串
 	 *
@@ -55,7 +57,7 @@ public class QuMultiFillblankController{
 			String resultJson=buildResultJson(entity);
 			response.getWriter().write(resultJson);
 		}catch (Exception e) {
-			e.printStackTrace();
+			logger.warning(e.getMessage());
 			response.getWriter().write("error");
 		}
 		return null;
@@ -218,7 +220,7 @@ public class QuMultiFillblankController{
 			quMultiFillblankManager.ajaxDelete(quItemId);
 			response.getWriter().write("true");
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.warning(e.getMessage());
 			response.getWriter().write("error");
 		}
 		return null;
