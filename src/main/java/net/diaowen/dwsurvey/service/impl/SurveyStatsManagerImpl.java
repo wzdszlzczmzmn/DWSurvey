@@ -32,12 +32,9 @@ import net.diaowen.common.service.BaseServiceImpl;
 public class SurveyStatsManagerImpl extends
 		BaseServiceImpl<SurveyStats, String> implements SurveyStatsManager {
 
-	@Autowired
-	private SurveyStatsDao surveyStatsDao;
-	@Autowired
-	private SurveyAnswerManager surveyAnswerManager;
-	@Autowired
-	private QuestionManager questionManager;
+	private final SurveyStatsDao surveyStatsDao;
+	private final SurveyAnswerManager surveyAnswerManager;
+	private final QuestionManager questionManager;
 	private final AnYesnoManager anYesnoManager;
 	private final AnRadioManager anRadioManager;
 	private final AnFillblankManager anFillblankManager;
@@ -48,9 +45,11 @@ public class SurveyStatsManagerImpl extends
 	private final AnScoreManager anScoreManager;
 	private final AnOrderManager anOrderManager;
 	private final AnUploadFileManager anUploadFileManager;
-
 	@Autowired
-	public SurveyStatsManagerImpl(AnYesnoManager anYesnoManager, AnRadioManager anRadioManager, AnFillblankManager anFillblankManager, AnEnumquManager anEnumquManager, AnDFillblankManager anDFillblankManager, AnCheckboxManager anCheckboxManager, AnAnswerManager anAnswerManager, AnScoreManager anScoreManager, AnOrderManager anOrderManager, AnUploadFileManager anUploadFileManager) {
+	public SurveyStatsManagerImpl(SurveyStatsDao surveyStatsDao, SurveyAnswerManager surveyAnswerManager, QuestionManager questionManager, AnYesnoManager anYesnoManager, AnRadioManager anRadioManager, AnFillblankManager anFillblankManager, AnEnumquManager anEnumquManager, AnDFillblankManager anDFillblankManager, AnCheckboxManager anCheckboxManager, AnAnswerManager anAnswerManager, AnScoreManager anScoreManager, AnOrderManager anOrderManager, AnUploadFileManager anUploadFileManager) {
+		this.surveyStatsDao = surveyStatsDao;
+		this.surveyAnswerManager = surveyAnswerManager;
+		this.questionManager = questionManager;
 		this.anYesnoManager = anYesnoManager;
 		this.anRadioManager = anRadioManager;
 		this.anFillblankManager = anFillblankManager;
@@ -62,6 +61,8 @@ public class SurveyStatsManagerImpl extends
 		this.anOrderManager = anOrderManager;
 		this.anUploadFileManager = anUploadFileManager;
 	}
+
+
 
 
 
@@ -244,7 +245,7 @@ public class SurveyStatsManagerImpl extends
 	 */
 	@Override
 	public List<DataCross> findDataChart(String quId) {
-		if (quId != null && !"".equals(quId)) {
+		if (quId != null && !quId.isEmpty()) {
 			Question question = questionManager.getDetail(quId);
 
 			QuType quType = question.getQuType();
