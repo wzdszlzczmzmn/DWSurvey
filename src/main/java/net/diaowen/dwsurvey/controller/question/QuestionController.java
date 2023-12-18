@@ -19,8 +19,13 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 @RequestMapping("/api/dwsurvey/app/design/question")
 public class QuestionController{
+	private final QuestionManager questionManager;
+
 	@Autowired
-	private QuestionManager questionManager;
+	public QuestionController(QuestionManager questionManager) {
+		this.questionManager = questionManager;
+	}
+
 	/**
 	 * ajax删除
 	 * @return 删除成则向客户端返回 true，出现异常则返回 false

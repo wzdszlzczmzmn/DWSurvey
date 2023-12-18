@@ -86,7 +86,7 @@ public class QuestionDaoImpl extends BaseDaoImpl<Question, String> implements Qu
 		String id=entity.getId();
 		String belongId=entity.getBelongId(); // 所属问卷或题库
 		int orderById=entity.getOrderById();
-		if(id==null || "".equals(id)){//如果是新增的题目，则根据已有的题来设置排序号
+		if(id==null || id.isEmpty()){//如果是新增的题目，则根据已有的题来设置排序号
 			isnew=true;
 		}
 		//保存题目的题干部分

@@ -29,8 +29,12 @@ import java.util.Map;
 @Controller
 @RequestMapping("/api/dwsurvey/app/design/qu-pagetag")
 public class QuPagetagController{
+	private final QuestionManager questionManager;
+
 	@Autowired
-	private QuestionManager questionManager;
+	public QuPagetagController(QuestionManager questionManager) {
+		this.questionManager = questionManager;
+	}
 
 	/**
 	 * 保存前端发来的分页标记（分页标记也是一个问题)
@@ -86,10 +90,10 @@ public class QuPagetagController{
 		entity.setTag(Integer.parseInt(tag));
 		// 设置问题类型为分页标记
 		entity.setQuType(QuType.PAGETAG);
-		isRequired=(isRequired==null || "".equals(isRequired))?"0":isRequired;
-		hv=(hv==null || "".equals(hv))?"0":hv; // 水平或垂直显示
-		randOrder=(randOrder==null || "".equals(randOrder))?"0":randOrder; // 是否随机排列
-		cellCount=(cellCount==null || "".equals(cellCount))?"0":cellCount;	 // 按列显示时的列数
+		isRequired=(isRequired==null || isRequired.isEmpty())?"0":isRequired;
+		hv=(hv==null || hv.isEmpty())?"0":hv; // 水平或垂直显示
+		randOrder=(randOrder==null || randOrder.isEmpty())?"0":randOrder; // 是否随机排列
+		cellCount=(cellCount==null || cellCount.isEmpty())?"0":cellCount;	 // 按列显示时的列数
 
 		entity.setIsRequired(Integer.parseInt(isRequired));
 		entity.setHv(Integer.parseInt(hv));

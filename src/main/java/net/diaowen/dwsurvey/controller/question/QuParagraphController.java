@@ -28,8 +28,12 @@ import java.util.Map;
 @Controller
 @RequestMapping("/api/dwsurvey/app/design/qu-paragraph")
 public class QuParagraphController{
+	private final QuestionManager questionManager;
+
 	@Autowired
-	private QuestionManager questionManager;
+	public QuParagraphController(QuestionManager questionManager) {
+		this.questionManager = questionManager;
+	}
 
 	/**
 	 * 保存前端发来的分段题
@@ -82,10 +86,10 @@ public class QuParagraphController{
 		entity.setTag(Integer.parseInt(tag));
 		// 设置问题类型为分段题
 		entity.setQuType(QuType.PARAGRAPH);
-		isRequired=(isRequired==null || "".equals(isRequired))?"0":isRequired;
-		hv=(hv==null || "".equals(hv))?"0":hv;
-		randOrder=(randOrder==null || "".equals(randOrder))?"0":randOrder;
-		cellCount=(cellCount==null || "".equals(cellCount))?"0":cellCount;
+		isRequired=(isRequired==null || isRequired.isEmpty())?"0":isRequired;
+		hv=(hv==null || hv.isEmpty())?"0":hv;
+		randOrder=(randOrder==null || randOrder.isEmpty())?"0":randOrder;
+		cellCount=(cellCount==null || cellCount.isEmpty())?"0":cellCount;
 		entity.setIsRequired(Integer.parseInt(isRequired));
 		entity.setHv(Integer.parseInt(hv));
 		entity.setRandOrder(Integer.parseInt(randOrder));
