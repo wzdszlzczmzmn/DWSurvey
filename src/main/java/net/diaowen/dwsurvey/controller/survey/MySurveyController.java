@@ -141,7 +141,7 @@ public class MySurveyController {
 
 
     /**
-     * 修改状态
+     * 修改问卷状态
      * @return
      */
     @PostMapping(path = "/up-survey-status.do")
@@ -157,7 +157,7 @@ public class MySurveyController {
 
 
     /**
-     * 保存更新基本属性
+     * 保存更新详细信息
      * @param surveyDetail
      * @return
      */

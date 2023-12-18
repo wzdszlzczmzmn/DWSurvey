@@ -37,12 +37,9 @@ public class SurveyAnswerManagerImpl extends
 	@Resource
 	private SurveyAnswerManagerImpl surveyAnswerManagerImpl;
 
-	@Autowired
-	private SurveyAnswerDao surveyAnswerDao;
-	@Autowired
-	private QuestionManager questionManager;
-	@Autowired
-	private SurveyDirectoryManager directoryManager;
+	private final SurveyAnswerDao surveyAnswerDao;
+	private final QuestionManager questionManager;
+	private final SurveyDirectoryManager directoryManager;
 	private final AnYesnoManager anYesnoManager;
 	private final AnRadioManager anRadioManager;
 	private final AnFillblankManager anFillblankManager;
@@ -58,8 +55,10 @@ public class SurveyAnswerManagerImpl extends
 	private static final String ENDANDATE = "endAnDate";
 	private static final String NBSP = "&nbsp;";
 
-	@Autowired
-	public SurveyAnswerManagerImpl(AnYesnoManager anYesnoManager, AnRadioManager anRadioManager, AnFillblankManager anFillblankManager, AnEnumquManager anEnumquManager, AnDFillblankManager anDFillblankManager, AnCheckboxManager anCheckboxManager, AnAnswerManager anAnswerManager, AnScoreManager anScoreManager, AnOrderManager anOrderManager, AnUploadFileManager anUploadFileManager) {
+	public SurveyAnswerManagerImpl(SurveyAnswerDao surveyAnswerDao, QuestionManager questionManager, SurveyDirectoryManager directoryManager, AnYesnoManager anYesnoManager, AnRadioManager anRadioManager, AnFillblankManager anFillblankManager, AnEnumquManager anEnumquManager, AnDFillblankManager anDFillblankManager, AnCheckboxManager anCheckboxManager, AnAnswerManager anAnswerManager, AnScoreManager anScoreManager, AnOrderManager anOrderManager, AnUploadFileManager anUploadFileManager) {
+		this.surveyAnswerDao = surveyAnswerDao;
+		this.questionManager = questionManager;
+		this.directoryManager = directoryManager;
 		this.anYesnoManager = anYesnoManager;
 		this.anRadioManager = anRadioManager;
 		this.anFillblankManager = anFillblankManager;
@@ -71,6 +70,10 @@ public class SurveyAnswerManagerImpl extends
 		this.anOrderManager = anOrderManager;
 		this.anUploadFileManager = anUploadFileManager;
 	}
+
+	@Autowired
+
+
 
 	@Override
 	public void setBaseDao() {

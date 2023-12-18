@@ -178,7 +178,7 @@ public interface SurveyDirectoryManager extends BaseService<SurveyDirectory, Str
 	public Page<SurveyDirectory> findModel(Page<SurveyDirectory> page,
                                            SurveyDirectory entity);
 	/**
-	 * 根据surveyDirectory=创建问卷
+	 * 根据surveyDirectory创建问卷
 	 * @param fromBankId
 	 * @param surveyName
 	 * @param tag

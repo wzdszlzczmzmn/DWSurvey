@@ -32,6 +32,7 @@ public class SurveyDesignController {
 	private final SurveyDirectoryManager surveyDirectoryManager;
 	private final AccountManager accountManager;
 
+	private static final String UTF = "utf-8";
 	@Autowired
 	public SurveyDesignController(QuestionManager questionManager, SurveyDirectoryManager surveyDirectoryManager, AccountManager accountManager) {
 		this.questionManager = questionManager;
@@ -115,15 +116,15 @@ public class SurveyDesignController {
 			if(userId.equals(survey.getUserId())){
 
 				if( svyNote!=null){
-					svyNote=URLDecoder.decode(svyNote,"utf-8");
+					svyNote=URLDecoder.decode(svyNote, UTF);
 					surveyDetail.setSurveyNote(svyNote);
 				}
-				if(svyName!=null && !"".equals(svyName)){
-					svyName=URLDecoder.decode(svyName,"utf-8");
+				if(svyName!=null && !svyName.isEmpty()){
+					svyName=URLDecoder.decode(svyName, UTF);
 					survey.setSurveyName(svyName);
 				}
 				if(StringUtils.isNotEmpty(svyNameText)){
-					svyNameText=URLDecoder.decode(svyNameText,"utf-8");
+					svyNameText=URLDecoder.decode(svyNameText, UTF);
 					survey.setSurveyNameText(svyNameText);
 				}
 
@@ -131,37 +132,37 @@ public class SurveyDesignController {
 				if(effective!=null && !effective.isEmpty()){
 					surveyDetail.setEffective(Integer.parseInt(effective));
 				}
-				if(effectiveIp!=null && !"".equals(effectiveIp)){
+				if(effectiveIp!=null && !effectiveIp.isEmpty()){
 					surveyDetail.setEffectiveIp(Integer.parseInt(effectiveIp));
 				}
-				if(rule!=null && !"".equals(rule)){
+				if(rule!=null && !rule.isEmpty()){
 					surveyDetail.setRule(Integer.parseInt(rule));
 					surveyDetail.setRuleCode(ruleCode);
 				}
-				if(refresh!=null && !"".equals(refresh)){
+				if(refresh!=null && !refresh.isEmpty()){
 					surveyDetail.setRefresh(Integer.parseInt(refresh));
 				}
-				if(mailOnly!=null && !"".equals(mailOnly)){
+				if(mailOnly!=null && !mailOnly.isEmpty()){
 					surveyDetail.setMailOnly(Integer.parseInt(mailOnly));
 				}
-				if(ynEndNum!=null && !"".equals(ynEndNum)){
+				if(ynEndNum!=null && !ynEndNum.isEmpty()){
 					surveyDetail.setYnEndNum(Integer.parseInt(ynEndNum));
 					if(endNum!=null && endNum.matches("\\d*")){
 						surveyDetail.setEndNum(Integer.parseInt(endNum));
 					}
 				}
-				if(ynEndTime!=null && !"".equals(ynEndTime)){
+				if(ynEndTime!=null && !ynEndTime.isEmpty()){
 					surveyDetail.setYnEndTime(Integer.parseInt(ynEndTime));
 					if(org.apache.commons.lang3.StringUtils.isNotEmpty(endTime)){
 						SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						surveyDetail.setEndTime(simpleDateFormat.parse(endTime));
 					}
 				}
-				if(showShareSurvey!=null && !"".equals(showShareSurvey)){
+				if(showShareSurvey!=null && !showShareSurvey.isEmpty()){
 					surveyDetail.setShowShareSurvey(Integer.parseInt(showShareSurvey));
 					survey.setIsShare(Integer.parseInt(showShareSurvey));
 				}
-				if(showAnswerDa!=null && !"".equals(showAnswerDa)){
+				if(showAnswerDa!=null && !showAnswerDa.isEmpty()){
 					surveyDetail.setShowAnswerDa(Integer.parseInt(showAnswerDa));
 					survey.setViewAnswer(Integer.parseInt(showAnswerDa));
 				}
