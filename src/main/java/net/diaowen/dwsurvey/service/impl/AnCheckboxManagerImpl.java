@@ -15,7 +15,7 @@ import net.diaowen.dwsurvey.dao.AnCheckboxDao;
 import net.diaowen.dwsurvey.entity.DataCross;
 
 /**
- * 多选题
+ * 多选题业务 实现类
  * @author keyuan(keyuan258@gmail.com)
  *
  * https://github.com/wkeyuan/DWSurvey
@@ -32,30 +32,37 @@ public class AnCheckboxManagerImpl extends BaseServiceImpl<AnCheckbox, String> i
 	public void setBaseDao() {
 		this.baseDao=anCheckboxDao;
 	}
-	
-	//根据exam_user信息查询答案
-		public List<AnCheckbox> findAnswer(String belongAnswerId,String quId){
-			//belongAnswerId quId
-			Criterion criterion1=Restrictions.eq("belongAnswerId", belongAnswerId);
-			Criterion criterion2=Restrictions.eq("quId", quId);
-			return anCheckboxDao.find(criterion1,criterion2);
-		}
 
-		@Override
-		public void findGroupStats(Question question) {
-			anCheckboxDao.findGroupStats(question);
-		}
+	/**
+	 * 根据exam_user信息查询答案
+	 *
+	 * @param belongAnswerId 所属答案的ID
+	 * @param quId 问题的ID
+	 * @return 返回多选题答案列表
+	 */
+	public List<AnCheckbox> findAnswer(String belongAnswerId,String quId) {
+		//belongAnswerId quId
+		Criterion criterion1 = Restrictions.eq("belongAnswerId", belongAnswerId);
+		Criterion criterion2 = Restrictions.eq("quId", quId);
+		return anCheckboxDao.find(criterion1, criterion2);
+	}
 
-		@Override
-		public List<DataCross> findStatsDataCross(Question rowQuestion,
-				Question colQuestion) {
-			return anCheckboxDao.findStatsDataCross(rowQuestion,colQuestion);
-		}
+	@Override
+	public void findGroupStats(Question question) {
+		anCheckboxDao.findGroupStats(question);
+	}
 
-		@Override
-		public List<DataCross> findStatsDataChart(Question question) {
-			return anCheckboxDao.findStatsDataChart(question);
-		}
-		
-	
+
+	@Override
+	public List<DataCross> findStatsDataCross(Question rowQuestion,
+											  Question colQuestion) {
+		return anCheckboxDao.findStatsDataCross(rowQuestion, colQuestion);
+	}
+
+	@Override
+	public List<DataCross> findStatsDataChart(Question question) {
+		return anCheckboxDao.findStatsDataChart(question);
+	}
+
+
 }

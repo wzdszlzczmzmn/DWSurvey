@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import net.diaowen.common.dao.BaseDaoImpl;
 
 /**
- * 多选题 dao
+ * 多选题选项DAO 实现类
  * @author keyuan(keyuan258@gmail.com)
  *
  * https://github.com/wkeyuan/DWSurvey

@@ -4,7 +4,7 @@ import net.diaowen.common.dao.BaseDao;
 import net.diaowen.dwsurvey.entity.QuCheckbox;
 
 /**
- * 多选题 interface
+ * 多选题选项DAO interface
  * @author KeYuan(keyuan258@gmail.com)
  *
  * https://github.com/wkeyuan/DWSurvey

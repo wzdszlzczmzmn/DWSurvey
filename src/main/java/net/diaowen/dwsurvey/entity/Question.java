@@ -60,7 +60,7 @@ public class Question extends IdEntity{
 	private Integer visibility=1;
 
 	//如果是复制的题，则有复制于那一题
-	public String copyFromId;
+	private String copyFromId;
 
 	//控制性属性
 	//1水平显示 2垂直显示
@@ -443,7 +443,7 @@ public class Question extends IdEntity{
 	}
 
 	//统计json
-	public String statJson="";
+	private String statJson="";
 	@Transient
 	public String getStatJson() {
 		return statJson;

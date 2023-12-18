@@ -1,7 +1,6 @@
 package net.diaowen.dwsurvey.dao.impl;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 import net.diaowen.dwsurvey.dao.QuestionDao;

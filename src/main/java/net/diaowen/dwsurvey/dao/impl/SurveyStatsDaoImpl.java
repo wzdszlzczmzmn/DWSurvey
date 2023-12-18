@@ -19,14 +19,14 @@ import net.diaowen.dwsurvey.entity.Question;
 @Repository
 public class SurveyStatsDaoImpl extends BaseDaoImpl<SurveyStats, String> implements SurveyStatsDao{
 
-	
+
+	/**
+	 *
+	 * @param rowQuestion
+	 * @param colQuestion
+	 */
 	@Override
 	public void findStatsDataCross(Question rowQuestion, Question colQuestion) {
-
-		String sql="select yesno_answer,qu_item_id,count(*) from t_an_yesno t1, t_an_radio t2"+ 
-							"where t1.qu_id='402880e63dd92431013dd9297ecc0000'"+ 
-							"and t2.qu_id='402881c83dbff250013dbff6b2d50000'"+ 
-							"and t1.belong_answer_id=t2.belong_answer_id GROUP BY yesno_answer,qu_item_id";
 		
 		getQuItemName(rowQuestion);
 		getQuItemName(colQuestion);
