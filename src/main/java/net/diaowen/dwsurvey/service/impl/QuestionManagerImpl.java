@@ -41,29 +41,39 @@ import javax.persistence.criteria.Root;
  */
 @Service("questionManager")
 public class QuestionManagerImpl extends BaseServiceImpl<Question, String> implements QuestionManager{
+	private static final String QU_TYPE = "quType";
+	private static final String QU_TAG = "quTag";
 	private static final String BELONG_ID = "belongId";
+	private static final String TAG = "tag";
 	private static final String ORDER_BY_ID = "orderById";
 
-	private static final String QU_TYPE = "quType";
+	private final QuestionDao questionDao;
+	private final QuCheckboxManager quCheckboxManager;
+	private final QuRadioManager quRadioManager;
+	private final QuMultiFillblankManager quMultiFillblankManager;
+	private final QuScoreManager quScoreManager;
+	private final QuOrderbyManager quOrderbyManager;
+	private final QuestionLogicManager questionLogicManager;
+	private final AccountManager accountManager;
 
-	@Autowired
-	private QuestionDao questionDao;
-	@Autowired
-	private QuCheckboxManager quCheckboxManager;
-	@Autowired
-	private QuRadioManager quRadioManager;
-	@Autowired
-	private QuMultiFillblankManager quMultiFillblankManager;
-	@Autowired
-	private QuScoreManager quScoreManager;
-	@Autowired
-	private QuOrderbyManager quOrderbyManager;
-	@Autowired
-	private QuestionLogicManager questionLogicManager;
-	@Autowired
-	private AccountManager accountManager;
+	// to avoid circle dependency
 	@Autowired
 	private SurveyDirectoryManager surveyDirectoryManager;
+
+	public QuestionManagerImpl(QuestionDao questionDao, QuCheckboxManager quCheckboxManager,
+			QuRadioManager quRadioManager, QuMultiFillblankManager quMultiFillblankManager,
+			QuScoreManager quScoreManager, QuOrderbyManager quOrderbyManager,
+			QuestionLogicManager questionLogicManager, AccountManager accountManager) {
+		this.questionDao = questionDao;
+		this.quCheckboxManager = quCheckboxManager;
+		this.quRadioManager = quRadioManager;
+		this.quMultiFillblankManager = quMultiFillblankManager;
+		this.quScoreManager = quScoreManager;
+		this.quOrderbyManager = quOrderbyManager;
+		this.questionLogicManager = questionLogicManager;
+		this.accountManager = accountManager;
+	}
+
 
 	@Override
 	public void setBaseDao() {
@@ -85,7 +95,7 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 			// 判断该问卷是否属于当前用户
 			if(user.getId().equals(survey.getUserId())){
 				String uuid=question.getId();
-				if(uuid==null || "".equals(uuid)){
+				if(uuid==null || uuid.isEmpty()){
 					question.setId(null);
 				}
 				// 新增的 question 的 Id 在保存到数据库时由 JPA 生成
@@ -110,9 +120,9 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 		criteriaQuery.select(root);
 		// 设置查询条件
 		Predicate eqQuId = criteriaBuilder.equal(root.get(BELONG_ID),belongId);
-		Predicate eqTag = criteriaBuilder.equal(root.get("tag"),tag);
+		Predicate eqTag = criteriaBuilder.equal(root.get(TAG),tag);
 		// 过滤不是大题下面的小题
-		Predicate eqQuTag = criteriaBuilder.notEqual(root.get("quTag"),3);
+		Predicate eqQuTag = criteriaBuilder.notEqual(root.get(QU_TAG),3);
 		criteriaQuery.where(eqQuId,eqTag,eqQuTag);
 		// 按问题的序号升序排列
 		criteriaQuery.orderBy(criteriaBuilder.asc(root.get(ORDER_BY_ID)));
@@ -201,11 +211,11 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 			return questions;
 		}
 		// 构造 hql 语句
-		StringBuilder hqlBuf= new StringBuilder("from Question qu where qu.id in(");
+		StringBuilder hqlBuilder=new StringBuilder("from Question qu where qu.id in(");
 		for (String quId : quIds) {
-			hqlBuf.append("'"+quId+"'").append(",");
+			hqlBuilder.append("'"+quId+"'").append(",");
 		}
-		String hql=hqlBuf.substring(0, hqlBuf.lastIndexOf(","))+")";
+		String hql=hqlBuilder.substring(0, hqlBuilder.lastIndexOf(","))+")";
 		questions=questionDao.find(hql);
 		if(b){
 			// 对每个问题，查询其所有的选项
@@ -236,7 +246,7 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 	 */
 	@Transactional
 	public void delete(String quId){
-		if(quId!=null && !"".equals(quId)){
+		if(quId!=null && !quId.isEmpty()){
 			// 根据 id 拿到相应问题
 			Question question=get(quId);
 			//同时删除掉相应的选项
@@ -258,7 +268,7 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 	@Transactional
 	public boolean upsort(String prevId, String nextId) {
 		// 判空处理
-		if(prevId!=null && !"".equals(prevId) && nextId!=null && !"".equals(nextId)){
+		if(prevId!=null && !prevId.isEmpty() && nextId!=null && !nextId.isEmpty()){
 			Question prevQuestion=get(prevId);
 			Question nextQuestion=get(nextId);
 			int prevNum=prevQuestion.getOrderById();
@@ -325,7 +335,7 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 
 			// 处理大题下面的小题，每个题都要复制
 			List<Question> changeChildQuestions=findByParentQuId(quId);
-			List<Question> qulits=new ArrayList<>();
+			List<Question> qulist=new ArrayList<>();
 			for (Question changeQu : changeChildQuestions) {
 				Question question2=new Question();
 				// 复制所有属性
@@ -341,12 +351,12 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 				getQuestionOption(changeQu);
 				copyItems(changeQu, question2);
 
-				qulits.add(question2);
+				qulist.add(question2);
 			}
-			question.setQuestions(qulits);
+			question.setQuestions(qulist);
 			save(question);
 		}else{ // 不是大题
-			copyroot(belongId, tag, changeQuestion);
+			copyRoot(belongId, tag, changeQuestion);
 		}
 	}
 
@@ -356,7 +366,7 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 	 * @param tag 题目标记
 	 * @param changeQuestion
 	 */
-	private void copyroot(String belongId,Integer tag, Question changeQuestion) {
+	private void copyRoot(String belongId,Integer tag, Question changeQuestion) {
 		//拷贝先中的问题属性值到新对象中
 		Question question=new Question();
 		ReflectionUtils.copyAttr(changeQuestion,question);
@@ -435,7 +445,6 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 			}
 			question.setQuOrderbys(quOrderbyList);
 		}
-
 	}
 
 
@@ -447,7 +456,7 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 	@Override
 	public List<Question> findStatsRowVarQus(SurveyDirectory survey) {
 		Criterion criterion1=Restrictions.eq(BELONG_ID, survey.getId());
-		Criterion criterion2=Restrictions.eq("tag", 2);
+		Criterion criterion2=Restrictions.eq(TAG, 2);
 
 		// 排除所有填空题、多项填空题、多行填空题、多选题、矩阵填空题、矩阵单选题、枚举题、排序题、评分题
 		Criterion criterion31=Restrictions.ne(QU_TYPE, QuType.FILLBLANK);
@@ -473,7 +482,7 @@ public class QuestionManagerImpl extends BaseServiceImpl<Question, String> imple
 	public List<Question> findStatsColVarQus(SurveyDirectory survey) {
 		Criterion criterion1=Restrictions.eq(BELONG_ID, survey.getId());
 		// 问卷中的题
-		Criterion criterion2=Restrictions.eq("tag", 2);
+		Criterion criterion2=Restrictions.eq(TAG, 2);
 
 		// 排除所有填空题、多项填空题、多行填空题、多选题、矩阵填空题、矩阵单选题、枚举题、排序题、评分题
 		Criterion criterion31=Restrictions.ne(QU_TYPE, QuType.FILLBLANK);
