@@ -19,17 +19,23 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 @RequestMapping("/api/dwsurvey/app/design/question")
 public class QuestionController{
+	private final QuestionManager questionManager;
+
 	@Autowired
-	private QuestionManager questionManager;
+	public QuestionController(QuestionManager questionManager) {
+		this.questionManager = questionManager;
+	}
+
 	/**
 	 * ajax删除
-	 * @return
+	 * @return 删除成则向客户端返回 true，出现异常则返回 false
 	 * @throws Exception
 	 */
 	@RequestMapping("/ajaxDelete.do")
 	public String ajaxDelete(HttpServletRequest request,HttpServletResponse response) throws Exception {
 		String responseStr="";
 		try{
+			// 从请求中获取问题 id
 			String delQuId=request.getParameter("quId");
 			questionManager.delete(delQuId);
 			responseStr="true";
