@@ -29,24 +29,7 @@ public class AnOrderDaoImpl extends BaseDaoImpl<AnOrder, String> implements AnOr
 		List<Object[]> list=this.getSession().createSQLQuery(sql).setParameter(1,question.getId()).list();// 执行SQL查询并获取结果
 		List<QuOrderby> quOrderbies=question.getQuOrderbys();//得到该问题中的所有排序项
 
-		/*
-		int count=0;
-		for (QuOrderby quOrderby : quOrderbies) {
-			String quOrderById= quOrderby.getId();
-			for (Object[] objects : list) {
-				if(quOrderById.equals(objects[0].toString())){
-					Float sumOrderyNum=Float.parseFloat(objects[1].toString());
-					count+=sumOrderyNum;
-					quOrderby.setAnOrderSum(sumOrderyNum.intValue());
-					continue;
-				}
-			}
-		}
-		question.setAnCount(count);
-		*/
-
-		int count=0;// 初始化计数器
-		List<QuOrderby> list2 = new ArrayList<QuOrderby>();// 创建一个新的排序项列表，用于存储结果
+		List<QuOrderby> list2 = new ArrayList<>();// 创建一个新的排序项列表，用于存储结果
 		for (Object[] objects : list) {//遍历SQL查询结果
 
 			// 解析查询结果
@@ -60,7 +43,7 @@ public class AnOrderDaoImpl extends BaseDaoImpl<AnOrder, String> implements AnOr
 				}
 			}
 		}
-//		question.setAnCount(count);
+
 		question.setQuOrderbys(list2);
 
 	}

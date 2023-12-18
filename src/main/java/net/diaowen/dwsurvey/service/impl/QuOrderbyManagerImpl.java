@@ -1,10 +1,10 @@
 package net.diaowen.dwsurvey.service.impl;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 import net.diaowen.dwsurvey.dao.QuOrderbyDao;
-import net.diaowen.dwsurvey.entity.QuMultiFillblank;
+
 import net.diaowen.dwsurvey.entity.QuOrderby;
 import net.diaowen.dwsurvey.service.QuOrderbyManager;
 import org.hibernate.criterion.Criterion;
@@ -45,15 +45,6 @@ public class QuOrderbyManagerImpl extends BaseServiceImpl<QuOrderby, String> imp
 	 * @return 返回排序题选项列表
 	 */
 	public List<QuOrderby> findByQuId(String quId){
-		/*Page<QuOrderby> page=new Page<QuOrderby>();
-		page.setOrderBy("orderById");
-		page.setOrderDir("asc");
-
-		List<PropertyFilter> filters=new ArrayList<PropertyFilter>();
-		filters.add(new PropertyFilter("EQS_quId", quId));
-		filters.add(new PropertyFilter("EQI_visibility", "1"));
-		return findAll(page, filters);
-		*/
 		CriteriaBuilder criteriaBuilder=quOrderbyDao.getSession().getCriteriaBuilder();// 获取 CriteriaBuilder 对象，用于构建查询条件
 		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(QuOrderby.class);// 创建一个 CriteriaQuery 对象，用于执行查询操作
 		Root root = criteriaQuery.from(QuOrderby.class);// 从查询中指定要查询的 QuOrderby 类

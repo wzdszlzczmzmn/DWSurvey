@@ -14,6 +14,7 @@ import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ public class QuCheckboxController {
 	 * @throws Exception
 	 */
 	@RequestMapping("/ajaxSave.do")
-	public String ajaxSave(HttpServletRequest request,HttpServletResponse response) throws Exception {
+	public String ajaxSave(HttpServletRequest request,HttpServletResponse response) throws IOException {
 		try{
 			// 从请求中构建并保存多选题
 			Question entity=ajaxBuildSaveOption(request);
@@ -119,8 +120,9 @@ public class QuCheckboxController {
 
 		// 获取并处理选项
 		Map<String, Object> optionNameMap=WebUtils.getParametersStartingWith(request, "optionValue_");
-		List<QuCheckbox> quCheckboxs=new ArrayList<QuCheckbox>();
-		for (String key : optionNameMap.keySet()) {
+		List<QuCheckbox> quCheckboxs=new ArrayList<>();
+		for (Map.Entry<String,Object> entry: optionNameMap.entrySet()) {
+			String key = entry.getKey();
 			String optionId=request.getParameter("optionId_"+key);
 			String isNote=request.getParameter("isNote_"+key);
 			String checkType=request.getParameter("checkType_"+key);
@@ -133,7 +135,6 @@ public class QuCheckboxController {
 				optionId=null;
 			}
 			quCheckbox.setId(optionId);
-//			quRadio.setOptionTitle(key);
 			optionNameValue=URLDecoder.decode(optionNameValue,"utf-8");
 			quCheckbox.setOptionName(optionNameValue);
 			quCheckbox.setOrderById(Integer.parseInt(key));
@@ -149,8 +150,9 @@ public class QuCheckboxController {
 
 		//逻辑选项设置
 		Map<String, Object> quLogicIdMap=WebUtils.getParametersStartingWith(request, "quLogicId_");
-		List<QuestionLogic> quLogics=new ArrayList<QuestionLogic>();
-		for (String key : quLogicIdMap.keySet()) {
+		List<QuestionLogic> quLogics=new ArrayList<>();
+		for (Map.Entry<String,Object> entry : quLogicIdMap.entrySet()) {
+			String key = entry.getKey();
 			String cgQuItemId=request.getParameter("cgQuItemId_"+key);
 			String skQuId=request.getParameter("skQuId_"+key);
 			String visibility=request.getParameter("visibility_"+key);
@@ -178,7 +180,7 @@ public class QuCheckboxController {
 	 */
 	public static String buildResultJson(Question entity){
 		//{id:'null',quItems:[{id:'null',title:'null'},{id:'null',title:'null'}]}
-		StringBuffer strBuf=new StringBuffer();
+		StringBuilder strBuf=new StringBuilder();
 
 		//将问题对象的id和orderById属性添加到strBuf中
 		strBuf.append("{id:'").append(entity.getId());
@@ -224,7 +226,7 @@ public class QuCheckboxController {
 	 * @throws Exception
 	 */
 	@RequestMapping("/ajaxDelete.do")
-	public String ajaxDelete(HttpServletRequest request,HttpServletResponse response) throws Exception {
+	public String ajaxDelete(HttpServletRequest request,HttpServletResponse response) throws IOException {
 		try{
 			String quItemId=request.getParameter("quItemId");
 			quCheckboxManager.ajaxDelete(quItemId);

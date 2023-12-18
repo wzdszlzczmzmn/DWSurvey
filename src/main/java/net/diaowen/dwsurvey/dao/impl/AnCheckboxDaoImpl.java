@@ -50,7 +50,7 @@ public class AnCheckboxDaoImpl extends BaseDaoImpl<AnCheckbox, String> implement
 	@Override
 	public List<DataCross> findStatsDataCross(Question rowQuestion,
 											  Question colQuestion) {
-		List<DataCross> dataCrosses=new ArrayList<DataCross>();
+		List<DataCross> dataCrosses=new ArrayList<>();
 		List<QuCheckbox> rowList=rowQuestion.getQuCheckboxs();
 
 		Session session=this.getSession();
@@ -71,7 +71,6 @@ public class AnCheckboxDaoImpl extends BaseDaoImpl<AnCheckbox, String> implement
 		String sql="";
 		QuType colQuType=colQuestion.getQuType();
 
-		int[] colCounts=new int[0];
 
 		if(colQuType==QuType.YESNO){//多选题与是非题
 			//设置SQL查询参数
@@ -80,11 +79,11 @@ public class AnCheckboxDaoImpl extends BaseDaoImpl<AnCheckbox, String> implement
 			sql="select "+groupSql+",count(*) from "+rowTab+","+colTab+whereSql+groupSql;//构建SQL语句
 			List<Object[]> objects=session.createSQLQuery(sql).setParameter(1, rowQuestion.getId()).setParameter(1, colQuestion.getId()).list();//执行SQL查询并获取结果
 
-			List<String> colList=new ArrayList<String>();
+			List<String> colList=new ArrayList<>();
 			colList.add(colQuestion.getYesnoOption().getTrueValue());
 			colList.add(colQuestion.getYesnoOption().getFalseValue());
 
-			colCounts=new int[colList.size()];
+
 			for (QuCheckbox quCheckbox : rowList) {//遍历rowList中的每个QuCheckbox对象
 				DataCross rowDataCross=new DataCross();
 				String rowName=quCheckbox.getOptionName();
@@ -120,7 +119,7 @@ public class AnCheckboxDaoImpl extends BaseDaoImpl<AnCheckbox, String> implement
 
 			List<QuRadio> quRadios=colQuestion.getQuRadios();
 
-			colCounts=new int[quRadios.size()];
+
 			for (QuCheckbox quCheckbox : rowList) {//遍历rowList中的每个QuCheckbox对象
 				DataCross rowDataCross=new DataCross();
 				String rowName=quCheckbox.getOptionName();
@@ -157,7 +156,7 @@ public class AnCheckboxDaoImpl extends BaseDaoImpl<AnCheckbox, String> implement
 			List<Object[]> objects=session.createSQLQuery(sql).setParameter(1, rowQuestion.getId()).setParameter(1, colQuestion.getId()).list();//执行SQL查询并获取结果
 
 			List<QuCheckbox> quCheckboxs=colQuestion.getQuCheckboxs();
-			colCounts=new int[quCheckboxs.size()];
+
 
 			for (QuCheckbox rowQuCheckbox : rowList) {//遍历rowList中的每个QuCheckbox对象
 				DataCross rowDataCross=new DataCross();
@@ -190,7 +189,7 @@ public class AnCheckboxDaoImpl extends BaseDaoImpl<AnCheckbox, String> implement
 
 	@Override
 	public List<DataCross> findStatsDataChart(Question question) {
-		List<DataCross> crosses=new ArrayList<DataCross>();
+		List<DataCross> crosses=new ArrayList<>();
 		String sql="select qu_item_id,count(*) from t_an_checkbox where  visibility=1 and qu_id=? GROUP BY qu_item_id";//构建SQL语句
 
 		String quId=question.getId();

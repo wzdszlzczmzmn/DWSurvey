@@ -1,17 +1,17 @@
 package net.diaowen.dwsurvey.service.impl;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 import net.diaowen.dwsurvey.dao.QuCheckboxDao;
-import net.diaowen.dwsurvey.entity.Question;
+
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.diaowen.common.plugs.page.Page;
+
 import net.diaowen.common.service.BaseServiceImpl;
 import net.diaowen.dwsurvey.entity.QuCheckbox;
 import net.diaowen.dwsurvey.service.QuCheckboxManager;
@@ -45,17 +45,6 @@ public class QuCheckboxManagerImpl extends BaseServiceImpl<QuCheckbox, String> i
 	 * @return 返回多选题选项列表
 	 */
 	public List<QuCheckbox> findByQuId(String quId){
-
-		/*
-		Page<QuCheckbox> page=new Page<QuCheckbox>();
-		page.setOrderBy("orderById");
-		page.setOrderDir("asc");
-		List<PropertyFilter> filters=new ArrayList<PropertyFilter>();
-		filters.add(new PropertyFilter("EQS_quId", quId));
-		filters.add(new PropertyFilter("EQI_visibility", "1"));
-		return findAll(page, filters);
-		*/
-
 		CriteriaBuilder criteriaBuilder=quCheckboxDao.getSession().getCriteriaBuilder();// 获取 CriteriaBuilder 对象，用于构建查询条件
 		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(QuCheckbox.class);// 创建一个 CriteriaQuery 对象，用于执行查询操作
 		Root root = criteriaQuery.from(QuCheckbox.class);// 从查询中指定要查询的 QuCheckbox 类

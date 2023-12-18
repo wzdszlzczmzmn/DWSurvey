@@ -1,22 +1,18 @@
 package net.diaowen.dwsurvey.controller.question;
 
 import net.diaowen.common.QuType;
-import net.diaowen.common.base.entity.User;
-import net.diaowen.common.base.service.AccountManager;
-import net.diaowen.common.plugs.page.Page;
 import net.diaowen.dwsurvey.entity.*;
 import net.diaowen.dwsurvey.service.AnDFillblankManager;
 import net.diaowen.dwsurvey.service.QuMultiFillblankManager;
 import net.diaowen.dwsurvey.service.QuestionManager;
-import net.diaowen.dwsurvey.service.SurveyDirectoryManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -50,7 +46,7 @@ public class QuMultiFillblankController{
 	 * @throws Exception
 	 */
 	@RequestMapping("/ajaxSave.do")
-	public String ajaxSave(HttpServletRequest request,HttpServletResponse response) throws Exception {
+	public String ajaxSave(HttpServletRequest request,HttpServletResponse response) throws IOException {
 		try{
 			// 从请求中构建并保存多行填空题
 			Question entity=ajaxBuildSaveOption(request);
@@ -88,7 +84,6 @@ public class QuMultiFillblankController{
 		String randOrder=request.getParameter("randOrder");
 		String cellCount=request.getParameter("cellCount");
 		String paramInt01=request.getParameter("paramInt01");//最小分
-		String paramInt02=request.getParameter("paramInt02");//最大分
 
 		// 对空字符串进行处理
 		if("".equals(quId)){
@@ -120,8 +115,9 @@ public class QuMultiFillblankController{
 
 		// 获取并处理填空项
 		Map<String, Object> optionNameMap=WebUtils.getParametersStartingWith(request, "optionValue_");
-		List<QuMultiFillblank> quMFillblanks=new ArrayList<QuMultiFillblank>();
-		for (String key : optionNameMap.keySet()) {
+		List<QuMultiFillblank> quMFillblanks=new ArrayList<>();
+		for (Map.Entry<String,Object> entry : optionNameMap.entrySet()) {
+			String key = entry.getKey();
 			String optionId=request.getParameter("optionId_"+key);
 			Object optionName=optionNameMap.get(key);
 			String optionNameValue=(optionName!=null)?optionName.toString():"";
@@ -130,7 +126,6 @@ public class QuMultiFillblankController{
 				optionId=null;
 			}
 			quMultiFillblank.setId(optionId);
-//			quRadio.setOptionTitle(key);
 			optionNameValue=URLDecoder.decode(optionNameValue,"utf-8");
 			quMultiFillblank.setOptionName(optionNameValue);
 			quMultiFillblank.setOrderById(Integer.parseInt(key));
@@ -140,8 +135,9 @@ public class QuMultiFillblankController{
 
 		//逻辑选项设置
 		Map<String, Object> quLogicIdMap=WebUtils.getParametersStartingWith(request, "quLogicId_");
-		List<QuestionLogic> quLogics=new ArrayList<QuestionLogic>();
-		for (String key : quLogicIdMap.keySet()) {
+		List<QuestionLogic> quLogics=new ArrayList<>();
+		for (Map.Entry<String,Object> entry : quLogicIdMap.entrySet()) {
+			String key = entry.getKey();
 			String cgQuItemId=request.getParameter("cgQuItemId_"+key);
 			String skQuId=request.getParameter("skQuId_"+key);
 			String visibility=request.getParameter("visibility_"+key);
@@ -170,7 +166,7 @@ public class QuMultiFillblankController{
 	 * @return 构建好的JSON字符串
 	 */
 	public static String buildResultJson(Question entity){
-		StringBuffer strBuf=new StringBuffer();
+		StringBuilder strBuf=new StringBuilder();
 
 		//将问题对象的id和orderById属性添加到strBuf中
 		strBuf.append("{id:'").append(entity.getId());
@@ -216,7 +212,7 @@ public class QuMultiFillblankController{
 	 * @throws Exception
 	 */
 	@RequestMapping("/ajaxDelete.do")
-	public String ajaxDelete(HttpServletRequest request,HttpServletResponse response) throws Exception {
+	public String ajaxDelete(HttpServletRequest request,HttpServletResponse response) throws IOException {
 		try{
 			String quItemId=request.getParameter("quItemId");
 			quMultiFillblankManager.ajaxDelete(quItemId);

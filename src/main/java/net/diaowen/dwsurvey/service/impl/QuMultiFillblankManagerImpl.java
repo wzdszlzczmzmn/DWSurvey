@@ -1,6 +1,6 @@
 package net.diaowen.dwsurvey.service.impl;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 import net.diaowen.dwsurvey.dao.QuMultiFillblankDao;
@@ -43,15 +43,6 @@ public class QuMultiFillblankManagerImpl extends BaseServiceImpl<QuMultiFillblan
 	 * @return 返回多项填空题填空项列表
 	 */
 	public List<QuMultiFillblank> findByQuId(String quId){
-		/*Page<QuMultiFillblank> page=new Page<QuMultiFillblank>();
-		page.setOrderBy("orderById");
-		page.setOrderDir("asc");
-
-		List<PropertyFilter> filters=new ArrayList<PropertyFilter>();
-		filters.add(new PropertyFilter("EQS_quId", quId));
-		filters.add(new PropertyFilter("EQI_visibility", "1"));
-		return findAll(page, filters);
-		*/
 		CriteriaBuilder criteriaBuilder=quMultiFillblankDao.getSession().getCriteriaBuilder();// 获取 CriteriaBuilder 对象，用于构建查询条件
 		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(QuMultiFillblank.class);// 创建一个 CriteriaQuery 对象，用于执行查询操作
 		Root root = criteriaQuery.from(QuMultiFillblank.class);// 从查询中指定要查询的 QuMultiFillblank 类

@@ -36,7 +36,6 @@ public class AnOrderManagerImpl extends BaseServiceImpl<AnOrder, String> impleme
 		Criterion criterion1=Restrictions.eq("belongAnswerId", belongAnswerId);
 		Criterion criterion2=Restrictions.eq("quId", quId);
 		return anOrderDao.findByOrder("orderyNum",true,criterion1,criterion2);
-//		return anOrderDao.find(criterion1,criterion2);
 	}
 
 	@Override

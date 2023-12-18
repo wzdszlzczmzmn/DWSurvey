@@ -7,8 +7,6 @@ import net.diaowen.dwsurvey.entity.Question;
 import net.diaowen.dwsurvey.entity.QuestionLogic;
 import net.diaowen.dwsurvey.service.QuOrderbyManager;
 import net.diaowen.dwsurvey.service.QuestionManager;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +14,7 @@ import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -47,7 +46,7 @@ public class QuOrderquController{
 	 * @throws Exception
 	 */
 	@RequestMapping("/ajaxSave.do")
-	public String ajaxSave(HttpServletRequest request,HttpServletResponse response) throws Exception {
+	public String ajaxSave(HttpServletRequest request,HttpServletResponse response) throws IOException {
 		try{
 			// 从请求中构建并保存排序题
 			Question entity=ajaxBuildSaveOption(request);
@@ -113,8 +112,9 @@ public class QuOrderquController{
 
 		// 获取并处理排序项
 		Map<String, Object> optionNameMap=WebUtils.getParametersStartingWith(request, "optionValue_");
-		List<QuOrderby> quOrderbys=new ArrayList<QuOrderby>();
-		for (String key : optionNameMap.keySet()) {
+		List<QuOrderby> quOrderbys=new ArrayList<>();
+		for (Map.Entry<String,Object> entry : optionNameMap.entrySet()) {
+			String key = entry.getKey();
 			String optionId=request.getParameter("optionId_"+key);
 			Object optionName=optionNameMap.get(key);
 			String optionNameValue=(optionName!=null)?optionName.toString():"";
@@ -123,7 +123,6 @@ public class QuOrderquController{
 				optionId=null;
 			}
 			quOrderby.setId(optionId);
-//			quRadio.setOptionTitle(key);
 			optionNameValue=URLDecoder.decode(optionNameValue,"utf-8");
 			quOrderby.setOptionName(optionNameValue);
 			quOrderby.setOrderById(Integer.parseInt(key));
@@ -133,8 +132,9 @@ public class QuOrderquController{
 
 		//逻辑选项设置
 		Map<String, Object> quLogicIdMap=WebUtils.getParametersStartingWith(request, "quLogicId_");
-		List<QuestionLogic> quLogics=new ArrayList<QuestionLogic>();
-		for (String key : quLogicIdMap.keySet()) {
+		List<QuestionLogic> quLogics=new ArrayList<>();
+		for (Map.Entry<String,Object> entry : quLogicIdMap.entrySet()) {
+			String key = entry.getKey();
 			String cgQuItemId=request.getParameter("cgQuItemId_"+key);
 			String skQuId=request.getParameter("skQuId_"+key);
 			String visibility=request.getParameter("visibility_"+key);
@@ -162,7 +162,7 @@ public class QuOrderquController{
 	 * @return 构建好的JSON字符串
 	 */
 	public static String buildResultJson(Question entity){
-		StringBuffer strBuf=new StringBuffer();
+		StringBuilder strBuf=new StringBuilder();
 
 		//将问题对象的id和orderById属性添加到strBuf中
 		strBuf.append("{id:'").append(entity.getId());
@@ -207,7 +207,7 @@ public class QuOrderquController{
 	 * @throws Exception
 	 */
 	@RequestMapping("/ajaxDelete.do")
-	public String ajaxDelete(HttpServletRequest request,HttpServletResponse response) throws Exception {
+	public String ajaxDelete(HttpServletRequest request,HttpServletResponse response) throws IOException {
 		try{
 			String quItemId=request.getParameter("quItemId");
 			quOrderbyManager.ajaxDelete(quItemId);
