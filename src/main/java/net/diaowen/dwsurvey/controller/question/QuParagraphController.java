@@ -1,5 +1,6 @@
 package net.diaowen.dwsurvey.controller.question;
 
+import java.util.Map.Entry;
 import net.diaowen.common.QuType;
 import net.diaowen.dwsurvey.entity.Question;
 import net.diaowen.dwsurvey.entity.QuestionLogic;
@@ -96,8 +97,9 @@ public class QuParagraphController{
 		entity.setCellCount(Integer.parseInt(cellCount));
 		// 获取所有以 quLogicId_ 开头的参数，构造跳转或显示逻辑
 		Map<String, Object> quLogicIdMap=WebUtils.getParametersStartingWith(request, "quLogicId_");
-		List<QuestionLogic> quLogics=new ArrayList<QuestionLogic>();
-		for (String key : quLogicIdMap.keySet()) {
+		List<QuestionLogic> quLogics=new ArrayList<>();
+		for (Entry<String, Object> entry : quLogicIdMap.entrySet()) {
+			String key = entry.getKey();
 			String cgQuItemId=request.getParameter("cgQuItemId_"+key); // 逻辑关联的选项
 			String skQuId=request.getParameter("skQuId_"+key); // 逻辑关联的题目
 			String visibility=request.getParameter("visibility_"+key);
@@ -121,25 +123,25 @@ public class QuParagraphController{
 
 	// 生成返回给前端的 json
 	public static String buildResultJson(Question entity){
-		StringBuffer strBuf=new StringBuffer();
-		strBuf.append("{id:'").append(entity.getId()); // 题目 id
-		strBuf.append("',orderById:");
-		strBuf.append(entity.getOrderById()); // 题目排序号
-		strBuf.append(",quLogics:["); // 题目逻辑
+		StringBuilder stringBuilder=new StringBuilder();
+		stringBuilder.append("{id:'").append(entity.getId()); // 题目 id
+		stringBuilder.append("',orderById:");
+		stringBuilder.append(entity.getOrderById()); // 题目排序号
+		stringBuilder.append(",quLogics:["); // 题目逻辑
 		List<QuestionLogic> questionLogics=entity.getQuestionLogics();
 		if(questionLogics!=null){
 			for (QuestionLogic questionLogic : questionLogics) {
-				strBuf.append("{id:'").append(questionLogic.getId());
-				strBuf.append("',title:'").append(questionLogic.getTitle()).append("'},");
+				stringBuilder.append("{id:'").append(questionLogic.getId());
+				stringBuilder.append("',title:'").append(questionLogic.getTitle()).append("'},");
 			}
 		}
 		// 处理多余的逗号
-		int strLen=strBuf.length();
-		if(strBuf.lastIndexOf(",")==(strLen-1)){
-			strBuf.replace(strLen-1, strLen, "");
+		int strLen=stringBuilder.length();
+		if(stringBuilder.lastIndexOf(",")==(strLen-1)){
+			stringBuilder.replace(strLen-1, strLen, "");
 		}
-		strBuf.append("]}");
-		return strBuf.toString();
+		stringBuilder.append("]}");
+		return stringBuilder.toString();
 	}
 
 }

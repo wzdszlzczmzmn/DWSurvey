@@ -40,13 +40,13 @@ public class QuestionDaoImpl extends BaseDaoImpl<Question, String> implements Qu
 	/**
 	 *	查询题库或问卷中的问题
 	 *
-	 * @param qubankId 题库或问卷 id
+	 * @param quBankId 题库或问卷 id
 	 * @param tag  1题库  2问卷
 	 * @return
 	 */
-	public List<Question> findByBelongTag(String qubankId,String tag){
+	public List<Question> findByBelongTag(String quBankId,String tag){
 		// 分页
-		Page<Question> page=new Page<Question>();
+		Page<Question> page= new Page<>();
 		page.setOrderBy("orderById");
 		page.setOrderDir("asc");
 
@@ -54,7 +54,7 @@ public class QuestionDaoImpl extends BaseDaoImpl<Question, String> implements Qu
 		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(Question.class);
 		Root root = criteriaQuery.from(Question.class);
 		criteriaQuery.select(root);
-		Predicate eqBelongId = criteriaBuilder.equal(root.get("belongId"),qubankId);
+		Predicate eqBelongId = criteriaBuilder.equal(root.get("belongId"),quBankId);
 		Predicate eqTag = criteriaBuilder.equal(root.get("tag"),tag);
 		Predicate quTag = criteriaBuilder.notEqual(root.get("quTag"),3);
 		criteriaQuery.where(eqBelongId,eqTag,quTag);
@@ -110,8 +110,8 @@ public class QuestionDaoImpl extends BaseDaoImpl<Question, String> implements Qu
 		List<QuestionLogic> questionLogics=entity.getQuestionLogics();
 		if(questionLogics!=null){
 			for (QuestionLogic questionLogic : questionLogics) {
-				String qulogicId=questionLogic.getId();
-				if("".equals(qulogicId)){	// 新增问题逻辑
+				String quLogicId=questionLogic.getId();
+				if(quLogicId == null || quLogicId.isEmpty()){	// 新增问题逻辑
 					questionLogic.setId(null);
 				}
 				questionLogic.setCkQuId(entity.getId());
