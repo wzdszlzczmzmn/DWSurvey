@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public abstract class ReflectionUtils {
-
+	private static final String ERROR_MESSAGE = "] on target [";
 	//CGLIB动态代理类的分隔符，用于获取真实的Class类型。
 	public static final String CGLIB_CLASS_SEPARATOR = "$$";
 
@@ -86,7 +86,7 @@ public abstract class ReflectionUtils {
 
 		if (field == null) {    // 如果字段不存在
 			//抛出找不到字段的异常
-			throw new IllegalArgumentException("Could not find field [" + fieldName + "] on target [" + obj + "]");
+			throw new IllegalArgumentException("Could not find field [" + fieldName + ERROR_MESSAGE + obj + "]");
 		}
 
 		//初始化
@@ -117,7 +117,7 @@ public abstract class ReflectionUtils {
 
 		if (field == null) { // 如果字段不存在
 			//抛出找不到字段的异常
-			throw new IllegalArgumentException("Could not find field [" + fieldName + "] on target [" + obj + "]");
+			throw new IllegalArgumentException("Could not find field [" + fieldName + ERROR_MESSAGE + obj + "]");
 		}
 
 		try {
@@ -196,7 +196,7 @@ public abstract class ReflectionUtils {
 		Method method = getAccessibleMethod(obj, methodName, parameterTypes);
 		if (method == null) {// 如果未找到指定方法
 			// 抛出异常
-			throw new IllegalArgumentException("Could not find method [" + methodName + "] on target [" + obj + "]");
+			throw new IllegalArgumentException("Could not find method [" + methodName + ERROR_MESSAGE + obj + "]");
 		}
 
 		try {

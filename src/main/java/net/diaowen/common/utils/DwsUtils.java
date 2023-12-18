@@ -15,6 +15,9 @@ import java.util.Date;
  * 这个类是一个工具类，包含了获取基础URL、将字符串处理成日期、文件下载的静态方法。
  */
 public class DwsUtils {
+    private DwsUtils(){
+
+    }
 
     // 默认的基础URL
     public static String BASEURL_DEFAULT = "http://www.surveyform.cn";

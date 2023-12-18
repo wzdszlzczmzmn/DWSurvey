@@ -23,6 +23,9 @@ import org.springframework.web.servlet.support.RequestContextUtils;
  * 将内存输出流的数据传到本地文件中。若没有文件相应路径，则创建路径；若没有文件，则创建文件
  */
 public class BuildHtml {
+	private BuildHtml(){
+
+	}
 
 	/**
 	 * 内容输入到本地

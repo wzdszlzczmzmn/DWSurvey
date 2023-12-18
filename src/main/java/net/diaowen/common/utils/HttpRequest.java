@@ -26,7 +26,7 @@ public class HttpRequest {
         //初始化result为空字符串
         String result = "";
         //初始化输入流in为null
-        BufferedReader in = null;
+//        BufferedReader in = null;
         try {
             //urlNameString是发送请求的url加上它请求的参数，即完整的请求网址
             String urlNameString = url + "?" + param;
@@ -47,31 +47,15 @@ public class HttpRequest {
             // 获取所有响应头字段
             Map<String, List<String>> map = connection.getHeaderFields();
             // 定义 BufferedReader输入流来读取URL的响应
-            in = new BufferedReader(new InputStreamReader(
-                    connection.getInputStream()));
-            //初始化字符串line，用于存储输入流中的一行
-            String line;
-            while ((line = in.readLine()) != null) {
-                //如果输入流这一行非空，就在result加上这一行，直至result获取url所有内容
-                result += line;
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                String line;
+                while ((line = in.readLine()) != null) {
+                    result += line;
+                }
             }
-        } catch (Exception e) {
-            //抛出异常
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        // 使用finally块来关闭输入流
-        finally {
-            try {
-                if (in != null) {
-                    //关闭输入流
-                    in.close();
-                }
-            } catch (Exception e2) {
-                //抛出异常
-                e2.printStackTrace();
-            }
-        }
-        //返回获取的URL响应
         return result;
     }
 
@@ -86,9 +70,9 @@ public class HttpRequest {
      */
     public static String sendPost(String url, String param) {
         //初始化打印流out为null
-        PrintWriter out = null;
+//        PrintWriter out = null;
         //初始化输入流in为null
-        BufferedReader in = null;
+//        BufferedReader in = null;
         //初始化字符串result为空字符串
         String result = "";
         try {
@@ -107,42 +91,21 @@ public class HttpRequest {
             conn.setDoOutput(true);
             conn.setDoInput(true);
             // 获取URLConnection对象对应的输出流
-            out = new PrintWriter(conn.getOutputStream());
-            // 发送请求参数
-            out.print(param);
-            // flush输出流的缓冲
-            out.flush();
-            // 定义BufferedReader输入流来读取URL的响应
-            in = new BufferedReader(
-                    new InputStreamReader(conn.getInputStream()));
-            //初始化字符串line，存储输入流的一行
-            String line;
-            while ((line = in.readLine()) != null) {
-                //若输入流此行非空，就写入result中，直至写完URL的响应
-                result += line;
+
+            try (PrintWriter out = new PrintWriter(conn.getOutputStream())) {
+                out.print(param);
+                out.flush();
             }
-        } catch (Exception e) {
-            //抛出异常
+
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+                String line;
+                while ((line = in.readLine()) != null) {
+                    result += line;
+                }
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        //使用finally块来关闭输出流、输入流
-        finally{
-            try{
-                if(out!=null){
-                    //关闭输出流
-                    out.close();
-                }
-                if(in!=null){
-                    //关闭输入流
-                    in.close();
-                }
-            }
-            catch(IOException ex){
-                //抛出异常
-                ex.printStackTrace();
-            }
-        }
-        //返回获取的URL响应
         return result;
     }
 }

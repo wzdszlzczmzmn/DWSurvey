@@ -17,6 +17,10 @@ import org.springframework.web.multipart.MultipartFile;
  * 文件转移、保存到指定路径、数据传送到指定路径、删除、读文件
  */
 public class FileUtils {
+	private FileUtils(){
+
+	}
+	private static Random r = new Random();
 	/**
 	 * 将上传的文件转移到指定路径
 	 *
@@ -48,10 +52,6 @@ public class FileUtils {
 			// 如果上传的文件的名字中含有中文字符或其他非单词字符，那么就进行重命名，并将其改为英文名字
 			// 这里所说的单词字符为：[a-zA-Z_0-9]
 			Boolean rename = true;
-			// String pattern="[\u4e00-\u9fa5]+";
-			// Pattern p=Pattern.compile(pattern);
-			// Matcher result=p.matcher(file.getOriginalFilename());
-			// rename=result.find();
 			//// 检查文件是否存在或者是否已命名，或者文件名长度是否大于30个字符，如果是，则进入重命名流程
 			if (aFile != null && aFile.exists() || nameLength > 30 || rename) {
 				// 创建一个包含所有可能字符的数组，用于随机生成文件名
@@ -63,7 +63,7 @@ public class FileUtils {
 				// 创建一个 StringBuffer 用于存储文件名
 				StringBuffer fileName = new StringBuffer("");
 				// 创建一个随机数生成器
-				Random r = new Random();
+//				Random r = new Random();
 				// 初始化位置变量为 -1
 				int pos = -1;
 				// 循环15次，生成随机文件名
@@ -142,7 +142,7 @@ public class FileUtils {
 				// 创建一个 StringBuffer 用于存储文件名
 				StringBuffer fileName = new StringBuffer("");
 				// 创建一个随机数生成器
-				Random r = new Random();
+//				Random r = new Random();
 				// 初始化位置变量为-1
 				int pos = -1;
 				// 循环15次，生成随机文件名
@@ -213,7 +213,7 @@ public class FileUtils {
 						//创建一个用于存储文件名的 StringBuffer
 						StringBuffer fileName = new StringBuffer("");
 						// 创建一个随机数生成器
-						Random r = new Random();
+//						Random r = new Random();
 						// 初始化位置变量为-1
 						int pos = -1;
 						// 生成15个随机字符组成的文件名
@@ -343,40 +343,27 @@ public class FileUtils {
 		// 用于存储文件内容的 StringBuffer
 		StringBuffer stringBuffer=new StringBuffer();
 		// 初始化reader为空
-		BufferedReader reader = null;
+//		BufferedReader reader = null;
 		// 创建相应路径文件实体
 		File inputPath = new File(path);
 		if (inputPath.exists()) {
 			// 如果文件存在
-			try {
-				// 创建 BufferedReader 以便逐行读取文件内容
-				reader = new BufferedReader(new InputStreamReader(
-						new FileInputStream(inputPath), encoding));
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+					new FileInputStream(inputPath), encoding))) {
 				//初始化字符串line
 				String line;
 				while ((line = reader.readLine()) != null) {
 					// 读取非空行并追加到 StringBuffer 中
 					if (StringUtils.isNotBlank(line)) {
-//						sl.add(line);
-						stringBuffer.append(line+"\r\n");
+						stringBuffer.append(line + "\r\n");
 					}
 				}
-			} catch (Exception e) {
+			} catch (IOException e) {
 				// 捕获异常并打印堆栈信息
 				e.printStackTrace();
-			} finally {
-				if (reader != null) {
-					try {
-						// 关闭 BufferedReader
-						reader.close();
-					} catch (Exception e) {
-						// 捕获异常并打印堆栈信息
-						e.printStackTrace();
-					}
-				}
 			}
 		}
 		// 返回读取到的文件内容字符串
-	return stringBuffer.toString();
+		return stringBuffer.toString();
 	}
 }

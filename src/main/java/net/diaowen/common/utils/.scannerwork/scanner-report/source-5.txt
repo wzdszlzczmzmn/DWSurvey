@@ -26,6 +26,9 @@ import org.apache.commons.lang.StringEscapeUtils;
  *
  */
 public abstract class EncodeUtils {
+	private EncodeUtils(){
+
+	}
 
 	// 字母数字字符串
 	private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";

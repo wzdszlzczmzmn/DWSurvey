@@ -44,30 +44,4 @@ y
 javaS3008ZRename this field "LICENSE_VERSION" to match the regular expression '^[a-z][a-zA-Z0-9]*$'. 266 %x
 javaS3008]Rename this field "LICENSE_EVALUATION" to match the regular expression '^[a-z][a-zA-Z0-9]*$'. 299 (w
 javaS3008\Rename this field "LICENSE_PUBLICKEY" to match the regular expression '^[a-z][a-zA-Z0-9]*$'. 2<< 'r
-javaS3008WRename this field "LICENSE_SIGN" to match the regular expression '^[a-z][a-zA-Z0-9]*$'. 2?? "ž
-javaS1186€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation. 2yy @V
-javaS125<This block of commented-out lines of code should be removed. 2 7Š
-javaS125<This block of commented-out lines of code should be removed. 2QQ D:
-SS :Code:
-TT 4Code:
-VV =Code:
-WW ?Code:
-XX 8Code:
-YY ECode:
-ZZ FCode:
-[[ ACode:
-\\ >Code:
-]] 9Code:
-^^ CCode:
-__ BCode:
-`` @Code:
-aa 6CodeÄ
-javaS125<This block of commented-out lines of code should be removed. 2ff 3:
-gg %Code:
-hh "Code:
-ii ,Code:
-jj 'Code:
-kk Code‚
-javaS125<This block of commented-out lines of code should be removed. 2qq 7:
-rr 'Code:
-ss Code
+javaS3008WRename this field "LICENSE_SIGN" to match the regular expression '^[a-z][a-zA-Z0-9]*$'. 2?? "

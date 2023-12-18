@@ -1,5 +1,4 @@
-(
-sonar.analysis.detectedscm
-undetected'
+!
+sonar.analysis.detectedscmgit'
 sonar.analysis.detectedci
 undetected

@@ -11,6 +11,9 @@ package net.diaowen.common.utils;
  * 异常处理工具类，提供将已检查异常转换为未检查异常的功能，就是转换成RuntimeException异常
  */
 public class ExceptionUtils {
+	private ExceptionUtils(){
+
+	}
 
 	/**
 	 * 将CheckedException转换为UnCheckedException.

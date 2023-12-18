@@ -8,6 +8,9 @@ import java.io.*;
  * 将输出流内容写到文件
  */
 public class DwWriteFile {
+	private DwWriteFile(){
+
+	}
 
 	/**
 	 * OS写到文件
@@ -23,7 +26,6 @@ public class DwWriteFile {
 			FileNotFoundException {
 		//从fileRealPath字符串中找到"/wjHtml"最后一次出现的位置，并返回其后面的子字符串（不包括"/wjHtml"）
 		fileRealPath = fileRealPath.substring(fileRealPath.lastIndexOf("/wjHtml")+1);
-//		fileRealPath = "/Users/xiajunlanna/IdeaProjects/dwsurvey/target/"+fileRealPath;
 		//根路径用写好的配置
 		fileRealPath = DWSurveyConfig.DWSURVEY_WEB_FILE_PATH+fileRealPath;
 		//创建一个以fileRealPath为路径的File实体file

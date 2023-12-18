@@ -31,7 +31,9 @@ public class RunAnswerUtil {
             try {
                 Thread.sleep(1);  // 等待1毫秒
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // 重新中断当前线程
                 e.printStackTrace();
+
             }
         }
         return questionMap;  // 返回新的question Map

@@ -7,7 +7,13 @@ import java.io.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+
+/**
+ * 这个类提供了 ZIP 文件相关的工具方法，用于创建 ZIP 文件和文件夹的压缩包，并支持文件的清理操作。
+ */
 public class ZipUtil {
+    private static final String ZIP_FILE_CREATION_ERROR = "创建ZIP文件失败";
+    private static final String ZIP_FILE_DELETE_ERROR = "文件删除失败";
      private static final Logger log = LoggerFactory.getLogger(ZipUtil.class);
 
     private ZipUtil() {
@@ -19,32 +25,16 @@ public class ZipUtil {
      * @param isDrop  是否删除原文件:true删除、false不删除
      */
   public static void createZip(String sourcePath, String zipPath,Boolean isDrop) {
-        //创建文件输出流
-        FileOutputStream fos = null;
-        //创建zip输出流
-        ZipOutputStream zos = null;
-        try {
-            //创建文件输出流
-            fos = new FileOutputStream(zipPath);
-            //创建zip输出流
-            zos = new ZipOutputStream(fos);
-            //创建xml文件
-            //createXmlFile(sourcePath,"293.xml");
-            //写入zip文件
-            writeZip(new File(sourcePath), "", zos,isDrop);
-        } catch (FileNotFoundException e) {
-            log.error("创建ZIP文件失败",e);
-        } finally {
-            try {
-                //关闭zip输出流
-                if (zos != null) {
-                    zos.close();
-                }
-            } catch (IOException e) {
-                log.error("创建ZIP文件失败",e);
-            }
+      try (FileOutputStream fos = new FileOutputStream(zipPath);
+           ZipOutputStream zos = new ZipOutputStream(fos)) {
 
-        }
+          writeZip(new File(sourcePath), "", zos, isDrop);
+
+      } catch (FileNotFoundException e) {
+          log.error(ZIP_FILE_CREATION_ERROR, e);
+      } catch (IOException e) {
+          log.error(ZIP_FILE_CREATION_ERROR, e);
+      }
     }
     /**
      * 清空文件和文件目录
@@ -58,7 +48,7 @@ public class ZipUtil {
         if (cs == null || cs.length <= 0) {
             boolean isDelete = f.delete();
             if (!isDelete) {
-                throw new Exception(f.getName() + "文件删除失败！");
+                throw new Exception(f.getName() + ZIP_FILE_DELETE_ERROR);
             }
         //如果文件列表不为空，则遍历文件列表，删除文件
         } else {
@@ -70,7 +60,7 @@ public class ZipUtil {
                 if (f2.exists() && f2.isFile()) {
                     boolean isDelete = f2.delete();
                     if (!isDelete) {
-                        throw new Exception(f2.getName() + "文件删除失败！");
+                        throw new Exception(f2.getName() + ZIP_FILE_DELETE_ERROR);
                     }
                 //如果文件存在且是文件夹，则递归调用clean方法
                 } else if (f2.exists() && f2.isDirectory()) {
@@ -80,7 +70,7 @@ public class ZipUtil {
             //删除文件夹
             boolean isDelete = f.delete();
             if (!isDelete) {
-                throw new Exception(f.getName() + "文件删除失败！");
+                throw new Exception(f.getName() + ZIP_FILE_DELETE_ERROR);
             }
         }
     }
@@ -110,34 +100,29 @@ public class ZipUtil {
                     }
                 }
             } else {
-                FileInputStream fis = null;
                 try {
-                    fis = new FileInputStream(file);
                     ZipEntry ze = new ZipEntry(parentPath + file.getName());
                     zos.putNextEntry(ze);
                     byte[] content = new byte[1024];
                     int len;
-                    while ((len = fis.read(content)) != -1) {
-                        zos.write(content, 0, len);
-                    }
-                } catch (FileNotFoundException e) {
-                    log.error("创建ZIP文件失败", e);
-                } catch (IOException e) {
-                    log.error("创建ZIP文件失败", e);
-                } finally {
-                    try {
-                        if (fis != null) {
-                            fis.close();
-                        }
-                        if (isDrop) {
-                            clean(file);
+                    try (FileInputStream fis = new FileInputStream(file)) {
+                        while ((len = fis.read(content)) != -1) {
+                            zos.write(content, 0, len);
                         }
                     } catch (IOException e) {
-                        log.error("创建ZIP文件失败", e);
+                        log.error(ZIP_FILE_CREATION_ERROR, e);
+                    }
+
+                    // 捕获 clean 方法可能抛出的受检查异常
+                    try {
+                        clean(file);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                } catch (IOException e) {
+                    log.error(ZIP_FILE_CREATION_ERROR, e);
                 }
+
             }
         }
     }

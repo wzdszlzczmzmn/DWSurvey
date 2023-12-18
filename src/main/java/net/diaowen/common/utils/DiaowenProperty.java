@@ -24,7 +24,7 @@ public class DiaowenProperty extends
 
 	// 网站URL，默认为"http://192.168.3.20:8080/#"
 	public static String WEBSITE_URL = "http://192.168.3.20:8080/#";
-//	private static Map<String, String> ctxPropertiesMap;
+
 
 	// 许可描述
 	public static String LICENSE_DESC = null;
@@ -78,48 +78,13 @@ public class DiaowenProperty extends
 		// 注释掉的部分表示原本的属性加载方式，现在被注释掉了
 
 
-		/*STORAGE_URL_PREFIX = props.getProperty("dw.storage.url_prefix");
-
-		SURVEYURL_MODE = props.getProperty("dw.surveyurl.mode");
-		WEBSITE_URL = props.getProperty("dw.website.url");
-
-		LICENSE_DESC = props.getProperty("dw.license.description");
-		LICENSE_ORGAN = props.getProperty("dw.license.organisation");
-		LICENSE_EMAIL = props.getProperty("dw.license.email");
-		LICENSE_TYPENAME = props.getProperty("dw.license.licenseTypeName");
-		LICENSE_CREATIONDATE = props.getProperty("dw.license.creationDate");
-		LICENSE_DOMAIN = props.getProperty("dw.license.licenseDomain");
-		LICENSE_SERVERID = props.getProperty("dw.license.serverId");
-		LICENSE_ID = props.getProperty("dw.license.licenseId");
-		LICENSE_VERSION = props.getProperty("dw.license.licenseVersion");
-		LICENSE_EVALUATION = props.getProperty("dw.license.evaluation");
-		LICENSE_PUBLICKEY = props.getProperty("dw.license.publickey");
-		LICENSE_SIGN = props.getProperty("dw.license.sign");
-		*/
-
-		// 注释掉的代码表示曾经用于创建一个映射存储属性名和对应的值，现在被注释掉了
-		/*
-		ctxPropertiesMap = new HashMap<String, String>();
-		for (Object key : props.keySet()) {
-			String keyStr = key.toString();
-			String value = props.getProperty(keyStr);
-			ctxPropertiesMap.put(keyStr, value);
-		}
-		*/
-
 	}
-	// 获取上下文属性（被注释掉的方法）
-/*
-	public static String getContextProperty(String name) {
-	    return ctxPropertiesMap.get(name);
-	}
-*/
 
 	/**
-	 *DiaowenProperty类的初始化方法
+	 *
 	 */
 	public void diaowenInit(){
-
+		//不知道什么用
 	}
 
 }

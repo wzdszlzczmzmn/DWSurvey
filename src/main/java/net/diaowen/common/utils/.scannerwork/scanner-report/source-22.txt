@@ -18,7 +18,10 @@ import org.springframework.util.StringUtils;
  *   断言工具，用于在代码中执行断言检查，确保在运行时满足特定的条件，否则抛出异常
  */
 public abstract class AssertUtils {
+	private AssertUtils(){
 
+	}
+	private static final String CHECK_TYPE_NOT_NULL = "Type to check against must not be null";
 	/**
 	 * 确保布尔表达式为真，如果测试结果为假，则抛出 <code>IllegalArgumentException</code> 异常。
 	 *
@@ -338,7 +341,7 @@ public abstract class AssertUtils {
 	 * @param message 若集合为null或者没有元素，抛出的异常信息
 	 * @throws IllegalArgumentException 如果集合为null或者没有元素，抛出IllegalArgumentException异常
 	 */
-	public static void notEmpty(Collection collection, String message) {
+	public static <E> void notEmpty(Collection<E> collection, String message) {
 		if (CollectionUtils.isEmpty(collection)) {
 			//如果集合为null或者没有元素，抛出IllegalArgumentException异常，并使用给定的信息
 			throw new IllegalArgumentException(message);
@@ -350,7 +353,7 @@ public abstract class AssertUtils {
 	 * @param collection 要断言的集合
 	 * @throws IllegalArgumentException 如果集合为null或者没有元素，抛出IllegalArgumentException异常
 	 */
-	public static void notEmpty(Collection collection) {
+	public static <E> void notEmpty(Collection<E> collection) {
 		notEmpty(collection,
 				"[Assertion failed] - this collection must not be empty: it must contain at least 1 element");
 	}
@@ -360,7 +363,7 @@ public abstract class AssertUtils {
 	 * @param collection 要断言的集合
 	 * @param throwIfAssertFail 如果集合为null或者没有元素，抛出throwIfAssertFail异常
 	 */
-	public static void notEmpty(Collection collection, RuntimeException throwIfAssertFail) {
+	public static <E> void notEmpty(Collection<E> collection, RuntimeException throwIfAssertFail) {
 		if (CollectionUtils.isEmpty(collection)) {
 			//如果集合为null或者没有元素，抛出throwIfAssertFail异常
 			throw throwIfAssertFail;
@@ -373,7 +376,7 @@ public abstract class AssertUtils {
 	 * @param message 若Map没有键值对，所抛出的异常信息
 	 * @throws IllegalArgumentException 若Map没有键值对，抛出IllegalArgumentException异常
 	 */
-	public static void notEmpty(Map map, String message) {
+	public static <k,V> void notEmpty(Map<k,V> map, String message) {
 		if (CollectionUtils.isEmpty(map)) {
 			//若Map没有键值对，抛出IllegalArgumentException异常，并使用给定的信息
 			throw new IllegalArgumentException(message);
@@ -385,7 +388,7 @@ public abstract class AssertUtils {
 	 * @param map 要检查的键值对
 	 * @throws IllegalArgumentException 若Map没有键值对，抛出IllegalArgumentException异常
 	 */
-	public static void notEmpty(Map map) {
+	public static <K,V> void notEmpty(Map<K,V> map) {
 		//调用notEmpty(map, "[Assertion failed] - this map must not be empty; it must contain at least one entry")方法
 		notEmpty(map, "[Assertion failed] - this map must not be empty; it must contain at least one entry");
 	}
@@ -395,7 +398,7 @@ public abstract class AssertUtils {
 	 * @param map 要检查的键值对
 	 * @param throwIfAssertFail  若Map没有键值对，抛出throwIfAssertFail异常
 	 */
-	public static void notEmpty(Map map, RuntimeException throwIfAssertFail) {
+	public static <K,V> void notEmpty(Map<K,V> map, RuntimeException throwIfAssertFail) {
 		if (CollectionUtils.isEmpty(map)) {
 			//若Map没有键值对，抛出throwIfAssertFail异常
 			throw throwIfAssertFail;
@@ -410,9 +413,9 @@ public abstract class AssertUtils {
 	 * @throws IllegalArgumentException 若给定的对象不是指定类的实例，抛出IllegalArgumentException异常
 	 * @see Class#isInstance
 	 */
-	public static void isInstanceOf(Class type, Object obj, String message) {
+	public static <T> void isInstanceOf(Class<T> type, Object obj, String message) {
 		//调用notNull(type, "Type to check against must not be null")方法，若type为null则抛出异常
-		notNull(type, "Type to check against must not be null");
+		notNull(type, CHECK_TYPE_NOT_NULL);
 		if (!type.isInstance(obj)) {
 			//若给定的对象不是指定类的实例，抛出IllegalArgumentException异常，并使用给定的信息加其他输出（实例类必须为给定的类）
 			throw new IllegalArgumentException(message + "Object of class ["
@@ -427,7 +430,7 @@ public abstract class AssertUtils {
      * @throws IllegalArgumentException 若给定的对象不是指定类的实例，抛出IllegalArgumentException异常
 	 * @see Class#isInstance
 	 */
-	public static void isInstanceOf(Class clazz, Object obj) {
+	public static <T> void isInstanceOf(Class<T> clazz, Object obj) {
 		//调用isInstanceOf(clazz, obj, "")方法
 		isInstanceOf(clazz, obj, "");
 	}
@@ -439,9 +442,9 @@ public abstract class AssertUtils {
 	 * @param throwIfAssertFail 若给定的对象不是指定类的实例，抛出throwIfAssertFail异常
 	 * @see Class#isInstance
 	 */
-	public static void isInstanceOf(Class type, Object obj, RuntimeException throwIfAssertFail) {
+	public static <T> void isInstanceOf(Class<T> type, Object obj, RuntimeException throwIfAssertFail) {
 		//调用notNull(type, "Type to check against must not be null")方法，若type为null则抛出异常
-		notNull(type, "Type to check against must not be null");
+		notNull(type, CHECK_TYPE_NOT_NULL);
 		if (!type.isInstance(obj)) {
 			//若给定的对象不是指定类的实例，抛出throwIfAssertFail异常
 			throw throwIfAssertFail;
@@ -455,9 +458,9 @@ public abstract class AssertUtils {
 	 * @param message 若superType不能继承或赋值给subType，所抛出的部分异常信息
 	 * @throws IllegalArgumentException 若superType不能继承或赋值给subType，抛出IllegalArgumentException异常
 	 */
-	public static void isAssignable(Class superType, Class subType, String message) {
+	public static <T> void isAssignable(Class<T> superType, Class<T> subType, String message) {
 		//检测superType是否为null，若为null，抛出异常
-		notNull(superType, "Type to check against must not be null");
+		notNull(superType, CHECK_TYPE_NOT_NULL);
 		if (subType == null || !superType.isAssignableFrom(subType)) {
 			//若subType为null或者superType不能继承或赋值给subType，则抛出IllegalArgumentException异常，异常信息为message++ subType + " is not assignable to " + superType
 			throw new IllegalArgumentException(message + subType + " is not assignable to " + superType);
@@ -470,7 +473,7 @@ public abstract class AssertUtils {
 	 * @param subType 被继承或赋值的类
 	 * @throws IllegalArgumentException 若superType不能继承或赋值给subType，抛出IllegalArgumentException异常
 	 */
-	public static void isAssignable(Class superType, Class subType) {
+	public static <T> void isAssignable(Class<T> superType, Class<T> subType) {
 		//调用isAssignable(superType, subType, "")方法
 		isAssignable(superType, subType, "");
 	}

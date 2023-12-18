@@ -9,6 +9,9 @@ import javax.servlet.http.HttpServletResponse;
  * 可以指定添加的cookie的名称、值、生命周期和路径
  */
 public class CookieUtils {
+	private CookieUtils(){
+
+	}
 	/**
 	 * 添加cookie
 	 * 

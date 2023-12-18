@@ -9,9 +9,9 @@ import java.util.Random;
  * 它包括生成随机字符串、数字、日期、订单编码、验证代码、企业编码、应用密钥和应用密钥密钥等功能。
  */
 public class RandomUtils {
-
+	private static Random random = new Random();
 	public static void main(String[] args) throws Exception{
-
+		//空的main方法
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class RandomUtils {
 	 */
 	public static int randomInt(int minNum, int maxNum) {
 		// 创建一个随机数生成器
-		Random random = new Random();
+//		Random random = new Random();
 		// 生成一个不超过 maxNum 的随机整数
 		int randomInt = random.nextInt(maxNum);
 		// 如果生成的随机数小于最小值
@@ -144,7 +144,7 @@ public class RandomUtils {
 		  // 可用于生成随机字符串的字符集合
 		String base = "abcdefghijklmnopqrstuvwxyz0123456789";
 		//创建随机数生成器
-		Random random = new Random();
+//		Random random = new Random();
 		  // 用于构建生成的随机字符串
 		StringBuffer sb = new StringBuffer();
 		  // 生成一个介于minLen和maxLen之间的随机长度

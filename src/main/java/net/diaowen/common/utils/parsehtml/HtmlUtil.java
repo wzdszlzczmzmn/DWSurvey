@@ -25,9 +25,9 @@ public class HtmlUtil {
 
 			String regEx_html = "<[^>]+>"; // 定义HTML标签的正则表达式
 			String regEx_html1 = "<[^>]+";
-			htmlStr = htmlStr.replaceAll("\n", "");
-			htmlStr = htmlStr.replaceAll("\t", "");
-			htmlStr = htmlStr.replaceAll("\r", "");
+			htmlStr = htmlStr.replace("\n", "");
+			htmlStr = htmlStr.replace("\t", "");
+			htmlStr = htmlStr.replace("\r", "");
 
 			// 过滤注释标签
 			pattern = Pattern.compile(regEx_remark);// 过滤注释标签
