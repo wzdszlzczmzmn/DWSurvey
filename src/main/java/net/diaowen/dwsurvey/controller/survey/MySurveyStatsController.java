@@ -30,7 +30,7 @@ public class MySurveyStatsController {
     }
 
     /**
-     * 获取频数分析数据
+     * 获取问卷的统计分析数据
      * @param surveyId 问卷id
      * @return
      */

@@ -42,19 +42,26 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 
 	@Resource
 	private SurveyDirectoryManagerImpl surveyDirectoryManager;
-
-	@Autowired
-	private SurveyDirectoryDao surveyDirectoryDao;
-	@Autowired
-	private SurveyDetailManager surveyDetailManager;
-	@Autowired
-	private QuestionManager questionManager;
 	@Autowired
 	private SurveyStatsManager surveyStatsManager;
+	private final SurveyDirectoryDao surveyDirectoryDao;
+	private final SurveyDetailManager surveyDetailManager;
+	private final QuestionManager questionManager;
+	private final AccountManager accountManager;
+	private static final String PARENTID = "parentId";
+	private static final String CREATEDATE = "createDate";
+	private static final String VISIBILITY = "visibility";
+	private static final String SURVEYMODEL = "surveyModel";
+	private static final String SURVEYNAME = "surveyName";
+	private static final String SURVEYSTATE = "surveyState";
+
 	@Autowired
-	private AccountManager accountManager;
-
-
+	public SurveyDirectoryManagerImpl(SurveyDirectoryDao surveyDirectoryDao, SurveyDetailManager surveyDetailManager, QuestionManager questionManager, AccountManager accountManager) {
+		this.surveyDirectoryDao = surveyDirectoryDao;
+		this.surveyDetailManager = surveyDetailManager;
+		this.questionManager = questionManager;
+		this.accountManager = accountManager;
+	}
 
 	@Override
 	public void setBaseDao() {
@@ -281,7 +288,7 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		SurveyDirectory parentDirectory=get(id);
 		parentDirectory.setVisibility(0);
 		surveyDirectoryDao.save(parentDirectory);
-		Criterion criterion=Restrictions.eq("parentId", parentDirectory.getId());
+		Criterion criterion=Restrictions.eq(PARENTID, parentDirectory.getId());
 		List<SurveyDirectory> directories=findList(criterion);
 		if(directories!=null){
 			for (SurveyDirectory surveyDirectory : directories) {
@@ -294,6 +301,7 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 	 * 删除整个问卷目录
 	 * @param parentDirectory
 	 */
+	@Override
 	@Transactional
 	public void delete(SurveyDirectory parentDirectory) {
 		String id=parentDirectory.getId();
@@ -301,7 +309,7 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		if(!"1".equals(id)){
 			//设为不可见
 			parentDirectory.setVisibility(0);
-			Criterion criterion=Restrictions.eq("parentId", parentDirectory.getId());
+			Criterion criterion=Restrictions.eq(PARENTID, parentDirectory.getId());
 			List<SurveyDirectory> directories=findList(criterion);
 			if(directories!=null){
 				for (SurveyDirectory surveyDirectory : directories) {
@@ -321,8 +329,8 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 	@Override
 	public SurveyDirectory findByNameUn(String id,String parentId, String surveyName) {
 		List<Criterion> criterions=new ArrayList<>();
-		Criterion eqName=Restrictions.eq("surveyName", surveyName);
-		Criterion eqParentId=Restrictions.eq("parentId", parentId);
+		Criterion eqName=Restrictions.eq(SURVEYNAME, surveyName);
+		Criterion eqParentId=Restrictions.eq(PARENTID, parentId);
 		criterions.add(eqName);
 		criterions.add(eqParentId);
 
@@ -344,7 +352,7 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		User user=accountManager.getCurUser();
 		if(user!=null){
 			List<Criterion> criterions=new ArrayList<>();
-			Criterion eqName=Restrictions.eq("surveyName", surveyName);
+			Criterion eqName=Restrictions.eq(SURVEYNAME, surveyName);
 			Criterion eqUserId=Restrictions.eq("userId", user.getId());
 			criterions.add(eqName);
 			criterions.add(eqUserId);
@@ -461,19 +469,19 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 	 */
 	@Override
 	public Page<SurveyDirectory> findPage(Page<SurveyDirectory> page,String surveyName,Integer surveyState,Integer isShare) {
-		page.setOrderBy("createDate");
+		page.setOrderBy(CREATEDATE);
 		page.setOrderDir("desc");
 
 		List<Criterion> criterions=new ArrayList<>();
-		criterions.add(Restrictions.eq("visibility", 1));
+		criterions.add(Restrictions.eq(VISIBILITY, 1));
 		criterions.add(Restrictions.eq("dirType", 2));
-		criterions.add(Restrictions.eq("surveyModel", 1));
+		criterions.add(Restrictions.eq(SURVEYMODEL, 1));
 
 		if(surveyName!=null){
-			criterions.add(Restrictions.like("surveyName", "%"+surveyName+"%"));
+			criterions.add(Restrictions.like(SURVEYNAME, "%"+surveyName+"%"));
 		}
 		if(surveyState!=null){
-			criterions.add(Restrictions.eq("surveyState", surveyState));
+			criterions.add(Restrictions.eq(SURVEYSTATE, surveyState));
 		}
 		if(isShare!=null){
 			criterions.add(Restrictions.eq("isShare", isShare));
@@ -537,7 +545,7 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 	@Override
 	public SurveyDirectory findNext(SurveyDirectory directory) {
 		Date date=directory.getCreateDate();
-		Criterion criterion=Restrictions.gt("createDate", date);
+		Criterion criterion=Restrictions.gt(CREATEDATE, date);
 		return surveyDirectoryDao.findFirst(criterion);
 	}
 
@@ -567,12 +575,12 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		if(user!=null){
 			List<Criterion> criterions=new ArrayList<>();
 			criterions.add(Restrictions.eq("userId", user.getId()));
-			criterions.add(Restrictions.eq("visibility", 1));
+			criterions.add(Restrictions.eq(VISIBILITY, 1));
 			criterions.add(Restrictions.eq("dirType", 2));
-			criterions.add(Restrictions.eq("surveyModel", 1));
-			if(surveyState!=null) criterions.add(Restrictions.eq("surveyState", surveyState));
-			if(StringUtils.isNotEmpty(surveyName)) criterions.add(Restrictions.like("surveyName", "%"+surveyName+"%"));
-			page.setOrderBy("createDate");
+			criterions.add(Restrictions.eq(SURVEYMODEL, 1));
+			if(surveyState!=null) criterions.add(Restrictions.eq(SURVEYSTATE, surveyState));
+			if(StringUtils.isNotEmpty(surveyName)) criterions.add(Restrictions.like(SURVEYNAME, "%"+surveyName+"%"));
+			page.setOrderBy(CREATEDATE);
 			page.setOrderDir("desc");
 			page=surveyDirectoryDao.findPageList(page,criterions);
 		}
@@ -590,21 +598,20 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 
 
 		List<Criterion> criterions = new ArrayList<>();
-		if(groupId1!=null && !"".equals(groupId1)){
+		if(groupId1!=null && !groupId1.isEmpty()){
 			Criterion cri1=Restrictions.eq("groupId1", groupId1);
 			criterions.add(cri1);
 		}
-		if(groupId2!=null && !"".equals(groupId2)){
-			Criterion cri1_2=Restrictions.eq("groupId2", groupId2);
-			criterions.add(cri1_2);
+		if(groupId2!=null && !groupId2.isEmpty()){
+			criterions.add(Restrictions.eq("groupId2", groupId2));
 		}
 
-		Criterion cri2=Restrictions.eq("visibility", 1);
-		Criterion cri4=Restrictions.eq("surveyModel", 4);
+		Criterion cri2=Restrictions.eq(VISIBILITY, 1);
+		Criterion cri4=Restrictions.eq(SURVEYMODEL, 4);
 
 		criterions.add(cri2);
 		criterions.add(cri4);
-		page.setOrderBy("createDate");
+		page.setOrderBy(CREATEDATE);
 		page.setOrderDir("desc");
 
 		return surveyDirectoryDao.findPage(page,criterions.toArray(new Criterion[criterions.size()]) );
@@ -625,18 +632,18 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		List<Criterion> criterions=new ArrayList<>();
 
 		if(surveyState!=null && surveyState.intValue()!=100){
-			Criterion cri1=Restrictions.eq("surveyState", surveyState);
+			Criterion cri1=Restrictions.eq(SURVEYSTATE, surveyState);
 			criterions.add(cri1);
 		}
-		if(surveyName!=null && !"".equals(surveyName)){
-			Criterion cri1=Restrictions.like("surveyName", "%"+surveyName+"%");
+		if(surveyName!=null && !surveyName.isEmpty()){
+			Criterion cri1=Restrictions.like(SURVEYNAME, "%"+surveyName+"%");
 			criterions.add(cri1);
 		}
-		Criterion cri2=Restrictions.eq("visibility", 1);
+		Criterion cri2=Restrictions.eq(VISIBILITY, 1);
 		criterions.add(cri2);
-		Criterion cri4=Restrictions.eq("surveyModel", 4);
+		Criterion cri4=Restrictions.eq(SURVEYMODEL, 4);
 		criterions.add(cri4);
-		page.setOrderBy("createDate");
+		page.setOrderBy(CREATEDATE);
 		page.setOrderDir("desc");
 		return surveyDirectoryDao.findPageList(page,criterions);
 	}
@@ -647,12 +654,12 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 	 */
 	@Override
 	public List<SurveyDirectory> findByIndex() {
-		Criterion cri1=Restrictions.eq("visibility", 1);
-		Criterion cri2=Restrictions.eq("parentId", "402880e5428a2dca01428a2f1f290000");
+		Criterion cri1=Restrictions.eq(VISIBILITY, 1);
+		Criterion cri2=Restrictions.eq(PARENTID, "402880e5428a2dca01428a2f1f290000");
 		Criterion cri3=Restrictions.eq("surveyTag", 1);
 		Criterion cri4=Restrictions.isNull("sid");
 		Page<SurveyDirectory> page=new Page<>();
-		page.setOrderBy("createDate");
+		page.setOrderBy(CREATEDATE);
 		page.setOrderDir("desc");
 		page.setPageSize(10);
         return surveyDirectoryDao.findPage(page, cri1,cri2,cri3,cri4).getResult();
@@ -663,12 +670,12 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 	 */
 	@Override
 	public List<SurveyDirectory> findByT1() {
-		Criterion cri1=Restrictions.eq("visibility", 1);
-		Criterion cri2=Restrictions.eq("parentId", "402880e5428a2dca01428a2f1f290000");
+		Criterion cri1=Restrictions.eq(VISIBILITY, 1);
+		Criterion cri2=Restrictions.eq(PARENTID, "402880e5428a2dca01428a2f1f290000");
 		Criterion cri3=Restrictions.eq("surveyTag", 1);
 		Criterion cri4=Restrictions.isNull("sid");
 		Page<SurveyDirectory> page=new Page<>();
-		page.setOrderBy("createDate");
+		page.setOrderBy(CREATEDATE);
 		page.setOrderDir("desc");
 		page.setPageSize(10);
         return surveyDirectoryDao.findPage(page, cri1,cri2,cri3,cri4).getResult();
@@ -809,11 +816,10 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 			dirFile.mkdirs();
 		}
 		File localFile = new File(rootPath+ savePath + fileName);
-		if (!localFile.exists()) {
-			localFile.createNewFile();
-		}
-		try(FileOutputStream fos = new FileOutputStream(localFile)){
-			fos.write(jsonString.getBytes());
+		if (localFile.exists() || localFile.createNewFile()) {
+			try(FileOutputStream fos = new FileOutputStream(localFile)){
+				fos.write(jsonString.getBytes());
+			}
 		}
 	}
 
