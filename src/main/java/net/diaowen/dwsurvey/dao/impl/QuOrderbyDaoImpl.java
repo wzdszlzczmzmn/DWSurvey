@@ -7,7 +7,7 @@ import net.diaowen.common.dao.BaseDaoImpl;
 import net.diaowen.dwsurvey.dao.QuOrderbyDao;
 
 /**
- * 排序题 dao
+ * 排序题选项DAO 实现类
  * @author keyuan(keyuan258@gmail.com)
  *
  * https://github.com/wkeyuan/DWSurvey

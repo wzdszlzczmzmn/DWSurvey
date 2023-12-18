@@ -1,22 +1,18 @@
 package net.diaowen.dwsurvey.controller.question;
 
 import net.diaowen.common.QuType;
-import net.diaowen.common.base.entity.User;
-import net.diaowen.common.base.service.AccountManager;
-import net.diaowen.common.plugs.page.Page;
 import net.diaowen.dwsurvey.entity.*;
 import net.diaowen.dwsurvey.service.AnDFillblankManager;
 import net.diaowen.dwsurvey.service.QuMultiFillblankManager;
 import net.diaowen.dwsurvey.service.QuestionManager;
-import net.diaowen.dwsurvey.service.SurveyDirectoryManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -41,11 +37,21 @@ public class QuMultiFillblankController{
 	@Autowired
 	private AnDFillblankManager anDFillblankManager;
 
+	/**
+	 * 处理 保存多项填空题 的请求，并返回一个包含结果的JSON字符串
+	 *
+	 * @param request
+	 * @param response
+	 * @return 返回一个包含结果的JSON字符串
+	 * @throws Exception
+	 */
 	@RequestMapping("/ajaxSave.do")
-	public String ajaxSave(HttpServletRequest request,HttpServletResponse response) throws Exception {
+	public String ajaxSave(HttpServletRequest request,HttpServletResponse response) throws IOException {
 		try{
+			// 从请求中构建并保存多行填空题
 			Question entity=ajaxBuildSaveOption(request);
 			questionManager.save(entity);
+			// 构建结果JSON并返回
 			String resultJson=buildResultJson(entity);
 			response.getWriter().write(resultJson);
 		}catch (Exception e) {
@@ -55,7 +61,17 @@ public class QuMultiFillblankController{
 		return null;
 	}
 
+	/**
+	 * 处理 保存多项填空题 的具体逻辑
+	 * 从请求中获取问题和填空项的属性，设置这些属性的值
+	 * 最后将问题和填空项保存到数据库中
+	 *
+	 * @param request
+	 * @return 返回保存后的多项填空题对象
+	 * @throws UnsupportedEncodingException
+	 */
 	private Question ajaxBuildSaveOption(HttpServletRequest request) throws UnsupportedEncodingException {
+		// 从请求中获取问题和选项的属性
 		String quId=request.getParameter("quId");
 		String belongId=request.getParameter("belongId");
 		String quTitle=request.getParameter("quTitle");
@@ -68,10 +84,12 @@ public class QuMultiFillblankController{
 		String randOrder=request.getParameter("randOrder");
 		String cellCount=request.getParameter("cellCount");
 		String paramInt01=request.getParameter("paramInt01");//最小分
-		String paramInt02=request.getParameter("paramInt02");//最大分
+
+		// 对空字符串进行处理
 		if("".equals(quId)){
 			quId=null;
 		}
+		// 创建 Question 对象并设置属性
 		Question entity=questionManager.getModel(quId);
 		entity.setBelongId(belongId);
 		if(quTitle!=null){
@@ -81,6 +99,7 @@ public class QuMultiFillblankController{
 		entity.setOrderById(Integer.parseInt(orderById));
 		entity.setTag(Integer.parseInt(tag));
 		entity.setQuType(QuType.MULTIFILLBLANK);
+
 		//参数
 		isRequired=(isRequired==null || "".equals(isRequired))?"0":isRequired;
 		hv=(hv==null || "".equals(hv))?"0":hv;
@@ -93,9 +112,12 @@ public class QuMultiFillblankController{
 		entity.setCellCount(Integer.parseInt(cellCount));
 		entity.setParamInt01(Integer.parseInt(paramInt01));
 		entity.setParamInt02(10);
+
+		// 获取并处理填空项
 		Map<String, Object> optionNameMap=WebUtils.getParametersStartingWith(request, "optionValue_");
-		List<QuMultiFillblank> quMFillblanks=new ArrayList<QuMultiFillblank>();
-		for (String key : optionNameMap.keySet()) {
+		List<QuMultiFillblank> quMFillblanks=new ArrayList<>();
+		for (Map.Entry<String,Object> entry : optionNameMap.entrySet()) {
+			String key = entry.getKey();
 			String optionId=request.getParameter("optionId_"+key);
 			Object optionName=optionNameMap.get(key);
 			String optionNameValue=(optionName!=null)?optionName.toString():"";
@@ -104,7 +126,6 @@ public class QuMultiFillblankController{
 				optionId=null;
 			}
 			quMultiFillblank.setId(optionId);
-//			quRadio.setOptionTitle(key);
 			optionNameValue=URLDecoder.decode(optionNameValue,"utf-8");
 			quMultiFillblank.setOptionName(optionNameValue);
 			quMultiFillblank.setOrderById(Integer.parseInt(key));
@@ -114,8 +135,9 @@ public class QuMultiFillblankController{
 
 		//逻辑选项设置
 		Map<String, Object> quLogicIdMap=WebUtils.getParametersStartingWith(request, "quLogicId_");
-		List<QuestionLogic> quLogics=new ArrayList<QuestionLogic>();
-		for (String key : quLogicIdMap.keySet()) {
+		List<QuestionLogic> quLogics=new ArrayList<>();
+		for (Map.Entry<String,Object> entry : quLogicIdMap.entrySet()) {
+			String key = entry.getKey();
 			String cgQuItemId=request.getParameter("cgQuItemId_"+key);
 			String skQuId=request.getParameter("skQuId_"+key);
 			String visibility=request.getParameter("visibility_"+key);
@@ -137,11 +159,21 @@ public class QuMultiFillblankController{
 		return entity;
 	}
 
+	/**
+	 * 构建包含问题和填空项信息的JSON字符串
+	 *
+	 * @param entity 问题对象
+	 * @return 构建好的JSON字符串
+	 */
 	public static String buildResultJson(Question entity){
-		StringBuffer strBuf=new StringBuffer();
+		StringBuilder strBuf=new StringBuilder();
+
+		//将问题对象的id和orderById属性添加到strBuf中
 		strBuf.append("{id:'").append(entity.getId());
 		strBuf.append("',orderById:");
 		strBuf.append(entity.getOrderById());
+
+		//将问题对象的 填空项列表 添加到strBuf中
 		strBuf.append(",quItems:[");
 		List<QuMultiFillblank> quMultiFillblanks=entity.getQuMultiFillblanks();
 		for (QuMultiFillblank quMultiFillblank : quMultiFillblanks) {
@@ -154,6 +186,7 @@ public class QuMultiFillblankController{
 		}
 		strBuf.append("]");
 
+		//添加quLogics（逻辑列表）属性
 		strBuf.append(",quLogics:[");
 		List<QuestionLogic> questionLogics=entity.getQuestionLogics();
 		if(questionLogics!=null){
@@ -171,12 +204,15 @@ public class QuMultiFillblankController{
 	}
 
 	/**
-	 * 删除选项
+	 * 删除填空项
+	 *
+	 * @param request
+	 * @param response
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping("/ajaxDelete.do")
-	public String ajaxDelete(HttpServletRequest request,HttpServletResponse response) throws Exception {
+	public String ajaxDelete(HttpServletRequest request,HttpServletResponse response) throws IOException {
 		try{
 			String quItemId=request.getParameter("quItemId");
 			quMultiFillblankManager.ajaxDelete(quItemId);
