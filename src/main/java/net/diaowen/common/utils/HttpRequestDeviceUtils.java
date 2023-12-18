@@ -2,6 +2,9 @@ package net.diaowen.common.utils;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * 判断是手机端还是电脑端，判断是不是微信浏览器
+ */
 public class HttpRequestDeviceUtils {
 
 	/** Wap网关Via头信息中特有的描述信息 */
@@ -109,35 +112,48 @@ public class HttpRequestDeviceUtils {
 	 * @return 如果命中手机特征规则，则返回对应的特征字符串
 	 */
 	public static boolean isMobileDevice(HttpServletRequest request) {
+		// 设定初始状态为非手机终端
 		boolean b = false;
+		// 设定初始状态为非PC端
 		boolean pcFlag = false;
+		// 设定初始状态为非手机终端特征
 		boolean mobileFlag = false;
+		//获取请求头中的Via属性
 		String via = request.getHeader("Via");
+		//获取请求头中的user-agent属性
 		String userAgent = request.getHeader("user-agent");
 		for (int i = 0; via != null && !via.trim().equals("")
 				&& i < mobileGateWayHeaders.length; i++) {
 			if (via.contains(mobileGateWayHeaders[i])) {
+				// 检查是否存在特定的WAP网关的Via头信息，若存在则标记为手机终端特征
 				mobileFlag = true;
+				//若找到了就退出循环
 				break;
 			}
 		}
 		for (int i = 0; !mobileFlag && userAgent != null
 				&& !userAgent.trim().equals("") && i < mobileUserAgents.length; i++) {
 			if (userAgent.contains(mobileUserAgents[i])) {
+				// 检查用户代理字符串中是否存在手机端的关键词，若存在则标记为手机终端特征
 				mobileFlag = true;
+				//若找到了就退出循环
 				break;
 			}
 		}
 		for (int i = 0; userAgent != null && !userAgent.trim().equals("")
 				&& i < pcHeaders.length; i++) {
 			if (userAgent.contains(pcHeaders[i])) {
+				// 检查用户代理字符串中是否存在电脑端的关键词，若存在则标记为电脑端
 				pcFlag = true;
+				// 找到了就退出循环
 				break;
 			}
 		}
 		if (mobileFlag == true && pcFlag == false) {
+			// 若判定为手机端特征，并且非PC端，则标记为手机终端
 			b = true;
 		}
+		//返回是否是手机端，false是手机，true是电脑端
 		return b;// false pc true shouji
 
 	}
@@ -153,6 +169,7 @@ public class HttpRequestDeviceUtils {
 	 * @return: boolean
 	 */
 	public static boolean isWechat(HttpServletRequest request) {
+		//获取请求头信息
 		String ua = request.getHeader("User-Agent").toLowerCase();
 		if (ua!=null && ua.indexOf("micromessenger") > -1) {
 			return true;//微信
