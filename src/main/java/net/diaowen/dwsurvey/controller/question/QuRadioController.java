@@ -7,7 +7,6 @@ import net.diaowen.dwsurvey.entity.Question;
 import net.diaowen.dwsurvey.entity.QuestionLogic;
 import net.diaowen.dwsurvey.service.QuRadioManager;
 import net.diaowen.dwsurvey.service.QuestionManager;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,11 +31,24 @@ import java.util.Map;
 @Controller
 @RequestMapping("/api/dwsurvey/app/design/qu-radio")
 public class QuRadioController{
-	@Autowired
-	private QuestionManager questionManager;
-	@Autowired
-	private QuRadioManager quRadioManager;
+	private final QuestionManager questionManager;
+	private final QuRadioManager quRadioManager;
 
+	public static final String ID="{id:'";
+
+	@Autowired
+	public QuRadioController(QuestionManager questionManager, QuRadioManager quRadioManager) {
+		this.questionManager = questionManager;
+		this.quRadioManager = quRadioManager;
+	}
+
+	/**
+	 * 处理Ajax请求
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping("/ajaxSave.do")
 	public String ajaxSave(HttpServletRequest request,HttpServletResponse response) throws Exception {
 		try{
@@ -51,6 +63,12 @@ public class QuRadioController{
 		return null;
 	}
 
+	/**
+	 * 解析请求
+	 * @param request
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
 	private Question ajaxBuildSaveOption(HttpServletRequest request) throws UnsupportedEncodingException {
 		String quId=request.getParameter("quId");
 		String belongId=request.getParameter("belongId");
@@ -89,6 +107,8 @@ public class QuRadioController{
 		entity.setCellCount(Integer.parseInt(cellCount));
 		Map<String, Object> optionNameMap=WebUtils.getParametersStartingWith(request, "optionValue_");
 		List<QuRadio> quRadios=new ArrayList<QuRadio>();
+
+		//根据请求参数，构建相应的 QuRadio 对象，并将这些对象添加到集合中
 		for (String key : optionNameMap.keySet()) {
 			String optionId=request.getParameter("optionId_"+key);
 			String isNote=request.getParameter("isNote_"+key);
@@ -102,7 +122,6 @@ public class QuRadioController{
 				optionId=null;
 			}
 			quRadio.setId(optionId);
-//			quRadio.setOptionTitle(key);
 			optionNameValue=URLDecoder.decode(optionNameValue,"utf-8");
 			quRadio.setOptionName(optionNameValue);
 			quRadio.setOrderById(Integer.parseInt(key));
@@ -141,15 +160,20 @@ public class QuRadioController{
 		return entity;
 	}
 
+	/**
+	 * 构建Json字符串
+	 * @param entity
+	 * @return
+	 */
 	public static String buildResultJson(Question entity){
 		StringBuffer strBuf=new StringBuffer();
-		strBuf.append("{id:'").append(entity.getId());
+		strBuf.append(ID).append(entity.getId());
 		strBuf.append("',orderById:");
 		strBuf.append(entity.getOrderById());
 		strBuf.append(",quItems:[");
 		List<QuRadio> quRadios=entity.getQuRadios();
 		for (QuRadio quRadio : quRadios) {
-			strBuf.append("{id:'").append(quRadio.getId());
+			strBuf.append(ID).append(quRadio.getId());
 			strBuf.append("',title:'").append(quRadio.getOrderById()).append("'},");
 		}
 		int strLen=strBuf.length();
@@ -162,7 +186,7 @@ public class QuRadioController{
 		List<QuestionLogic> questionLogics=entity.getQuestionLogics();
 		if(questionLogics!=null){
 			for (QuestionLogic questionLogic : questionLogics) {
-				strBuf.append("{id:'").append(questionLogic.getId());
+				strBuf.append(ID).append(questionLogic.getId());
 				strBuf.append("',title:'").append(questionLogic.getTitle()).append("'},");
 			}
 		}

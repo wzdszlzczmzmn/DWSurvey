@@ -8,7 +8,7 @@ import net.diaowen.dwsurvey.dao.AnFillblankDao;
 import net.diaowen.dwsurvey.entity.Question;
 
 /**
- * 填空 dao
+ * 统计填空题的回答情况
  * @author keyuan(keyuan258@gmail.com)
  *
  * https://github.com/wkeyuan/DWSurvey

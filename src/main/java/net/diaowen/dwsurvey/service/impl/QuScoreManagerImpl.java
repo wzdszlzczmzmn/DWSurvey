@@ -1,9 +1,7 @@
 package net.diaowen.dwsurvey.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import net.diaowen.dwsurvey.entity.QuRadio;
 import net.diaowen.dwsurvey.service.QuScoreManager;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
@@ -22,7 +20,7 @@ import javax.persistence.criteria.Root;
 
 
 /**
- * 评分题
+ * 评分题选项的增删改查
  * @author keyuan(keyuan258@gmail.com)
  *
  * https://github.com/wkeyuan/DWSurvey
@@ -31,23 +29,24 @@ import javax.persistence.criteria.Root;
 @Service
 public class QuScoreManagerImpl extends BaseServiceImpl<QuScore, String> implements QuScoreManager {
 
-	@Autowired
 	private QuScoreDao quScoreDao;
+
+	@Autowired
+	public QuScoreManagerImpl(QuScoreDao quScoreDao) {
+		this.quScoreDao = quScoreDao;
+	}
 
 	@Override
 	public void setBaseDao() {
 		this.baseDao=quScoreDao;
 	}
 
+	/**
+	 * 根据quId查询数据库中的QuScore
+	 * @param quId
+	 * @return
+	 */
 	public List<QuScore> findByQuId(String quId){
-		/*Page<QuScore> page=new Page<QuScore>();
-		page.setOrderBy("orderById");
-		page.setOrderDir("asc");
-
-		List<PropertyFilter> filters=new ArrayList<PropertyFilter>();
-		filters.add(new PropertyFilter("EQS_quId", quId));
-		filters.add(new PropertyFilter("EQI_visibility", "1"));
-		return findAll(page, filters);*/
 		CriteriaBuilder criteriaBuilder=quScoreDao.getSession().getCriteriaBuilder();
 		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(QuScore.class);
 		Root root = criteriaQuery.from(QuScore.class);
@@ -59,6 +58,11 @@ public class QuScoreManagerImpl extends BaseServiceImpl<QuScore, String> impleme
 		return quScoreDao.findAll(criteriaQuery);
 	}
 
+	/**
+	 * 根据quId查询数据库中的QuScore对象，返回其OrderById值
+	 * @param quId
+	 * @return
+	 */
 	public int getOrderById(String quId){
 		Criterion criterion=Restrictions.eq("quId", quId);
 		QuScore quRadio=quScoreDao.findFirst("orderById", false, criterion);
@@ -69,20 +73,23 @@ public class QuScoreManagerImpl extends BaseServiceImpl<QuScore, String> impleme
 	}
 
 
-
-	/*******************************************************************8
-	 * 更新操作
+	/**
+	 * 更新或添加选项
+	 * @param quId
+	 * @param quItemId
+	 * @param optionName
+	 * @return
 	 */
-
 	@Override
 	@Transactional
 	public QuScore upOptionName(String quId,String quItemId, String optionName) {
+		//选项存在
 		if(quItemId!=null && !"".equals(quItemId)){
 			QuScore quScore=quScoreDao.get(quItemId);
 			quScore.setOptionName(optionName);
 			quScoreDao.save(quScore);
 			return quScore;
-		}else{
+		}else{//选项不存在
 			//取orderById
 			int orderById=getOrderById(quId);
 			//新加选项
@@ -97,6 +104,12 @@ public class QuScoreManagerImpl extends BaseServiceImpl<QuScore, String> impleme
 		}
 	}
 
+	/**
+	 * 批量向数据库保存问卷选项
+	 * @param quId
+	 * @param quScores
+	 * @return
+	 */
 	@Override
 	@Transactional
 	public List<QuScore> saveManyOptions(String quId,List<QuScore> quScores) {
@@ -111,6 +124,10 @@ public class QuScoreManagerImpl extends BaseServiceImpl<QuScore, String> impleme
 		return quScores;
 	}
 
+	/**
+	 * 删除问卷选项
+	 * @param quItemId
+	 */
 	@Override
 	@Transactional
 	public void ajaxDelete(String quItemId) {
@@ -119,6 +136,10 @@ public class QuScoreManagerImpl extends BaseServiceImpl<QuScore, String> impleme
 		quScoreDao.save(quScore);
 	}
 
+	/**
+	 * 更新问卷选项至数据库
+	 * @param quItemId
+	 */
 	@Override
 	@Transactional
 	public void saveAttr(String quItemId) {

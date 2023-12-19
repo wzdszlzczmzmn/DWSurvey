@@ -7,24 +7,26 @@
  */
 package net.diaowen.common.utils.web;
 
+import net.diaowen.common.utils.AssertUtils;
+import net.diaowen.common.utils.EncodeUtils;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import net.diaowen.common.utils.AssertUtils;
-import net.diaowen.common.utils.EncodeUtils;
-
 /**
  * Http与Servlet工具类.
  *
  */
 public abstract class ServletUtils {
+	private ServletUtils(){
+
+	}
 
 	//-- Content Type 定义 --//
 	public static final String EXCEL_TYPE = "application/vnd.ms-excel";
@@ -136,6 +138,7 @@ public abstract class ServletUtils {
 			String encodedfileName = new String(fileName.getBytes(), "ISO8859-1");
 			response.setHeader("Content-Disposition", "attachment; filename=\"" + encodedfileName + "\"");
 		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -146,7 +149,7 @@ public abstract class ServletUtils {
 	 */
 	public static Map<String, Object> getParametersStartingWith(ServletRequest request, String prefix) {
 		AssertUtils.notNull(request, "Request must not be null");
-		Enumeration paramNames = request.getParameterNames();
+		Enumeration<String> paramNames = request.getParameterNames();
 		Map<String, Object> params = new TreeMap<String, Object>();
 		if (prefix == null) {
 			prefix = "";

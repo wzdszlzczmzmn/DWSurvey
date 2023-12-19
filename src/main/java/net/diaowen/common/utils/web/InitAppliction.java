@@ -4,8 +4,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import net.diaowen.common.utils.DiaowenProperty;
-
 public class InitAppliction implements ServletContextListener {
 
 	public  static  String contextPath = null;
@@ -17,7 +15,7 @@ public class InitAppliction implements ServletContextListener {
 	}
 
 	@Override
-	public void contextInitialized(ServletContextEvent sce) {
+	public  void contextInitialized(ServletContextEvent sce) {
 		// TODO Auto-generated method stub
 		ServletContext servletContext = sce.getServletContext();
 		contextPath = servletContext.getContextPath();

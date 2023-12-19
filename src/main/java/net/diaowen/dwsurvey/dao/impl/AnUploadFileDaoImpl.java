@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 /**
  * 填空 dao
+ * 统计问题的回答数量以及未回答数量
  * @author keyuan(keyuan258@gmail.com)
  *
  * https://github.com/wkeyuan/DWSurvey
@@ -17,6 +18,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class AnUploadFileDaoImpl extends BaseDaoImpl<AnUplodFile, String> implements AnUploadFileDao {
 
+	/**
+	 * 统计问题的回答数量和未回答数量
+	 * @param question
+	 */
 	@Override
 	public void findGroupStats(Question question) {
 		String sql="select count(case when file_path='' then file_path end) emptyCount, count(case when file_path!='' then file_path end) blankCount from t_an_uplodfile where  visibility=1 and  qu_id=?";

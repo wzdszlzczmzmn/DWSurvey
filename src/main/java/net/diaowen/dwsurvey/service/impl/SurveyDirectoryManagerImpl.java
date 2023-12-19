@@ -9,15 +9,11 @@ import net.diaowen.common.plugs.page.Page;
 import net.diaowen.common.service.BaseServiceImpl;
 import net.diaowen.common.utils.RandomUtils;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import net.diaowen.common.utils.parsehtml.HtmlUtil;
 import net.diaowen.dwsurvey.config.DWSurveyConfig;
 import net.diaowen.dwsurvey.dao.SurveyDirectoryDao;
 import net.diaowen.dwsurvey.entity.Question;
@@ -26,17 +22,13 @@ import net.diaowen.dwsurvey.entity.SurveyDirectory;
 import net.diaowen.dwsurvey.entity.SurveyStats;
 import net.diaowen.dwsurvey.service.*;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
+import javax.annotation.Resource;
 
 /**
  * 问卷
@@ -48,28 +40,38 @@ import java.util.List;
 @Service("surveyDirectoryManager")
 public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory, String> implements SurveyDirectoryManager {
 
-	@Autowired
-	private SurveyDirectoryDao surveyDirectoryDao;
-	@Autowired
-	private SurveyDetailManager surveyDetailManager;
-	@Autowired
-	private QuestionManager questionManager;
+	@Resource
+	private SurveyDirectoryManagerImpl surveyDirectoryManager;
 	@Autowired
 	private SurveyStatsManager surveyStatsManager;
+	private final SurveyDirectoryDao surveyDirectoryDao;
+	private final SurveyDetailManager surveyDetailManager;
+	private final QuestionManager questionManager;
+	private final AccountManager accountManager;
+	private static final String PARENTID = "parentId";
+	private static final String CREATEDATE = "createDate";
+	private static final String VISIBILITY = "visibility";
+	private static final String SURVEYMODEL = "surveyModel";
+	private static final String SURVEYNAME = "surveyName";
+	private static final String SURVEYSTATE = "surveyState";
+
 	@Autowired
-	private SurveyAnswerManager surveyAnswerManager;
-	@Autowired
-	private AccountManager accountManager;
-	@Autowired
-	private QuestionBankManager questionBankManager;
-	@Autowired
-	private UserManager userManager;
+	public SurveyDirectoryManagerImpl(SurveyDirectoryDao surveyDirectoryDao, SurveyDetailManager surveyDetailManager, QuestionManager questionManager, AccountManager accountManager) {
+		this.surveyDirectoryDao = surveyDirectoryDao;
+		this.surveyDetailManager = surveyDetailManager;
+		this.questionManager = questionManager;
+		this.accountManager = accountManager;
+	}
 
 	@Override
 	public void setBaseDao() {
 		this.baseDao=surveyDirectoryDao;
 	}
 
+	/**
+	 * 保存问卷目录或者问卷
+	 * @param t
+	 */
 	@Transactional
 	@Override
 	public void save(SurveyDirectory t) {
@@ -106,10 +108,14 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		}
 	}
 
+	/**
+	 * admin保存，并设置短链接
+	 * @param t
+	 */
 	@Transactional
 	public void saveByAdmin(SurveyDirectory t){
 		String sId=t.getSid();
-		if(sId==null || "".equals(sId)){
+		if(sId==null || sId.isEmpty()){
 			sId=RandomUtils.randomStr(6, 12);
 			t.setSid(sId);
 		}
@@ -120,9 +126,9 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 	 * 得到当前目录所在的目录位置
 	 */
 	public List<SurveyDirectory> findPath(SurveyDirectory surveyDirectory) {
-		List<SurveyDirectory> resultList=new ArrayList<SurveyDirectory>();
+		List<SurveyDirectory> resultList=new ArrayList<>();
 		if(surveyDirectory!=null){
-			List<SurveyDirectory> dirPathList=new ArrayList<SurveyDirectory>();
+			List<SurveyDirectory> dirPathList=new ArrayList<>();
 			dirPathList.add(surveyDirectory);
 			String parentUuid=surveyDirectory.getParentId();
 			while(parentUuid!=null && !"".equals(parentUuid)){
@@ -137,6 +143,11 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		return resultList;
 	}
 
+	/**
+	 * 通过短链接获取survey
+	 * @param sid
+	 * @return
+	 */
 	@Override
 	public SurveyDirectory getSurveyBySid(String sid) {
 		Criterion criterion=Restrictions.eq("sid", sid);
@@ -145,9 +156,14 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		return surveyDirectory;
 	}
 
+	/**
+	 * 通过id获取目录
+	 * @param id
+	 * @return
+	 */
 	@Override
 	public SurveyDirectory getSurvey(String id) {
-		if(id==null || "".equals(id)){
+		if(id==null || id.isEmpty()){
 			return new SurveyDirectory();
 		}
 		SurveyDirectory directory=get(id);
@@ -155,8 +171,13 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		return directory;
 	}
 
+	/**
+	 * 通过id获取唯一目录
+	 * @param id
+	 * @return
+	 */
 	public SurveyDirectory findUniqueBy(String id) {
-		if(id==null || "".equals(id)){
+		if(id==null || id.isEmpty()){
 			return new SurveyDirectory();
 		}
 		SurveyDirectory directory=surveyDirectoryDao.findUniqueBy("id",id);
@@ -164,16 +185,26 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		return directory;
 	}
 
-
+	/**
+	 * 通过用户id和问卷id获取目录
+	 * @param id
+	 * @param userId
+	 * @return
+	 */
 	public SurveyDirectory getSurveyByUser(String id,String userId) {
 		SurveyDirectory directory=get(id);
 		if(userId.equals(directory.getUserId())){
 			getSurveyDetail(id,directory);
-		    return directory;
+			return directory;
 		}
 		return null;
 	}
 
+	/**
+	 * 获取问卷配置的详细信息
+	 * @param id
+	 * @param directory
+	 */
 	public void getSurveyDetail(String id,SurveyDirectory directory) {
 		String surveyDetailId=directory.getSurveyDetailId();
 		SurveyDetail surveyDetail=null;
@@ -189,6 +220,10 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		directory.setSurveyDetail(surveyDetail);
 	}
 
+	/**
+	 * 更新问卷数据
+	 * @param entity
+	 */
 	@Override
 	public void upSurveyData(SurveyDirectory entity) {
 		List<Question> questions=questionManager.findDetails(entity.getId(), "2");
@@ -211,6 +246,10 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		}
 	}
 
+	/**
+	 * 处理问卷数据
+	 * @param entity
+	 */
 	@Override
 	@Transactional
 	public void executeSurvey(SurveyDirectory entity) {
@@ -225,6 +264,10 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		surveyStatsManager.save(surveyStats);
 	}
 
+	/**
+	 * 关闭问卷
+	 * @param entity
+	 */
 	@Override
 	@Transactional
 	public void closeSurvey(SurveyDirectory entity) {
@@ -234,6 +277,10 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		//生成全局统计结果记录表
 	}
 
+	/**
+	 * 根据id删除问卷
+	 * @param id
+	 */
 	@Override
 	@Transactional
 	public void delete(String id) {
@@ -241,15 +288,20 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		SurveyDirectory parentDirectory=get(id);
 		parentDirectory.setVisibility(0);
 		surveyDirectoryDao.save(parentDirectory);
-		Criterion criterion=Restrictions.eq("parentId", parentDirectory.getId());
+		Criterion criterion=Restrictions.eq(PARENTID, parentDirectory.getId());
 		List<SurveyDirectory> directories=findList(criterion);
 		if(directories!=null){
 			for (SurveyDirectory surveyDirectory : directories) {
-				delete(surveyDirectory);
+				surveyDirectoryManager.delete(surveyDirectory);
 			}
 		}
 	}
 
+	/**
+	 * 删除整个问卷目录
+	 * @param parentDirectory
+	 */
+	@Override
 	@Transactional
 	public void delete(SurveyDirectory parentDirectory) {
 		String id=parentDirectory.getId();
@@ -257,41 +309,55 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		if(!"1".equals(id)){
 			//设为不可见
 			parentDirectory.setVisibility(0);
-			Criterion criterion=Restrictions.eq("parentId", parentDirectory.getId());
+			Criterion criterion=Restrictions.eq(PARENTID, parentDirectory.getId());
 			List<SurveyDirectory> directories=findList(criterion);
 			if(directories!=null){
 				for (SurveyDirectory surveyDirectory : directories) {
-					delete(surveyDirectory);
+					surveyDirectoryManager.delete(surveyDirectory);
 				}
 			}
 		}
 	}
 
+	/**
+	 * 通过名字寻找全局唯一问卷
+	 * @param id
+	 * @param parentId
+	 * @param surveyName
+	 * @return
+	 */
 	@Override
 	public SurveyDirectory findByNameUn(String id,String parentId, String surveyName) {
-		List<Criterion> criterions=new ArrayList<Criterion>();
-		Criterion eqName=Restrictions.eq("surveyName", surveyName);
-		Criterion eqParentId=Restrictions.eq("parentId", parentId);
+		List<Criterion> criterions=new ArrayList<>();
+		Criterion eqName=Restrictions.eq(SURVEYNAME, surveyName);
+		Criterion eqParentId=Restrictions.eq(PARENTID, parentId);
 		criterions.add(eqName);
 		criterions.add(eqParentId);
 
-		if(id!=null && !"".equals(id)){
+		if(id!=null && !id.isEmpty()){
 			Criterion eqId=Restrictions.ne("id", id);
 			criterions.add(eqId);
 		}
 		return surveyDirectoryDao.findFirst(criterions);
 	}
+
+	/**
+	 * 通过名字寻找用户唯一问卷
+	 * @param id
+	 * @param surveyName
+	 * @return
+	 */
 	@Override
 	public SurveyDirectory findByNameUserUn(String id, String surveyName) {
 		User user=accountManager.getCurUser();
 		if(user!=null){
-			List<Criterion> criterions=new ArrayList<Criterion>();
-			Criterion eqName=Restrictions.eq("surveyName", surveyName);
+			List<Criterion> criterions=new ArrayList<>();
+			Criterion eqName=Restrictions.eq(SURVEYNAME, surveyName);
 			Criterion eqUserId=Restrictions.eq("userId", user.getId());
 			criterions.add(eqName);
 			criterions.add(eqUserId);
 
-			if(id!=null && !"".equals(id)){
+			if(id!=null && !id.isEmpty()){
 				Criterion eqId=Restrictions.ne("id", id);
 				criterions.add(eqId);
 			}
@@ -300,6 +366,10 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		return null;
 	}
 
+	/**
+	 * 重新设计SurveyDirectory并保存
+	 * @param entity
+	 */
 	@Override
 	@Transactional
 	public void backDesign(SurveyDirectory entity) {
@@ -308,6 +378,10 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		super.save(entity);
 	}
 
+	/**
+	 * 保存SurveyDirectory对象
+	 * @param entity
+	 */
 	@Transactional
 	public void checkUp(SurveyDirectory entity) {
 		//计算可以回答的题量
@@ -315,10 +389,14 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 	}
 
 
+	/**
+	 * 更新SurveyDirectory文本
+	 * @param t
+	 */
 	@Transactional
 	public void upSuveyText(SurveyDirectory t){
 		String id=t.getId();
-		if(id!=null&&id.length()>0){
+		if(id!=null&&!id.isEmpty()){
 			super.save(t);
 			//保存SurveyDirectory
 			if(t.getDirType()==2){
@@ -329,6 +407,10 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		}
 	}
 
+	/**
+	 * 保存用户的 SurveyDirectory
+	 * @param t
+	 */
 	@Transactional
 	public void saveUser(SurveyDirectory t) {
 		super.save(t);
@@ -340,12 +422,16 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		}
 	}
 
+	/**
+	 * 为当前用户保存问卷
+	 * @param entity
+	 */
 	public void saveUserSurvey(SurveyDirectory entity) {
 		User user = accountManager.getCurUser();
 		if(user!=null){
 			String enId = entity.getId();
 			String userId=user.getId();
-			if(enId==null || "".equals(enId)){
+			if(enId==null || enId.isEmpty()){
 				//根据用户名得到目录
 				String loginName=user.getLoginName();
 				SurveyDirectory surveyDirUser=findByNameUn(null, "1", loginName);
@@ -356,38 +442,46 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 					surveyDirUser.setDirType(1);
 					surveyDirUser.setUserId(user.getId());
 					surveyDirUser.setParentId("1");
-					saveUser(surveyDirUser);
+					surveyDirectoryManager.saveUser(surveyDirUser);
 				}
 				entity.setParentId(surveyDirUser.getId());
 
 				entity.setUserId(userId);
-				saveUser(entity);
+				surveyDirectoryManager.saveUser(entity);
 			}else{
 				//判断当前人有无权限修改
 				String enUserId=entity.getUserId();
 				if(userId.equals(enUserId)){
 					entity.setUserId(userId);
-					saveUser(entity);
+					surveyDirectoryManager.saveUser(entity);
 				}
 			}
 		}
 	}
 
+	/**
+	 * 查找问卷和问卷目录
+	 * @param page
+	 * @param surveyName
+	 * @param surveyState
+	 * @param isShare
+	 * @return
+	 */
 	@Override
 	public Page<SurveyDirectory> findPage(Page<SurveyDirectory> page,String surveyName,Integer surveyState,Integer isShare) {
-		page.setOrderBy("createDate");
+		page.setOrderBy(CREATEDATE);
 		page.setOrderDir("desc");
 
-		List<Criterion> criterions=new ArrayList<Criterion>();
-		criterions.add(Restrictions.eq("visibility", 1));
+		List<Criterion> criterions=new ArrayList<>();
+		criterions.add(Restrictions.eq(VISIBILITY, 1));
 		criterions.add(Restrictions.eq("dirType", 2));
-		criterions.add(Restrictions.eq("surveyModel", 1));
+		criterions.add(Restrictions.eq(SURVEYMODEL, 1));
 
 		if(surveyName!=null){
-			criterions.add(Restrictions.like("surveyName", "%"+surveyName+"%"));
+			criterions.add(Restrictions.like(SURVEYNAME, "%"+surveyName+"%"));
 		}
 		if(surveyState!=null){
-			criterions.add(Restrictions.eq("surveyState", surveyState));
+			criterions.add(Restrictions.eq(SURVEYSTATE, surveyState));
 		}
 		if(isShare!=null){
 			criterions.add(Restrictions.eq("isShare", isShare));
@@ -396,11 +490,14 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		return surveyDirectoryDao.findPageList(page, criterions);
 	}
 
+	/**
+	 * 新建问卷目录
+	 * @return
+	 */
 	public List<SurveyDirectory> newSurveyList() {
-		List<SurveyDirectory> result=new ArrayList<SurveyDirectory>();
+		List<SurveyDirectory> result=new ArrayList<>();
 		try{
-			SurveyDirectory entity=new SurveyDirectory();
-			Page<SurveyDirectory> page=new Page<SurveyDirectory>();
+			Page<SurveyDirectory> page=new Page<>();
 			page.setPageSize(25);
 			page=findPage(page,null,1,null);
 			result=page.getResult();
@@ -411,6 +508,10 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 	}
 
 
+	/**
+	 * 保存目录所有内容
+	 * @param directory
+	 */
 	@Transactional
 	public void saveAll(SurveyDirectory directory) {
 		List<Question> questions=directory.getQuestions();
@@ -436,13 +537,24 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		}
 	}
 
+	/**
+	 * 查找下一个创建的目录（按时间排序）
+	 * @param directory
+	 * @return
+	 */
 	@Override
 	public SurveyDirectory findNext(SurveyDirectory directory) {
 		Date date=directory.getCreateDate();
-		Criterion criterion=Restrictions.gt("createDate", date);
+		Criterion criterion=Restrictions.gt(CREATEDATE, date);
 		return surveyDirectoryDao.findFirst(criterion);
 	}
 
+	/**
+	 * 查找用户id下的surveyDirectory
+	 * @param page
+	 * @param entity
+	 * @return
+	 */
 	@Override
 	public Page<SurveyDirectory> findByUser(Page<SurveyDirectory> page,
 											SurveyDirectory entity) {
@@ -450,101 +562,132 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		return page;
 	}
 
+	/**
+	 * 根据用户id检索surveyDirectory列表下的所有surveyDirectory并根据创建日期降序对它们进行排序
+	 * @param page
+	 * @param surveyName
+	 * @param surveyState
+	 * @return
+	 */
 	@Override
 	public Page<SurveyDirectory> findByUser(Page<SurveyDirectory> page, String surveyName, Integer surveyState) {
 		User user=accountManager.getCurUser();
 		if(user!=null){
-			List<Criterion> criterions=new ArrayList<Criterion>();
+			List<Criterion> criterions=new ArrayList<>();
 			criterions.add(Restrictions.eq("userId", user.getId()));
-			criterions.add(Restrictions.eq("visibility", 1));
+			criterions.add(Restrictions.eq(VISIBILITY, 1));
 			criterions.add(Restrictions.eq("dirType", 2));
-			criterions.add(Restrictions.eq("surveyModel", 1));
-			if(surveyState!=null) criterions.add(Restrictions.eq("surveyState", surveyState));
-			if(StringUtils.isNotEmpty(surveyName)) criterions.add(Restrictions.like("surveyName", "%"+surveyName+"%"));
-			page.setOrderBy("createDate");
+			criterions.add(Restrictions.eq(SURVEYMODEL, 1));
+			if(surveyState!=null) criterions.add(Restrictions.eq(SURVEYSTATE, surveyState));
+			if(StringUtils.isNotEmpty(surveyName)) criterions.add(Restrictions.like(SURVEYNAME, "%"+surveyName+"%"));
+			page.setOrderBy(CREATEDATE);
 			page.setOrderDir("desc");
 			page=surveyDirectoryDao.findPageList(page,criterions);
 		}
 		return page;
 	}
 
+	/**
+	 * 按组检索目录
+	 * @param groupId1
+	 * @param groupId2
+	 * @param page
+	 * @return
+	 */
 	public Page<SurveyDirectory> findByGroup(String groupId1, String groupId2, Page<SurveyDirectory> page) {
 
 
-		List<Criterion> criterions = new ArrayList<Criterion>();
-		if(groupId1!=null && !"".equals(groupId1)){
+		List<Criterion> criterions = new ArrayList<>();
+		if(groupId1!=null && !groupId1.isEmpty()){
 			Criterion cri1=Restrictions.eq("groupId1", groupId1);
 			criterions.add(cri1);
 		}
-		if(groupId2!=null && !"".equals(groupId2)){
-			Criterion cri1_2=Restrictions.eq("groupId2", groupId2);
-			criterions.add(cri1_2);
+		if(groupId2!=null && !groupId2.isEmpty()){
+			criterions.add(Restrictions.eq("groupId2", groupId2));
 		}
 
-	    Criterion cri2=Restrictions.eq("visibility", 1);
-	    Criterion cri4=Restrictions.eq("surveyModel", 4);
+		Criterion cri2=Restrictions.eq(VISIBILITY, 1);
+		Criterion cri4=Restrictions.eq(SURVEYMODEL, 4);
 
-	    criterions.add(cri2);
-	    criterions.add(cri4);
-	    page.setOrderBy("createDate");
+		criterions.add(cri2);
+		criterions.add(cri4);
+		page.setOrderBy(CREATEDATE);
 		page.setOrderDir("desc");
 
-	    return surveyDirectoryDao.findPage(page,criterions.toArray(new Criterion[criterions.size()]) );
+		return surveyDirectoryDao.findPage(page,criterions.toArray(new Criterion[criterions.size()]) );
 	}
 
 
+	/**
+	 * 根据问卷信息检索surveyDirectory列表下的所有surveyDirectory并根据创建日期降序对它们进行排序
+	 * @param page
+	 * @param entity
+	 * @return
+	 */
 	@Override
 	public Page<SurveyDirectory> findModel(Page<SurveyDirectory> page,
-			SurveyDirectory entity) {
+										   SurveyDirectory entity) {
 		Integer surveyState=entity.getSurveyState();
 		String surveyName=entity.getSurveyName();
-		List<Criterion> criterions=new ArrayList<Criterion>();
+		List<Criterion> criterions=new ArrayList<>();
 
 		if(surveyState!=null && surveyState.intValue()!=100){
-			Criterion cri1=Restrictions.eq("surveyState", surveyState);
+			Criterion cri1=Restrictions.eq(SURVEYSTATE, surveyState);
 			criterions.add(cri1);
 		}
-		if(surveyName!=null && !"".equals(surveyName)){
-			Criterion cri1=Restrictions.like("surveyName", "%"+surveyName+"%");
+		if(surveyName!=null && !surveyName.isEmpty()){
+			Criterion cri1=Restrictions.like(SURVEYNAME, "%"+surveyName+"%");
 			criterions.add(cri1);
 		}
-	    Criterion cri2=Restrictions.eq("visibility", 1);
-	    criterions.add(cri2);
-	    Criterion cri4=Restrictions.eq("surveyModel", 4);
-	    criterions.add(cri4);
-	    page.setOrderBy("createDate");
+		Criterion cri2=Restrictions.eq(VISIBILITY, 1);
+		criterions.add(cri2);
+		Criterion cri4=Restrictions.eq(SURVEYMODEL, 4);
+		criterions.add(cri4);
+		page.setOrderBy(CREATEDATE);
 		page.setOrderDir("desc");
-	    return surveyDirectoryDao.findPageList(page,criterions);
+		return surveyDirectoryDao.findPageList(page,criterions);
 	}
 
+	/**
+	 * 查找问卷
+	 * @return
+	 */
 	@Override
 	public List<SurveyDirectory> findByIndex() {
-	    Criterion cri1=Restrictions.eq("visibility", 1);
-	    Criterion cri2=Restrictions.eq("parentId", "402880e5428a2dca01428a2f1f290000");
-	    Criterion cri3=Restrictions.eq("surveyTag", 1);
-	    Criterion cri4=Restrictions.isNull("sid");
-	    Page<SurveyDirectory> page=new Page<SurveyDirectory>();
-	    page.setOrderBy("createDate");
+		Criterion cri1=Restrictions.eq(VISIBILITY, 1);
+		Criterion cri2=Restrictions.eq(PARENTID, "402880e5428a2dca01428a2f1f290000");
+		Criterion cri3=Restrictions.eq("surveyTag", 1);
+		Criterion cri4=Restrictions.isNull("sid");
+		Page<SurveyDirectory> page=new Page<>();
+		page.setOrderBy(CREATEDATE);
 		page.setOrderDir("desc");
 		page.setPageSize(10);
-	    List<SurveyDirectory> surveys = surveyDirectoryDao.findPage(page, cri1,cri2,cri3,cri4).getResult();
-	    return surveys;
+        return surveyDirectoryDao.findPage(page, cri1,cri2,cri3,cri4).getResult();
 	}
-
+	/**
+	 * 查找问卷
+	 * @return
+	 */
 	@Override
 	public List<SurveyDirectory> findByT1() {
-	    Criterion cri1=Restrictions.eq("visibility", 1);
-	    Criterion cri2=Restrictions.eq("parentId", "402880e5428a2dca01428a2f1f290000");
-	    Criterion cri3=Restrictions.eq("surveyTag", 1);
-	    Criterion cri4=Restrictions.isNull("sid");
-	    Page<SurveyDirectory> page=new Page<SurveyDirectory>();
-	    page.setOrderBy("createDate");
+		Criterion cri1=Restrictions.eq(VISIBILITY, 1);
+		Criterion cri2=Restrictions.eq(PARENTID, "402880e5428a2dca01428a2f1f290000");
+		Criterion cri3=Restrictions.eq("surveyTag", 1);
+		Criterion cri4=Restrictions.isNull("sid");
+		Page<SurveyDirectory> page=new Page<>();
+		page.setOrderBy(CREATEDATE);
 		page.setOrderDir("desc");
 		page.setPageSize(10);
-	    List<SurveyDirectory> surveys = surveyDirectoryDao.findPage(page, cri1,cri2,cri3,cri4).getResult();
-	    return surveys;
+        return surveyDirectoryDao.findPage(page, cri1,cri2,cri3,cri4).getResult();
 	}
 
+	/**
+	 * 根据surveyDirectory=创建问卷
+	 * @param fromBankId
+	 * @param surveyName
+	 * @param tag
+	 * @return
+	 */
 	@Override
 	public SurveyDirectory createBySurvey(String fromBankId, String surveyName,
 										  String tag) {//new
@@ -557,6 +700,13 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		return surveyDirectory;
 	}
 
+	/**
+	 * 拷贝 surveyDirectory=
+	 * @param fromBankId
+	 * @param surveyName
+	 * @param tag
+	 * @return
+	 */
 	private SurveyDirectory buildCopyObj(String fromBankId, String surveyName,String tag) {
 		SurveyDirectory surveyDirectory=new SurveyDirectory();
 		surveyDirectory.setSurveyName(surveyName);
@@ -572,23 +722,33 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 	}
 
 
+	/**
+	 * 根据id批量删除 surveyDirectory
+	 * @param id
+	 */
 	@Transactional
 	@Override
 	public void delete(String[] id) {
 		if(id!=null){
 			for (String idValue:id) {
-				delete(idValue);
+				surveyDirectoryManager.delete(idValue);
 			}
 		}
 	}
 
+	/**
+	 * 更新surveyDirectory 状态
+	 * @param surveyId
+	 * @param surveyState
+	 * @throws IOException
+	 */
 	@Transactional
 	@Override
 	public void upSurveyState(String surveyId, Integer surveyState) throws IOException {
 		if(surveyId!=null && surveyState!=null){
 			SurveyDirectory survey = findUniqueBy(surveyId);
 			if(surveyState==1){
-				devSurvey(survey);
+				surveyDirectoryManager.devSurvey(survey);
 			}else{
 				survey.setSurveyState(surveyState);
 				super.save(survey);
@@ -597,6 +757,11 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 
 	}
 
+	/**
+	 * 更新问卷状态并保存问卷
+	 * @param survey
+	 * @throws IOException
+	 */
 	@Transactional
 	public void devSurvey(SurveyDirectory survey) throws IOException {
 		String surveyId = survey.getId();
@@ -607,6 +772,11 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		super.save(survey);
 	}
 
+	/**
+	 * 根据问卷id获取问卷信息构造json并保存
+	 * @param surveyId
+	 * @return
+	 */
 	@Override
 	public String devSurveyJson(String surveyId) {
 		try {
@@ -615,7 +785,7 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 			ObjectMapper mapper = new ObjectMapper();
 
 			String infoJsonString = mapper.writeValueAsString(HttpResult.SUCCESS(surveyDirectory));
-			String savePath = File.separator+"file"+File.separator+"survey"+File.separator+sid+File.separator;;
+			String savePath = File.separator+"file"+File.separator+"survey"+File.separator+sid+File.separator;
 			writerJson(infoJsonString, savePath, sid+"_info.json");
 
 			List<Question> questions=questionManager.findDetails(surveyDirectory.getId(), "2");
@@ -632,6 +802,13 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 		return null;
 	}
 
+	/**
+	 * 向指定名字本地文件写入 json，不存在则创建
+	 * @param jsonString
+	 * @param savePath
+	 * @param fileName
+	 * @throws IOException
+	 */
 	private void writerJson(String jsonString, String savePath, String fileName) throws IOException {
 		String rootPath = DWSurveyConfig.DWSURVEY_WEB_FILE_PATH;
 		File dirFile = new File(rootPath+ savePath);
@@ -639,12 +816,11 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 			dirFile.mkdirs();
 		}
 		File localFile = new File(rootPath+ savePath + fileName);
-		if (!localFile.exists()) {
-			localFile.createNewFile();
+		if (localFile.exists() || localFile.createNewFile()) {
+			try(FileOutputStream fos = new FileOutputStream(localFile)){
+				fos.write(jsonString.getBytes());
+			}
 		}
-		FileOutputStream fos = new FileOutputStream(localFile);
-		fos.write(jsonString.getBytes());
-		fos.close();
 	}
 
 

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import net.diaowen.common.service.BaseServiceImpl;
 
 /**
- * 填空题
+ * 实现对用户填写的问卷答案的管理和查询功能
  * @author keyuan(keyuan258@gmail.com)
  *
  * https://github.com/wkeyuan/DWSurvey
@@ -22,15 +22,23 @@ import net.diaowen.common.service.BaseServiceImpl;
 @Service
 public class AnFillblankManagerImpl extends BaseServiceImpl<AnFillblank, String> implements AnFillblankManager {
 
+	private final AnFillblankDao anFillblankDao;
 	@Autowired
-	private AnFillblankDao anFillblankDao;
-	
+	public AnFillblankManagerImpl(AnFillblankDao anFillblankDao) {
+		this.anFillblankDao = anFillblankDao;
+	}
+
 	@Override
 	public void setBaseDao() {
 		this.baseDao=anFillblankDao;
 	}
 
-	//根据exam_user信息查询答案
+	/**
+	 * 根据id查找答案
+	 * @param belongAnswerId
+	 * @param quId
+	 * @return
+	 */
 	public AnFillblank findAnswer(String belongAnswerId,String quId){
 		//belongAnswerId quId
 		Criterion criterion1=Restrictions.eq("belongAnswerId", belongAnswerId);
@@ -38,16 +46,27 @@ public class AnFillblankManagerImpl extends BaseServiceImpl<AnFillblank, String>
 		return anFillblankDao.findUnique(criterion1,criterion2);
 	}
 
+
+	/**
+	 * 调用dao，通过对数据库访问统计填空题的作答情况
+	 * @param question
+	 */
 	@Override
 	public void findGroupStats(Question question) {
 		anFillblankDao.findGroupStats(question);
 	}
 
+	/**
+	 * 分页查找答案
+	 * @param page
+	 * @param quId
+	 * @return
+	 */
 	@Override
 	public Page<AnFillblank> findPage(Page<AnFillblank> page, String quId) {
 		Criterion cri1 = Restrictions.eq("quId",quId);
 		Criterion cri2 = Restrictions.eq("visibility",1);
 		return findPage(page,cri1,cri2);
 	}
-	
+
 }

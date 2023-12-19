@@ -11,7 +11,6 @@ import net.diaowen.dwsurvey.service.QuestionManager;
 import net.diaowen.dwsurvey.service.SurveyDirectoryManager;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -39,13 +38,23 @@ import java.util.zip.ZipOutputStream;
 @Controller
 @RequestMapping("/api/dwsurvey/app/design/qu-upload-file")
 public class QuUploadFileController {
-	@Autowired
-	private QuestionManager questionManager;
-	@Autowired
-	private AnUploadFileManager anUploadFileManager;
-	@Autowired
-	private SurveyDirectoryManager surveyDirectoryManager;
+	private final QuestionManager questionManager;
+	private final AnUploadFileManager anUploadFileManager;
+	private final SurveyDirectoryManager surveyDirectoryManager;
 
+	public QuUploadFileController(QuestionManager questionManager, AnUploadFileManager anUploadFileManager, SurveyDirectoryManager surveyDirectoryManager) {
+		this.questionManager = questionManager;
+		this.anUploadFileManager = anUploadFileManager;
+		this.surveyDirectoryManager = surveyDirectoryManager;
+	}
+
+	/**
+	 * 处理Ajax请求
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping("/ajaxSave.do")
 	public String ajaxSave(HttpServletRequest request,HttpServletResponse response) throws Exception {
 		try{
@@ -61,6 +70,12 @@ public class QuUploadFileController {
 		return null;
 	}
 
+	/**
+	 * 解析请求
+	 * @param request
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
 	private Question ajaxBuildSaveOption(HttpServletRequest request) throws UnsupportedEncodingException {
 		String quId=request.getParameter("quId");
 		String belongId=request.getParameter("belongId");
@@ -162,8 +177,12 @@ public class QuUploadFileController {
 		return entity;
 	}
 
+	/**
+	 * 构建Json字符串
+	 * @param entity
+	 * @return
+	 */
 	public static String buildResultJson(Question entity){
-		//{id:'null',quItems:[{id:'null',title:'null'},{id:'null',title:'null'}]}
 		StringBuffer strBuf=new StringBuffer();
 		strBuf.append("{id:'").append(entity.getId());
 		strBuf.append("',orderById:");
@@ -186,10 +205,18 @@ public class QuUploadFileController {
 	}
 
 
-	//取上传题结果
+	/**
+	 * 处理问卷答案中上传的文件
+	 * @param anPage
+	 * @param quId
+	 * @param surveyId
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping("/answers.do")
 	public ModelAndView answers(Page<AnUplodFile> anPage, String quId, String surveyId) throws Exception {
 		ModelAndView modelAndView = new ModelAndView();
+		//一次性获取所有的问卷答案
 		anPage.setPageSize(10000);
 		Criterion cri1 = Restrictions.eq("quId",quId);
 		anPage = anUploadFileManager.findPage(anPage, cri1);
@@ -200,23 +227,32 @@ public class QuUploadFileController {
 		return modelAndView;
 	}
 
+	/**
+	 * 文件下载
+	 * @param request
+	 * @param response
+	 * @param id
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping("/download.do")
 	public String download(HttpServletRequest request,HttpServletResponse response,String id) throws Exception {
 		String anuploadId = id;
 		AnUplodFile anUplodFile = anUploadFileManager.getModel(anuploadId);
 		//设置Content-Disposition
-		//response.sendRedirect(request.getContextPath()+anUplodFile.getFilePath());
 		String fileName =anUplodFile.getFileName();
 		String rootPath = request.getServletContext().getRealPath("/");
 		String filePath = anUplodFile.getFilePath().replaceAll("\\\\", File.separator);
 		filePath = filePath.replaceAll("/", File.separator);
 		File file = new File(rootPath+filePath);
+
 		//如果文件不存在
 		if(!file.exists()){
 			request.setAttribute("message", "您要下载的资源已被删除！！");
 			request.getRequestDispatcher("/message.jsp").forward(request, response);
 			return null;
 		}
+
 		//处理文件名
 		fileName=fileName.replaceAll("\\+","");
 		fileName=anUplodFile.getRandomCode()+"-"+fileName;
@@ -244,15 +280,24 @@ public class QuUploadFileController {
 
 
 
-	//批量打包下载 －－ //只打包当前页的
-	/*
-     * 批量下载另存为
-     */
+
+	/*待解决：1.关闭流的顺序较为混乱 2.压缩文件在写入和下载过程中被关闭两次 3.使用过时方法URLEncoder.encode()*/
+	/**
+	 * 文件批量下载
+	 * @param request
+	 * @param response
+	 * @param anPage
+	 * @param quId
+	 * @return
+	 * @throws IOException
+	 */
 	@RequestMapping("/batDownload.do")
 	public String batDownload(HttpServletRequest request,HttpServletResponse response,Page<AnUplodFile> anPage,String quId) throws IOException {
+		//文件查询
 		Criterion cri1 = Restrictions.eq("quId",quId);
 		anPage = anUploadFileManager.findPage(anPage, cri1);
 
+		//压缩文件创建
 		String tmpFileName = "ga_"+quId+".zip";
 		byte[] buffer = new byte[1024];
 		String rootPath = request.getServletContext().getRealPath("/upload/work/");
@@ -262,6 +307,7 @@ public class QuUploadFileController {
 		}
 		String strZipPath = request.getServletContext().getRealPath("/upload/work/"+tmpFileName);
 		try {
+			//创建压缩文件并向其中添加文件内容
 			ZipOutputStream out = new ZipOutputStream(new FileOutputStream(strZipPath));
 			List<AnUplodFile> result = anPage.getResult();
 			// 下载的文件集合
@@ -270,7 +316,6 @@ public class QuUploadFileController {
 				FileInputStream fis = new FileInputStream(request.getServletContext().getRealPath(anUplodFile.getFilePath()));
 				out.putNextEntry(new ZipEntry(anUplodFile.getRandomCode()+"-"+anUplodFile.getFileName()));
 				//设置压缩文件内的字符编码，不然会变成乱码
-//				out.setComment();
 				int len;
 				// 读入需要下载的文件的内容，打包到zip文件
 				while ((len = fis.read(buffer)) > 0) {
@@ -279,9 +324,8 @@ public class QuUploadFileController {
 				out.closeEntry();
 				fis.close();
 			}
+			//下载压缩文件
 			out.close();
-			//saveAs("work/"+tmpFileName, tmpFileName);
-
 			//设置响应头，控制浏览器下载该文件
 			response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(tmpFileName, "UTF-8"));
 			//读取要下载的文件，保存到文件输入流
@@ -289,7 +333,6 @@ public class QuUploadFileController {
 			//创建输出流
 			OutputStream respOut = response.getOutputStream();
 			//创建缓冲区
-			byte respBuffer[] = new byte[1024];
 			int len = 0;
 			//循环将输入流中的内容读取到缓冲区当中
 			while((len=in.read(buffer))>0){
