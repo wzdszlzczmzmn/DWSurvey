@@ -15,7 +15,7 @@ import net.diaowen.common.service.BaseServiceImpl;
 import net.diaowen.dwsurvey.entity.DataCross;
 
 /**
- * 单选题
+ * 处理单选题数据，统计和分析回答情况
  * @author keyuan(keyuan258@gmail.com)
  *
  * https://github.com/wkeyuan/DWSurvey
@@ -24,15 +24,23 @@ import net.diaowen.dwsurvey.entity.DataCross;
 @Service
 public class AnRadioManagerImpl extends BaseServiceImpl<AnRadio, String> implements AnRadioManager {
 
-	@Autowired
 	private AnRadioDao anRadioDao;
-	
+	@Autowired
+	public AnRadioManagerImpl(AnRadioDao anRadioDao) {
+		this.anRadioDao = anRadioDao;
+	}
+
 	@Override
 	public void setBaseDao() {
 		this.baseDao=anRadioDao;
 	}
-	
-	//根据exam_user信息查询答案
+
+	/**
+	 * 根据id查看问卷的作答
+	 * @param belongAnswerId
+	 * @param quId
+	 * @return
+	 */
 	public AnRadio findAnswer(String belongAnswerId,String quId){
 		//belongAnswerId quId
 		Criterion criterion1=Restrictions.eq("belongAnswerId", belongAnswerId);
@@ -40,17 +48,32 @@ public class AnRadioManagerImpl extends BaseServiceImpl<AnRadio, String> impleme
 		return anRadioDao.findUnique(criterion1,criterion2);
 	}
 
+	/**
+	 *统计该选择题回答的数量
+	 * @param question
+	 */
 	@Override
 	public void findGroupStats(Question question) {
 		anRadioDao.findGroupStats(question);
 	}
 
+	/**
+	 *获取两个问题的交叉数据
+	 * @param rowQuestion
+	 * @param colQuestion
+	 * @return
+	 */
 	@Override
 	public List<DataCross> findStatsDataCross(Question rowQuestion,
-			Question colQuestion) {
+											  Question colQuestion) {
 		return anRadioDao.findStatsDataCross(rowQuestion, colQuestion);
 	}
 
+	/**
+	 * 单选题选项统计结果的列表。
+	 * @param question
+	 * @return
+	 */
 	@Override
 	public List<DataCross> findStatsDataChart(Question question) {
 		return anRadioDao.findStatsDataChart(question);

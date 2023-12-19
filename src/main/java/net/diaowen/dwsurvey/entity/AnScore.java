@@ -6,7 +6,7 @@ import javax.persistence.Table;
 import net.diaowen.common.base.entity.IdEntity;
 
 /**
- * 评分题
+ * 评分题 保存表
  * @author KeYuan
  * @date 2013下午8:48:24
  *

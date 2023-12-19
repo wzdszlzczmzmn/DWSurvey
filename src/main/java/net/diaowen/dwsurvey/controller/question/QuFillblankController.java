@@ -2,22 +2,14 @@ package net.diaowen.dwsurvey.controller.question;
 
 import net.diaowen.common.CheckType;
 import net.diaowen.common.QuType;
-import net.diaowen.common.base.entity.User;
-import net.diaowen.common.base.service.AccountManager;
-import net.diaowen.common.plugs.page.Page;
-import net.diaowen.dwsurvey.entity.AnFillblank;
 import net.diaowen.dwsurvey.entity.Question;
 import net.diaowen.dwsurvey.entity.QuestionLogic;
-import net.diaowen.dwsurvey.entity.SurveyDirectory;
 import net.diaowen.dwsurvey.service.AnFillblankManager;
 import net.diaowen.dwsurvey.service.QuestionManager;
-import net.diaowen.dwsurvey.service.SurveyDirectoryManager;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,11 +31,23 @@ import java.util.Map;
 @Controller
 @RequestMapping("/api/dwsurvey/app/design/qu-fillblank")
 public class QuFillblankController{
-	@Autowired
-	private QuestionManager questionManager;
-	@Autowired
-	private AnFillblankManager anFillblankManager;
 
+	private final QuestionManager questionManager;
+	public final AnFillblankManager anFillblankManager;
+
+	@Autowired
+	public QuFillblankController(QuestionManager questionManager, AnFillblankManager anFillblankManager) {
+		this.questionManager = questionManager;
+		this.anFillblankManager=anFillblankManager;
+	}
+
+	/**
+	 * 处理Ajax请求
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping("/ajaxSave.do")
 	public String ajaxSave(HttpServletRequest request,HttpServletResponse response) throws Exception {
 		try{
@@ -58,6 +62,14 @@ public class QuFillblankController{
 		return null;
 	}
 
+	/**
+	 * 从传入的请求中提取参数，
+	 * 根据参数创建 QuestionLogic 对象列表，
+	 * 将列表作为属性保存至返回的Question对象中
+	 * @param request
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
 	private Question ajaxBuildSaveOption(HttpServletRequest request) throws UnsupportedEncodingException {
 		String quId=request.getParameter("quId");
 		String belongId=request.getParameter("belongId");
@@ -74,12 +86,13 @@ public class QuFillblankController{
 		String randOrder=request.getParameter("randOrder");
 		String cellCount=request.getParameter("cellCount");
 		String paramInt01=request.getParameter("paramInt01");
-		//System.out.println("paramInt01:"+paramInt01);
+		//处理空字符串
 		if("".equals(quId)){
 			quId=null;
 		}
 		Question entity=questionManager.getModel(quId);
 		entity.setBelongId(belongId);
+		//对quTitle进行URL解码
 		if(quTitle!=null){
 			quTitle=URLDecoder.decode(quTitle,"utf-8");
 			entity.setQuTitle(quTitle);
@@ -128,6 +141,11 @@ public class QuFillblankController{
 		return entity;
 	}
 
+	/**
+	 * 构建Json字符串
+	 * @param entity
+	 * @return
+	 */
 	public static String buildResultJson(Question entity){
 		StringBuffer strBuf=new StringBuffer();
 		strBuf.append("{id:'").append(entity.getId());
@@ -142,12 +160,14 @@ public class QuFillblankController{
 			}
 		}
 		int strLen=strBuf.length();
+		//处理字符串末尾逗号
 		if(strBuf.lastIndexOf(",")==(strLen-1)){
 			strBuf.replace(strLen-1, strLen, "");
 		}
 		strBuf.append("]}");
 		return strBuf.toString();
 	}
+
 
 
 

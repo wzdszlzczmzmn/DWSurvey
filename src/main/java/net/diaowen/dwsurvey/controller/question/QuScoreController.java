@@ -6,7 +6,6 @@ import net.diaowen.dwsurvey.entity.Question;
 import net.diaowen.dwsurvey.entity.QuestionLogic;
 import net.diaowen.dwsurvey.service.QuScoreManager;
 import net.diaowen.dwsurvey.service.QuestionManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.util.WebUtils;
@@ -30,11 +29,22 @@ import java.util.Map;
 @Controller
 @RequestMapping("/api/dwsurvey/app/design/qu-score")
 public class QuScoreController{
-	@Autowired
-	private QuestionManager questionManager;
-	@Autowired
-	private QuScoreManager quScoreManager;
+	private final QuestionManager questionManager;
+	private final QuScoreManager quScoreManager;
+	public static final String ID="{id:'";
 
+	public QuScoreController(QuestionManager questionManager, QuScoreManager quScoreManager) {
+		this.questionManager = questionManager;
+		this.quScoreManager = quScoreManager;
+	}
+
+	/**
+	 * 处理Ajax请求
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping("/ajaxSave.do")
 	public String ajaxSave(HttpServletRequest request,HttpServletResponse response) throws Exception {
 		try{
@@ -50,6 +60,12 @@ public class QuScoreController{
 		return null;
 	}
 
+	/**
+	 * 解析请求
+	 * @param request
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
 	private Question ajaxBuildSaveOption(HttpServletRequest request) throws UnsupportedEncodingException {
 		String quId=request.getParameter("quId");
 		String belongId=request.getParameter("belongId");
@@ -104,7 +120,6 @@ public class QuScoreController{
 				optionId=null;
 			}
 			quScore.setId(optionId);
-//			quRadio.setOptionTitle(key);
 			optionNameValue=URLDecoder.decode(optionNameValue,"utf-8");
 			quScore.setOptionName(optionNameValue);
 			quScore.setOrderById(Integer.parseInt(key));
@@ -131,10 +146,10 @@ public class QuScoreController{
 				quLogic=null;
 			}
 			if(geLe==null || "".equals(geLe)){
-			    geLe="le";
+				geLe="le";
 			}
 			if(scoreNum==null || "".equals(scoreNum)){
-			    scoreNum="2";
+				scoreNum="2";
 			}
 			quLogic.setId(quLogicIdValue);
 			quLogic.setCgQuItemId(cgQuItemId);
@@ -151,22 +166,24 @@ public class QuScoreController{
 		return entity;
 	}
 
+	/**
+	 * 构建Json字符串
+	 * @param entity
+	 * @return
+	 */
 	public static String buildResultJson(Question entity){
-		//{id:'null',quItems:[{id:'null',title:'null'},{id:'null',title:'null'}]}
 		StringBuffer strBuf=new StringBuffer();
-		//{id:'',quItems:[{id:'',title:''},{id:'',title:''}]}
-		strBuf.append("{id:'").append(entity.getId());
+		strBuf.append(ID).append(entity.getId());
 		strBuf.append("',orderById:");
 		strBuf.append(entity.getOrderById());
 		strBuf.append(",quItems:[");
 		List<QuScore> quScores=entity.getQuScores();
 		for (QuScore quScore : quScores) {
-			strBuf.append("{id:'").append(quScore.getId());
+			strBuf.append(ID).append(quScore.getId());
 			strBuf.append("',title:'").append(quScore.getOrderById()).append("'},");
 		}
 		int strLen=strBuf.length();
 		if(strBuf.lastIndexOf(",")==(strLen-1)){
-//			strBuf.substring(0, strLen-1);
 			strBuf.replace(strLen-1, strLen, "");
 		}
 		strBuf.append("]");
@@ -175,17 +192,15 @@ public class QuScoreController{
 		List<QuestionLogic> questionLogics=entity.getQuestionLogics();
 		if(questionLogics!=null){
 			for (QuestionLogic questionLogic : questionLogics) {
-				strBuf.append("{id:'").append(questionLogic.getId());
+				strBuf.append(ID).append(questionLogic.getId());
 				strBuf.append("',title:'").append(questionLogic.getTitle()).append("'},");
 			}
 		}
 		strLen=strBuf.length();
 		if(strBuf.lastIndexOf(",")==(strLen-1)){
-//			strBuf.substring(0, strLen-1);
 			strBuf.replace(strLen-1, strLen, "");
 		}
 		strBuf.append("]}");
-//		System.out.println(strBuf.toString());
 		return strBuf.toString();
 	}
 

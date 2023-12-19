@@ -16,7 +16,7 @@ import net.diaowen.dwsurvey.entity.DataCross;
 import net.diaowen.dwsurvey.entity.QuCheckbox;
 
 /**
- * 单选题 dao
+ * 处理单选题数据，统计和分析回答情况
  * @author keyuan(keyuan258@gmail.com)
  *
  * https://github.com/wkeyuan/DWSurvey
@@ -26,6 +26,12 @@ import net.diaowen.dwsurvey.entity.QuCheckbox;
 @Repository
 public class AnRadioDaoImpl extends BaseDaoImpl<AnRadio, String> implements AnRadioDao {
 
+	private static final String SELECT = "select ";
+	private static final String COUNT = ",count(*) from ";
+	/**
+	 * 查询各选项的数量以及回答问卷的总数量
+	 * @param question
+	 */
 	@Override
 	public void findGroupStats(Question question) {
 
@@ -41,16 +47,21 @@ public class AnRadioDaoImpl extends BaseDaoImpl<AnRadio, String> implements AnRa
 					int anCount=Integer.parseInt(objects[1].toString());
 					count+=anCount;
 					quRadio.setAnCount(anCount);
-					continue;
 				}
 			}
 		}
 		question.setAnCount(count);
 	}
 
+	/**
+	 * 获取两个问题之间的交叉数据
+	 * @param rowQuestion
+	 * @param colQuestion
+	 * @return
+	 */
 	@Override
 	public List<DataCross> findStatsDataCross(Question rowQuestion,
-                                              Question colQuestion) {
+											  Question colQuestion) {
 		List<DataCross> dataCrosses=new ArrayList<DataCross>();
 		List<QuRadio> rowList=rowQuestion.getQuRadios();
 
@@ -61,15 +72,15 @@ public class AnRadioDaoImpl extends BaseDaoImpl<AnRadio, String> implements AnRa
 		String groupSql="";
 		String columnSql="";
 		String whereSql=" where t1.qu_id=? "+
-							" and t2.qu_id=? "+
-							" and t1.belong_answer_id=t2.belong_answer_id GROUP BY ";
+				" and t2.qu_id=? "+
+				" and t1.belong_answer_id=t2.belong_answer_id GROUP BY ";
 		String sql="";
 		QuType colQuType=colQuestion.getQuType();
 
 		if(colQuType==QuType.YESNO){//是非题与是非题
 			colTab=" t_an_yesno t2 ";
 			groupSql=" t1.qu_item_id,t2.yesno_answer ";
-			sql="select "+groupSql+",count(*) from "+rowTab+","+colTab+whereSql+groupSql;
+			sql=SELECT+groupSql+COUNT+rowTab+","+colTab+whereSql+groupSql;
 
 			List<Object[]> objects=session.createSQLQuery(sql).setParameter(1, rowQuestion.getId()).setParameter(1, colQuestion.getId()).list();
 
@@ -83,30 +94,30 @@ public class AnRadioDaoImpl extends BaseDaoImpl<AnRadio, String> implements AnRa
 				String rowQuItemId=quRadio.getId();
 				rowDataCross.setOptionName(rowName);
 				List<DataCross> colDataCrosses=rowDataCross.getColDataCrosss();
-					for (String col : colList) {
-						DataCross colDataCross=new DataCross();
-						colDataCross.setOptionName(col);
-							for (Object[] objs : objects) {
+				for (String col : colList) {
+					DataCross colDataCross=new DataCross();
+					colDataCross.setOptionName(col);
+					for (Object[] objs : objects) {
 
-								String anRowQuItemId=objs[0].toString();
-								String colYesno_answer=objs[1].toString();
-								int objCount=Integer.parseInt(objs[2].toString());
+						String anRowQuItemId=objs[0].toString();
+						String colYesno_answer=objs[1].toString();
+						int objCount=Integer.parseInt(objs[2].toString());
 
-								if(rowQuItemId.equals(anRowQuItemId) && col.equals(colYesno_answer)){
-									colDataCross.setCount(objCount);
-									break;
-								}
-							}
-							colDataCrosses.add(colDataCross);
+						if(rowQuItemId.equals(anRowQuItemId) && col.equals(colYesno_answer)){
+							colDataCross.setCount(objCount);
+							break;
+						}
 					}
-					dataCrosses.add(rowDataCross);
+					colDataCrosses.add(colDataCross);
+				}
+				dataCrosses.add(rowDataCross);
 			}
 
 		}else if(colQuType==QuType.RADIO  || colQuType==QuType.COMPRADIO){//是非题与单选题
 			colTab=" t_an_radio t2 ";
 			columnSql=" t1.qu_item_id as quItemId1, t2.qu_item_id as quItemId2 ";
 			groupSql=" t1.qu_item_id,t2.qu_item_id ";
-			sql="select "+columnSql+",count(*) from "+rowTab+","+colTab+whereSql+groupSql;
+			sql=SELECT+columnSql+COUNT+rowTab+","+colTab+whereSql+groupSql;
 
 			List<Object[]> objects=session.createSQLQuery(sql).setParameter(1, rowQuestion.getId()).setParameter(1, colQuestion.getId()).list();
 
@@ -118,31 +129,31 @@ public class AnRadioDaoImpl extends BaseDaoImpl<AnRadio, String> implements AnRa
 				String rowQuItemId=rowQuRadio.getId();
 				rowDataCross.setOptionName(rowName);
 				List<DataCross> colDataCrosses=rowDataCross.getColDataCrosss();
-					for (QuRadio quRadio : quRadios) {
-						DataCross colDataCross=new DataCross();
-						colDataCross.setOptionName(quRadio.getOptionName());
-						String quRadioId=quRadio.getId();
+				for (QuRadio quRadio : quRadios) {
+					DataCross colDataCross=new DataCross();
+					colDataCross.setOptionName(quRadio.getOptionName());
+					String quRadioId=quRadio.getId();
 
-							for (Object[] objs : objects) {
-								String anRowQuItemId=objs[0].toString();
-								String anColQuItemId=objs[1].toString();
-								int objCount=Integer.parseInt(objs[2].toString());
+					for (Object[] objs : objects) {
+						String anRowQuItemId=objs[0].toString();
+						String anColQuItemId=objs[1].toString();
+						int objCount=Integer.parseInt(objs[2].toString());
 
-								if(rowQuItemId.equals(anRowQuItemId) && quRadioId.equals(anColQuItemId)){
-									colDataCross.setCount(objCount);
-									break;
-								}
-							}
-							colDataCrosses.add(colDataCross);
+						if(rowQuItemId.equals(anRowQuItemId) && quRadioId.equals(anColQuItemId)){
+							colDataCross.setCount(objCount);
+							break;
+						}
 					}
-					dataCrosses.add(rowDataCross);
+					colDataCrosses.add(colDataCross);
+				}
+				dataCrosses.add(rowDataCross);
 			}
 
 		}else if(colQuType==QuType.CHECKBOX || colQuType==QuType.COMPCHECKBOX){//是非题与多选题
 			colTab=" t_an_checkbox t2 ";
 			columnSql=" t1.qu_item_id as quItemId1, t2.qu_item_id as quItemId2 ";
 			groupSql=" t1.qu_item_id, t2.qu_item_id ";
-			sql="select "+columnSql+",count(*) from "+rowTab+","+colTab+whereSql+groupSql;
+			sql=SELECT+columnSql+COUNT+rowTab+","+colTab+whereSql+groupSql;
 
 			List<Object[]> objects=session.createSQLQuery(sql).setParameter(1, rowQuestion.getId()).setParameter(1, colQuestion.getId()).list();
 
@@ -156,28 +167,33 @@ public class AnRadioDaoImpl extends BaseDaoImpl<AnRadio, String> implements AnRa
 				List<DataCross> colDataCrosses=rowDataCross.getColDataCrosss();
 
 				for (QuCheckbox quCheckbox : quCheckboxs) {
-						DataCross colDataCross=new DataCross();
-						colDataCross.setOptionName(quCheckbox.getOptionName());
-						String colQuCheckboxId=quCheckbox.getId();
-							for (Object[] objs : objects) {
+					DataCross colDataCross=new DataCross();
+					colDataCross.setOptionName(quCheckbox.getOptionName());
+					String colQuCheckboxId=quCheckbox.getId();
+					for (Object[] objs : objects) {
 
-								String anRowQuItemId=objs[0].toString();
-								String anColQuItemId=objs[1].toString();
+						String anRowQuItemId=objs[0].toString();
+						String anColQuItemId=objs[1].toString();
 
-								int objCount=Integer.parseInt(objs[2].toString());
-								if(rowQuItemId.equals(anRowQuItemId) && colQuCheckboxId.equals(anColQuItemId)){
-									colDataCross.setCount(objCount);
-									break;
-								}
-							}
-							colDataCrosses.add(colDataCross);
+						int objCount=Integer.parseInt(objs[2].toString());
+						if(rowQuItemId.equals(anRowQuItemId) && colQuCheckboxId.equals(anColQuItemId)){
+							colDataCross.setCount(objCount);
+							break;
+						}
 					}
-					dataCrosses.add(rowDataCross);
+					colDataCrosses.add(colDataCross);
+				}
+				dataCrosses.add(rowDataCross);
 			}
 		}
 		return dataCrosses;
 	}
 
+	/**
+	 * 单选题选项统计结果的列表。
+	 * @param question
+	 * @return
+	 */
 	@Override
 	public List<DataCross> findStatsDataChart(Question question) {
 		List<DataCross> crosses=new ArrayList<DataCross>();

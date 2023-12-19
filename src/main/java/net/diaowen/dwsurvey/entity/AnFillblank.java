@@ -6,7 +6,7 @@ import javax.persistence.Table;
 import net.diaowen.common.base.entity.IdEntity;
 
 /**
- * 答卷  多选题保存表
+ * 答卷  填空题保存表
  * @author keyuan
  * @date 2012-10-21下午9:26:43
  *
@@ -32,7 +32,7 @@ public class AnFillblank extends IdEntity{
 
 	}
 	public AnFillblank(String surveyId, String surveyAnswerId, String quId,
-			String answerValue) {
+					   String answerValue) {
 		this.belongId=surveyId;
 		this.belongAnswerId=surveyAnswerId;
 		this.quId=quId;

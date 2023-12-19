@@ -9,7 +9,7 @@ import net.diaowen.common.base.entity.IdEntity;
  * 答卷 单选题保存表
  *
  * @author keyuan
- * @date 2012-10-21下午9:26:43
+ * @date 2012-10-21下午9:26:43shi
  *
  * https://github.com/wkeyuan/DWSurvey
  * http://dwsurvey.net
@@ -35,7 +35,7 @@ public class AnRadio extends IdEntity{
 
 	}
 	public AnRadio(String surveyId, String surveyAnswerId, String quId,
-			String quItemId) {
+				   String quItemId) {
 		this.belongId=surveyId;
 		this.belongAnswerId=surveyAnswerId;
 		this.quId=quId;
