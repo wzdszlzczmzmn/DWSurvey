@@ -21,7 +21,6 @@ import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-//import org.springframework.http.HttpEntity;
 
 /**
  * @author keyuan
@@ -30,7 +29,7 @@ import java.util.Map.Entry;
  * @date 2016年9月17日 上午11:21:41
  */
 public abstract class BaseHttpDao extends SuperHttpDao {
-
+    private static final String STANDRDCHARSETS = "UTF-8";
     private static Logger logger = LogManager.getLogger(BaseHttpDao.class.getName());
 
     @Override
@@ -63,7 +62,6 @@ public abstract class BaseHttpDao extends SuperHttpDao {
                     HttpClientUtils.buildHttpUrl(url), null, null);
             return this.doPost(httpPost);
         } catch (URISyntaxException e) {
-            //logger.error(message, params);
             logger.error("doPost(String url) URISyntaxException : {} ", url);
         }
         return null;
@@ -73,7 +71,6 @@ public abstract class BaseHttpDao extends SuperHttpDao {
         try {
             HttpPost httpPost = HttpClientUtils.buildHttpPost(
                     HttpClientUtils.buildHttpUrl(url), params, null);
-//			httpPost.addHeader("Content-Type","text/html;charset=UTF-8");
             return this.doPost(httpPost);
         } catch (URISyntaxException e) {
             logger.error("doPost(String url, Map<String, String> params) URISyntaxException : {} ", url);
@@ -86,7 +83,6 @@ public abstract class BaseHttpDao extends SuperHttpDao {
             HttpPut httpPost = HttpClientUtils.buildHttpPut(HttpClientUtils.buildHttpUrl(url), null, null);
             return this.doPut(httpPost);
         } catch (URISyntaxException e) {
-            //logger.error(message, params);
             logger.error("doPost(String url) URISyntaxException : {} ", url);
         }
         return null;
@@ -220,7 +216,7 @@ public abstract class BaseHttpDao extends SuperHttpDao {
     public String doPostFile(String url, Map<String, String> datas, Map<String, String> files) {
         MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
         multipartEntityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-        multipartEntityBuilder.setCharset(Charset.forName("UTF-8"));
+        multipartEntityBuilder.setCharset(Charset.forName(STANDRDCHARSETS));
 
         Iterator<Entry<String, String>> iterator = null;
         if (datas != null) {
@@ -228,7 +224,7 @@ public abstract class BaseHttpDao extends SuperHttpDao {
             // 发送的数据
             while (iterator.hasNext()) {
                 Entry<String, String> entry = (Entry<String, String>) iterator.next();
-                multipartEntityBuilder.addTextBody(entry.getKey(), entry.getValue(), ContentType.create("text/plain", Charset.forName("UTF-8")));
+                multipartEntityBuilder.addTextBody(entry.getKey(), entry.getValue(), ContentType.create("text/plain", Charset.forName(STANDRDCHARSETS)));
             }
         }
 
@@ -240,8 +236,6 @@ public abstract class BaseHttpDao extends SuperHttpDao {
                 String path = entry.getValue();
                 if ("".equals(path) || path == null)
                     continue;
-//				File file = new File(entry.getValue());
-//				multipartEntityBuilder.addBinaryBody(entry.getKey(), file);
                 FileBody bin = new FileBody(new File(entry.getValue()));
                 multipartEntityBuilder.addPart(entry.getKey(), bin);
             }
@@ -255,10 +249,9 @@ public abstract class BaseHttpDao extends SuperHttpDao {
             // 设置 POST 请求的实体部分
             httpPost.setEntity(httpEntity);
             // 发送 HTTP 请求
-//			return doPost(httpPost);
             response = httpClient.execute(httpPost);
             if (response.getStatusLine().getStatusCode() == 200) {
-                return EntityUtils.toString(response.getEntity(), "UTF-8");
+                return EntityUtils.toString(response.getEntity(), STANDRDCHARSETS);
             }
         } catch (ClientProtocolException e) {
             logger.error("doPostFile(String url, Map<String, String> datas, Map<String, String> files)  ClientProtocolException : {} ", url);

@@ -35,15 +35,8 @@ public class SecurityController {
 
     @RequestMapping("/logout.do")
     @ResponseBody
-    public HttpResult logout(HttpServletRequest request,HttpServletResponse response) throws Exception {
+    public HttpResult logout(HttpServletRequest request,HttpServletResponse response) {
         if (SecurityUtils.getSubject() != null) {
-            User curUser = accountManager.getCurUser();
-            String userId = "";
-            String loginName = "";
-            if(curUser!=null){
-                userId = curUser.getId();
-                loginName = curUser.getLoginName();
-            }
             SecurityUtils.getSubject().logout();
         }
         request.getSession().invalidate();
@@ -117,7 +110,7 @@ public class SecurityController {
 
     @RequestMapping("/checkEmail.do")
     @ResponseBody
-    public boolean checkEmailUn(String id,String email) throws Exception{
+    public boolean checkEmailUn(String id,String email) {
         User user=userManager.findEmailUn(id,email);
         boolean result=true;
         if(user!=null){
@@ -130,7 +123,7 @@ public class SecurityController {
 
     @RequestMapping("/checkLoginNamelUn.do")
     @ResponseBody
-    public boolean checkLoginNamelUn(String id,String loginName) throws Exception{
+    public boolean checkLoginNamelUn(String id,String loginName){
         User user=userManager.findNameUn(id,loginName);
         boolean result=true;
         if(user!=null){

@@ -27,12 +27,9 @@ import net.diaowen.common.utils.security.DigestUtils;
 public class AccountManager {
 
 	private static Logger logger = LoggerFactory.getLogger(AccountManager.class);
-
+	private static final String LOGINNAME = "loginName";
 	@Autowired
 	private UserDao userDao;
-
-//	@Autowired
-//	private NotifyMessageProducer notifyMessageProducer;//JMS消息推送
 
 	private ShiroDbRealm shiroRealm;
 
@@ -53,16 +50,10 @@ public class AccountManager {
 		//判断是否有重复用户
 		String shaPassword = DigestUtils.sha1Hex(user.getPlainPassword());
 		user.setShaPassword(shaPassword);
-		boolean bool=user.getId()==null?true:false;
 		userDao.save(user);
 		if (shiroRealm != null) {
 			shiroRealm.clearCachedAuthorizationInfo(user.getLoginName());
 		}
-		/*if(bool){
-//			Email email=new Email();
-//			sendNotifyMessage(email);	使用jms辅助 发送邮件
-			simpleMailService.sendRegisterMailByAsync(user);
-		}*/
 	}
 
 	@Transactional
@@ -77,8 +68,7 @@ public class AccountManager {
 	@Transactional
 	public boolean updatePwd(String curpwd, String newPwd) {
 		User user = getCurUser();
-		if(user!=null){
-			if(curpwd!=null && newPwd!=null){
+		if(user!=null&&curpwd!=null && newPwd!=null){
 				//判断是否有重复用户
 				String curShaPassword = DigestUtils.sha1Hex(curpwd);
 				if(user.getShaPassword().equals(curShaPassword)){
@@ -87,27 +77,17 @@ public class AccountManager {
 					userDao.save(user);
 					return true;
 				}
-			}
 		}
 		return false;
 	}
-	/*public User getByUid(String userSource,String uid){
-		Criterion cri1=Restrictions.eq("thirdSource", userSource);
-		Criterion cri2=Restrictions.eq("thirdUid", uid);
-		return userDao.findUnique(cri1,cri2);
-	}*/
-	//新注册用户，注册后
-//	private void sendNotifyMessage(Email email) {
-//		notifyMessageProducer.sendQueue(email);
-//	}
 
 
 	/**
 	 * 判断是否超级管理员.
 	 */
 	private boolean isSupervisor(User user) {
-//		return (user.getId() != null && user.getId() == 1L);
-		return false;
+
+		return (user.getId() != null && user.getId() == "1");
 	}
 
 	@Transactional(readOnly = true)
@@ -118,14 +98,14 @@ public class AccountManager {
 
 	@Transactional(readOnly = true)
 	public User findUserByLoginName(String loginName) {
-		return userDao.findUniqueBy("loginName", loginName);
+		return userDao.findUniqueBy(LOGINNAME, loginName);
 	}
 
 	@Transactional(readOnly = true)
 	public User findUserByLoginNameOrEmail(String loginName) {
 		User user = null;
 		if(loginName!=null){
-			user = userDao.findUniqueBy("loginName", loginName);
+			user = userDao.findUniqueBy(LOGINNAME, loginName);
 			if(user==null && loginName.contains("@")){
 				//是邮箱账号
 				user = userDao.findUniqueBy("email", loginName);
@@ -151,7 +131,7 @@ public class AccountManager {
 	 */
 	@Transactional(readOnly = true)
 	public boolean isLoginNameUnique(String newLoginName, String oldLoginName) {
-		return userDao.isPropertyUnique("loginName", newLoginName, oldLoginName);
+		return userDao.isPropertyUnique(LOGINNAME, newLoginName, oldLoginName);
 	}
 
 	/**
