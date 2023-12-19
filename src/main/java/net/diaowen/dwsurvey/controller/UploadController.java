@@ -24,12 +24,26 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.*;
 
 @Controller
 @RequestMapping("/api/dwsurvey/up")
 public class UploadController {
+    /**
+     * Random类用于生成随机数
+     */
+    private final Random r = SecureRandom.getInstanceStrong();
+
+    /**
+     * 日志
+     */
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    public UploadController() throws NoSuchAlgorithmException {
+    }
+
     /**
      * 上传文件数据，安全存储
      * /WebRoot/WEB-INF/upfile
@@ -94,7 +108,7 @@ public class UploadController {
                     //取得当前上传文件的文件名称
                     String myFileName = file.getOriginalFilename();
                     //如果名称不为“”,说明该文件存在，否则说明该文件不存在
-                    if(myFileName.trim() !=""){
+                    if(!myFileName.trim().equals("")){
                         //重命名上传后的文件名
                         String fileName = file.getOriginalFilename();
                         String ext = fileName.substring(fileName.lastIndexOf("."));
@@ -123,7 +137,7 @@ public class UploadController {
 
         }catch (Exception e){
 //            sb.append("{\"success\":\"false\",\"error\":\"上传失败\"}");
-            e.printStackTrace();
+            logger.warn(e.getMessage());
             httpResult = HttpResult.EXCEPTION(e.getMessage());
         }
         return httpResult;
@@ -200,13 +214,13 @@ public class UploadController {
 
                 } catch (IOException e) {
                     // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    logger.warn(e.getMessage());
                 }
                 //2.4 add to files
                 files.add(fileMeta);
             }
         }catch (Exception e){
-            e.printStackTrace();
+            logger.warn(e.getMessage());
         }
         // result will be like this
         // [{"fileName":"app_engine-85x77.png","fileSize":"8 Kb","fileType":"image/png"},...]
@@ -220,7 +234,6 @@ public class UploadController {
                 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4',
                 '5', '6', '7', '8', '9' };
         StringBuffer fileName = new StringBuffer("");
-        Random r = new Random();
         int pos = -1;
         for (int i = 0; i < 15; i++) {
             pos = Math.abs(r.nextInt(36));

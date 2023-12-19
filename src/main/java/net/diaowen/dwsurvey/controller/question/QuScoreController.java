@@ -17,6 +17,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * 评分题 action
@@ -33,6 +34,11 @@ public class QuScoreController{
 	private final QuScoreManager quScoreManager;
 	public static final String ID="{id:'";
 
+	/**
+	 * 日志
+	 */
+	private final Logger logger = Logger.getLogger(QuScoreController.class.getName());
+
 	public QuScoreController(QuestionManager questionManager, QuScoreManager quScoreManager) {
 		this.questionManager = questionManager;
 		this.quScoreManager = quScoreManager;
@@ -40,6 +46,7 @@ public class QuScoreController{
 
 	/**
 	 * 处理Ajax请求
+	 *
 	 * @param request
 	 * @param response
 	 * @return
@@ -54,7 +61,7 @@ public class QuScoreController{
 			response.getWriter().write(resultJson);
 			//返回各部分ID
 		}catch (Exception e) {
-			e.printStackTrace();
+			logger.warning(e.getMessage());
 			response.getWriter().write("error");
 		}
 		return null;
@@ -62,6 +69,7 @@ public class QuScoreController{
 
 	/**
 	 * 解析请求
+	 *
 	 * @param request
 	 * @return
 	 * @throws UnsupportedEncodingException
@@ -142,9 +150,6 @@ public class QuScoreController{
 			String quLogicIdValue=(quLogicId!=null)?quLogicId.toString():"";
 
 			QuestionLogic quLogic=new QuestionLogic();
-			if("".equals(quLogic)){
-				quLogic=null;
-			}
 			if(geLe==null || "".equals(geLe)){
 				geLe="le";
 			}
@@ -168,6 +173,7 @@ public class QuScoreController{
 
 	/**
 	 * 构建Json字符串
+	 *
 	 * @param entity
 	 * @return
 	 */
@@ -216,7 +222,7 @@ public class QuScoreController{
 			quScoreManager.ajaxDelete(quItemId);
 			response.getWriter().write("true");
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.warning(e.getMessage());
 			response.getWriter().write("error");
 		}
 		return null;

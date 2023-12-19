@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.logging.Logger;
 
 
 /**
@@ -33,6 +34,11 @@ public class SurveyDesignController {
 	private final AccountManager accountManager;
 
 	private static final String UTF = "utf-8";
+
+	/**
+	 * 日志
+	 */
+	private final Logger logger = Logger.getLogger(SurveyDesignController.class.getName());
 	@Autowired
 	public SurveyDesignController(QuestionManager questionManager, SurveyDirectoryManager surveyDirectoryManager, AccountManager accountManager) {
 		this.questionManager = questionManager;
@@ -52,7 +58,7 @@ public class SurveyDesignController {
 		try{
 			return buildSurvey(surveyId,sid);
 		}catch (Exception e){
-			e.printStackTrace();
+			logger.warning(e.getMessage());
 		}
 		return HttpResult.FAILURE();
 	}
@@ -72,7 +78,7 @@ public class SurveyDesignController {
 				surveyDirectoryManager.devSurvey(survey);
 				return HttpResult.SUCCESS();
 			}catch (Exception e) {
-				e.printStackTrace();
+				logger.warning(e.getMessage());
 			}
 
 			return HttpResult.FAILURE();
