@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 /**
- * 答卷  多选题保存表
+ * 答卷  文件题保存表
  * @author keyuan
  * @date 2012-10-21下午9:26:43
  *
@@ -36,7 +36,7 @@ public class AnUplodFile extends IdEntity {
 
 	}
 	public AnUplodFile(String surveyId, String surveyAnswerId, String quId,
-                       String filePath, String fileName, String randomCode) {
+					   String filePath, String fileName, String randomCode) {
 		this.belongId=surveyId;
 		this.belongAnswerId=surveyAnswerId;
 		this.quId=quId;
