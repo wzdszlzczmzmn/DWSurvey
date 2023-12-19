@@ -2,9 +2,9 @@ package net.diaowen.common.exception;
 
 /**
  * Service层公用的Exception.
- * 
+ *
  * 继承自RuntimeException, 从由Spring管理事务的函数中抛出时会触发事务回滚.
- * 
+ *
  * @author keyuan
  */
 public class ServiceException extends RuntimeException {

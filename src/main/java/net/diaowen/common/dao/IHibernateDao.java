@@ -14,7 +14,7 @@ import javax.persistence.criteria.Predicate;
 
 public interface IHibernateDao<T, ID extends Serializable> extends ISimpleHibernateDao<T, ID> {
 
-	public static final String DEFAULT_ALIAS = "x";
+
 
 	/**
 	 * 分页获取全部对象.
@@ -43,17 +43,6 @@ public interface IHibernateDao<T, ID extends Serializable> extends ISimpleHibern
 	 */
 	public abstract Page<T> findPage(final PageRequest pageRequest, String hql);
 
-	/**
-	 * 按HQL分页查询.
-	 *
-	 * @param page 分页参数.
-	 * @param hql hql语句.
-	 * @param values 命名参数,按名称绑定.
-	 *
-	 * @return 分页查询结果, 附带结果列表及所有查询输入参数.
-	 */
-	public abstract Page<T> findPage(final PageRequest pageRequest, String hql,
-                                     final Map<String, ?> values);
 
 	/**
 	 * 按Criteria分页查询.
@@ -111,6 +100,6 @@ public interface IHibernateDao<T, ID extends Serializable> extends ISimpleHibern
 
 	public Page<T> findPageOderBy(Page<T> pageRequest,String orderByProperty, boolean isAsc, List<Criterion> criterions);
 	public Page<T> findPageOderBy(Page<T> pageRequest,String orderByProperty, boolean isAsc, Criterion... criterions);
-
+	public abstract Page<T> findPageByCriteria(final PageRequest pageRequest, Criteria c);
 
 }

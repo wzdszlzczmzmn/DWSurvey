@@ -18,8 +18,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -33,7 +31,8 @@ import java.util.Map;
 public class SuperHttpDao {
 
 	private static Logger logger = LogManager.getLogger(SuperHttpDao.class.getName());
-
+	//utf8格式
+	private static final String STANDRDCHARSETS = "UTF-8";
 	@Autowired
 	protected CloseableHttpClient httpClient;
 	@Autowired
@@ -48,7 +47,7 @@ public class SuperHttpDao {
 			// 判断返回状态是否为200
 			StatusLine statusLine = response.getStatusLine();
 			if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
-				return EntityUtils.toString(response.getEntity(), "UTF-8");
+				return EntityUtils.toString(response.getEntity(), STANDRDCHARSETS);
 			}
 		} catch (ClientProtocolException e) {
 			logger.error("doGet(HttpGet httpGet)  ClientProtocolException : {} ", httpGet.getURI().toString());
@@ -74,7 +73,7 @@ public class SuperHttpDao {
 			response = httpClient.execute(httpPost);
 			// 判断返回状态是否为200
 			if (response.getStatusLine().getStatusCode() == 200) {
-				return EntityUtils.toString(response.getEntity(), "UTF-8");
+				return EntityUtils.toString(response.getEntity(), STANDRDCHARSETS);
 			}
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
@@ -102,7 +101,7 @@ public class SuperHttpDao {
 			response = httpClient.execute(httpDelete);
 			// 判断返回状态是否为200
 			if (response.getStatusLine().getStatusCode() == 200) {
-				return EntityUtils.toString(response.getEntity(), "UTF-8");
+				return EntityUtils.toString(response.getEntity(), STANDRDCHARSETS);
 			}
 		} catch (ClientProtocolException e) {
 			logger.error("doDelete(HttpDelete httpDelete) ClientProtocolException : {} ", httpDelete.getURI().toString());
@@ -129,7 +128,7 @@ public class SuperHttpDao {
 			response = httpClient.execute(httpPatch);
 			// 判断返回状态是否为200
 			if (response.getStatusLine().getStatusCode() == 200) {
-				return EntityUtils.toString(response.getEntity(), "UTF-8");
+				return EntityUtils.toString(response.getEntity(), STANDRDCHARSETS);
 			}
 		} catch (ClientProtocolException e) {
 			logger.error("doPatch(HttpPatch httpPatch) ClientProtocolException : {} ", httpPatch.getURI().toString());
@@ -156,7 +155,7 @@ public class SuperHttpDao {
 			response = httpClient.execute(httpPut);
 			// 判断返回状态是否为200
 			if (response.getStatusLine().getStatusCode() == 200) {
-				return EntityUtils.toString(response.getEntity(), "UTF-8");
+				return EntityUtils.toString(response.getEntity(), STANDRDCHARSETS);
 			}
 		} catch (ClientProtocolException e) {
 			logger.error("doPatch(HttpPatch httpPatch) ClientProtocolException : {} ", httpPut.getURI().toString());
@@ -191,7 +190,8 @@ public class SuperHttpDao {
 	public String doGet(String url, Map<String, String> params) {
 		try {
 			URIBuilder uriBuilder = new URIBuilder(url);
-			for (String key : params.keySet()) {
+			for (Map.Entry<String,String> entry : params.entrySet()) {
+				String key = entry.getKey();
 				uriBuilder.addParameter(key, params.get(key));
 			}
 			return this.doGet(uriBuilder.build().toString());
@@ -205,7 +205,8 @@ public class SuperHttpDao {
 	public String buildUrl(String url, Map<String, String> params) {
 		try {
 			URIBuilder uriBuilder = new URIBuilder(url);
-			for (String key : params.keySet()) {
+			for (Map.Entry<String,String> entry : params.entrySet()) {
+				String key = entry.getKey();
 				uriBuilder.addParameter(key, params.get(key));
 			}
 			return uriBuilder.build().toString();
@@ -214,74 +215,5 @@ public class SuperHttpDao {
 		}
 		return null;
 	}
-
-	/* (non-Javadoc)
-	 * @see net.diaowen.youwe.dao.impl.SuperHttpDao#doPost(java.lang.String, java.util.Map)
-	 */
-	/*
-	public HttpResult doPost(String url, Map<String, String> params) throws IOException {
-		// 创建http POST请求
-		HttpPost httpPost = new HttpPost(url);
-		httpPost.setConfig(this.requestConfig);
-		if (params != null) {
-			// 设置2个post参数，一个是scope、一个是q
-			List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-			for (String key : params.keySet()) {
-				parameters.add(new BasicNameValuePair(key, params.get(key)));
-			}
-			// 构造一个form表单式的实体
-			UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(parameters, "UTF-8");
-			// 将请求实体设置到httpPost对象中
-			httpPost.setEntity(formEntity);
-		}
-
-		CloseableHttpResponse response = null;
-		try {
-			// 执行请求
-			response = httpClient.execute(httpPost);
-			return new HttpResult(response.getStatusLine().getStatusCode(),
-					EntityUtils.toString(response.getEntity(), "UTF-8"));
-		} finally {
-			if (response != null) {
-				response.close();
-			}
-		}
-	}
-*/
-	/* (non-Javadoc)
-	 * @see net.diaowen.youwe.dao.impl.SuperHttpDao#doPost(java.lang.String)
-	 */
-//	public HttpResult doPost(String url) throws IOException {
-//		return this.doPost(url, null);
-//	}
-
-	/* (non-Javadoc)
-	 * @see net.diaowen.youwe.dao.impl.SuperHttpDao#doPostJson(java.lang.String, java.lang.String)
-	 */
-/*
-	public HttpResult doPostJson(String url, String json) throws ClientProtocolException, IOException {
-		// 创建http POST请求
-		HttpPost httpPost = new HttpPost(url);
-		httpPost.setConfig(this.requestConfig);
-
-		if (json != null) {
-			// 构造一个form表单式的实体
-			StringEntity stringEntity = new StringEntity(json, ContentType.APPLICATION_JSON);
-			// 将请求实体设置到httpPost对象中
-			httpPost.setEntity(stringEntity);
-		}
-
-		CloseableHttpResponse response = null;
-		try {
-			// 执行请求
-			response = this.httpClient.execute(httpPost);
-			return new HttpResult(response.getStatusLine().getStatusCode(),EntityUtils.toString(response.getEntity(), "UTF-8"));
-		} finally {
-			if (response != null) {
-				response.close();
-			}
-		}
-	}
-	*/
 
 }

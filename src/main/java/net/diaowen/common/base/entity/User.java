@@ -61,7 +61,6 @@ public class User extends IdEntity {
 	// 是否显示 0不显示
 	private Integer visibility = 1;
 
-//	private Date tokenTime;
 	private String shaPasswordTemp;
 
 	private String wxOpenId;
@@ -142,15 +141,6 @@ public class User extends IdEntity {
 	public void setCellphone(String cellphone) {
 		this.cellphone = cellphone;
 	}
-
-
-	/*public Long getOrganId() {
-		return organId;
-	}
-
-	public void setOrganId(Long organId) {
-		this.organId = organId;
-	}*/
 
 	public Date getBirthday() {
 		return birthday;
@@ -276,8 +266,6 @@ public class User extends IdEntity {
 	public void setPwd(String pwd) {
 		this.pwd = pwd;
 	}
-
-	private String roleId;
 
 	private String findPwdUrl="";
 	@Transient

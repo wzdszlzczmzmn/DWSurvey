@@ -1,10 +1,3 @@
-/**
- * Copyright (c) 2005-2011 springside.org.cn
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- *
- * $Id: HibernateDao.java 1547 2011-05-05 14:43:07Z calvinxiu $
- */
 package net.diaowen.common.dao;
 
 import java.io.Serializable;
@@ -14,6 +7,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.diaowen.common.exception.HibernateExecption;
 import net.diaowen.common.plugs.page.PageRequest;
 import net.diaowen.dwsurvey.entity.Question;
 import org.hibernate.Criteria;
@@ -50,7 +44,8 @@ import javax.persistence.criteria.Root;
  */
 
 public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao<T, ID> implements IHibernateDao<T, ID> {
-
+	public static final String DEFAULT_ALIAS = "x";
+	private static final String LIST_NAME = "orderEntries";
 	/**
 	 * 通过子类的泛型定义取得对象类型Class.
 	 * eg.
@@ -123,54 +118,14 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 	}
 
 	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.IHibernateDao#findPage(net.diaowen.common.orm.PageRequest, java.lang.String, java.util.Map)
-	 */
-	@Override
-	public Page<T> findPage(final PageRequest pageRequest, String hql, final Map<String, ?> values) {
-		AssertUtils.notNull(pageRequest, "page不能为空");
-
-		Page<T> page = new Page<T>(pageRequest);
-
-		if (pageRequest.isCountTotal()) {
-			long totalCount = countHqlResult(hql, values);
-			page.setTotalItems(totalCount);
-		}
-
-		if (pageRequest.isOrderBySetted()) {
-			hql = setOrderParameterToHql(hql, pageRequest);
-		}
-
-		Query q = createQuery(hql, values);
-		setPageParameterToQuery(q, pageRequest);
-
-		List result = q.list();
-		page.setResult(result);
-		return page;
-	}
-
-	/* (non-Javadoc)
 	 * @see net.diaowen.common.orm.hibernate.IHibernateDao#findPage(net.diaowen.common.orm.PageRequest, org.hibernate.criterion.Criterion)
 	 */
 	@Override
 	public Page<T> findPage(final PageRequest pageRequest, final Criterion... criterions) {
 		AssertUtils.notNull(pageRequest, "page不能为空");
 
-		Page<T> page = new Page<T>(pageRequest);
-
 		Criteria c = createCriteria(criterions);
-		if (pageRequest.isCountTotal()) {
-			long totalCount = countCriteriaResult(c);
-			page.setTotalItems(totalCount);
-			pageRequest.setTotalPage(page.getTotalPage());
-		}
-		if(pageRequest.isIslastpage()){
-			pageRequest.setPageNo(pageRequest.getTotalPage());
-			page.setPageNo(pageRequest.getPageNo());
-		}
-		setPageRequestToCriteria(c, pageRequest);
-
-		List result = c.list();
-		page.setResult(result);
+		Page<T> page = findPageByCriteria(pageRequest,c);
 		return page;
 	}
 
@@ -225,14 +180,14 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 	 *
 	 * 本函数只能自动处理简单的hql语句,复杂的hql查询请另行编写count语句查询.
 	 */
-	protected long countHqlResult(final String hql, final Object... values) {
+	protected long countHqlResult(final String hql, final Object... values) throws RuntimeException {
 		String countHql = prepareCountHql(hql);
 
 		try {
 			Long count = findUnique(countHql, values);
 			return count;
 		} catch (Exception e) {
-			throw new RuntimeException("hql can't be auto count, hql is:" + countHql, e);
+			throw new HibernateExecption("hql can't be auto count, hql is:" + countHql, e);
 		}
 	}
 
@@ -241,14 +196,14 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 	 *
 	 * 本函数只能自动处理简单的hql语句,复杂的hql查询请另行编写count语句查询.
 	 */
-	protected long countHqlResult(final String hql, final Map<String, ?> values) {
+	protected long countHqlResult(final String hql, final Map<String, ?> values) throws RuntimeException {
 		String countHql = prepareCountHql(hql);
 
 		try {
 			Long count = findUnique(countHql, values);
 			return count;
 		} catch (Exception e) {
-			throw new RuntimeException("hql can't be auto count, hql is:" + countHql, e);
+			throw new HibernateExecption("hql can't be auto count, hql is:" + countHql, e);
 		}
 	}
 
@@ -284,13 +239,13 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 		ResultTransformer transformer = impl.getResultTransformer();
 		List<CriteriaImpl.OrderEntry> orderEntries = null;
 		try {
-			orderEntries = (List) ReflectionUtils.getFieldValue(impl, "orderEntries");
-			ReflectionUtils.setFieldValue(impl, "orderEntries", new ArrayList());
+			orderEntries = (List) ReflectionUtils.getFieldValue(impl, LIST_NAME);
+			ReflectionUtils.setFieldValue(impl, LIST_NAME, new ArrayList());
 		} catch (Exception e) {
 			logger.error("不可能抛出的异常:{}", e.getMessage());
 		}
 		// 执行Count查询
-		Long totalCountObject = 0L;
+		Long totalCountObject = null;
 		Object uniResult = c.setProjection(Projections.rowCount()).uniqueResult();
 		if(uniResult!=null){
 			totalCountObject = (Long) uniResult;
@@ -308,7 +263,7 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 			c.setResultTransformer(transformer);
 		}
 		try {
-			ReflectionUtils.setFieldValue(impl, "orderEntries", orderEntries);
+			ReflectionUtils.setFieldValue(impl, LIST_NAME, orderEntries);
 		} catch (Exception e) {
 			logger.error("不可能抛出的异常:{}", e.getMessage());
 		}
@@ -411,39 +366,13 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 	}
 
 	public Page<T> findPageCriteria(PageRequest pageRequest,Criteria c){
-		Page<T> page = new Page<T>(pageRequest);
-		if (pageRequest.isCountTotal()) {
-			long totalCount = countCriteriaResult(c);
-			page.setTotalItems(totalCount);
-			pageRequest.setTotalPage(page.getTotalPage());
-		}
-		if(pageRequest.isIslastpage()){
-			pageRequest.setPageNo(pageRequest.getTotalPage());
-			page.setPageNo(pageRequest.getPageNo());
-		}
-		setPageRequestToCriteria(c, pageRequest);
-
-		List result = c.list();
-		page.setResult(result);
+		Page<T> page = findPageByCriteria(pageRequest,c);
 		return page;
 	}
 
 	public Page<T> findPageByCri(Page<T> pageRequest, List<Criterion> criterions){
 		Criteria c = createCriteria(criterions);
-		Page<T> page = new Page<T>(pageRequest);
-		if (pageRequest.isCountTotal()) {
-			long totalCount = countCriteriaResult(c);
-			page.setTotalItems(totalCount);
-			pageRequest.setTotalPage(page.getTotalPage());
-		}
-		if(pageRequest.isIslastpage()){
-			pageRequest.setPageNo(pageRequest.getTotalPage());
-			page.setPageNo(pageRequest.getPageNo());
-		}
-		setPageRequestToCriteria(c, pageRequest);
-
-		List result = c.list();
-		page.setResult(result);
+		Page<T> page = findPageByCriteria(pageRequest,c);
 		return page;
 	}
 
@@ -456,19 +385,7 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 			c.addOrder(Order.desc(orderByProperty));
 		}
 
-		Page<T> page = new Page<T>(pageRequest);
-		if (pageRequest.isCountTotal()) {
-			long totalCount = countCriteriaResult(c);
-			page.setTotalItems(totalCount);
-			pageRequest.setTotalPage(page.getTotalPage());
-		}
-		if(pageRequest.isIslastpage()){
-			pageRequest.setPageNo(pageRequest.getTotalPage());
-			page.setPageNo(pageRequest.getPageNo());
-		}
-		setPageRequestToCriteria(c, pageRequest);
-		List result = c.list();
-		page.setResult(result);
+		Page<T> page = findPageByCriteria(pageRequest,c);
 		return page;
 	}
 
@@ -480,6 +397,18 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 			c.addOrder(Order.desc(orderByProperty));
 		}
 
+		Page<T> page = findPageByCriteria(pageRequest,c);
+		return page;
+	}
+
+
+	public List<T> findAll(CriteriaQuery criteriaQuery) {
+		TypedQuery query = getSession().createQuery(criteriaQuery);
+		return query.getResultList();
+
+	}
+
+	public Page<T> findPageByCriteria(final PageRequest pageRequest, Criteria c) {
 		Page<T> page = new Page<T>(pageRequest);
 		if (pageRequest.isCountTotal()) {
 			long totalCount = countCriteriaResult(c);
@@ -494,19 +423,6 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 		List result = c.list();
 		page.setResult(result);
 		return page;
-	}
-
-
-	public List<T> findAll(CriteriaQuery criteriaQuery) {
-		/*CriteriaBuilder crb=getSession().getCriteriaBuilder();
-		CriteriaQuery<T> criteriaQuery = crb.createQuery(entityClass);
-		Root root = criteriaQuery.from(entityClass);
-		criteriaQuery.select(root);
-		Predicate[] predicatesArray = predicates.toArray(new Predicate[predicates.size()]);
-		criteriaQuery.where(predicatesArray);*/
-		TypedQuery query = getSession().createQuery(criteriaQuery);
-		return query.getResultList();
-
 	}
 
 }

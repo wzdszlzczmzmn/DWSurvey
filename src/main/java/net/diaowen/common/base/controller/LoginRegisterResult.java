@@ -5,10 +5,11 @@ import net.sf.json.JSON;
 
 public class LoginRegisterResult {
 
-    private String status;
-    private String type;
-    private String[] currentAuthority;
-    private HttpResult httpResult;
+    private String status;//表示登录和注册的状态
+    private String type;//表示登录和注册的类型
+    private String[] currentAuthority;//当前用户权限
+    private HttpResult httpResult;//表示http请求的结果
+    private static final String TYPEA = "account";
 
     public String getStatus() {
         return status;
@@ -53,8 +54,7 @@ public class LoginRegisterResult {
     public static LoginRegisterResult SUCCESS(String currentAuthority){
         LoginRegisterResult loginResult = new LoginRegisterResult();
         loginResult.setStatus("ok");
-        loginResult.setType("account");
-//        loginResult.setCurrentAuthority("admin");
+        loginResult.setType(TYPEA);
         loginResult.setCurrentAuthority(new String[]{currentAuthority});
         return loginResult;
     }
@@ -62,8 +62,7 @@ public class LoginRegisterResult {
     public static LoginRegisterResult SUCCESS(String[] currentAuthority){
         LoginRegisterResult loginResult = new LoginRegisterResult();
         loginResult.setStatus("ok");
-        loginResult.setType("account");
-//        loginResult.setCurrentAuthority("admin");
+        loginResult.setType(TYPEA);
         loginResult.setCurrentAuthority(currentAuthority);
         return loginResult;
     }
@@ -71,7 +70,7 @@ public class LoginRegisterResult {
     public static LoginRegisterResult FAILURE(){
         LoginRegisterResult loginResult = new LoginRegisterResult();
         loginResult.setStatus("error");
-        loginResult.setType("account");
+        loginResult.setType(TYPEA);
         loginResult.setCurrentAuthority(new String[]{"guest"});
         return loginResult;
     }
@@ -79,7 +78,7 @@ public class LoginRegisterResult {
     public static LoginRegisterResult FAILURE(HttpResult httpResult){
         LoginRegisterResult loginResult = new LoginRegisterResult();
         loginResult.setStatus("error");
-        loginResult.setType("account");
+        loginResult.setType(TYPEA);
         loginResult.setCurrentAuthority(new String[]{"guest"});
         loginResult.setHttpResult(httpResult);
         return loginResult;
