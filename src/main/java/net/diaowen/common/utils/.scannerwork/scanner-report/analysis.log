@@ -1,0 +1,131 @@
+Environment variables:
+  - CLASSPATH=.:/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home/lib/dt.jar:/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home/lib/tools.jar
+  - HOME=/Users/apple
+  - JAVA_MAIN_CLASS_24067=org.sonarsource.scanner.cli.Main
+  - LANG=zh_CN.UTF-8
+  - LOGNAME=apple
+  - M2_HOME=/Library/apache-maven-3.9.6
+  - PATH=/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/share/dotnet:~/.dotnet/tools:/Applications/Wireshark.app/Contents/MacOS:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/usr/local/mysql/bin:/Library/apache-maven-3.9.6/bin:/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home/bin:/Library/sonarqueb/sonarqube-7.6/bin:/Library/sonarqueb/sonar-scanner-3.3.0.1492-windows/bin:/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home/bin:/Library/sonarqueb/sonarqube-7.6/bin:/Library/sonarqueb/sonar-scanner-3.3.0.1492-windows/bin:/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home/bin:/Library/sonarqueb/sonarqube-7.6/bin:/Library/sonarqueb/sonar-scanner-3.3.0.1492-windows/bin:/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home/bin:/Library/sonarqueb/sonarqube-7.6/bin:/Library/sonarqueb/sonar-scanner-4.8.0.2856-macosx/bin:/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home/bin:/Library/sonarqueb/sonarqube-7.6/bin:/Library/sonarqueb/sonar-scanner-3.3.0.1492-windows/bin:/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home/bin:/Library/sonarqueb/sonarqube-7.6/bin:/Library/sonarqueb/sonar-scanner-3.3.0.1492-windows/bin
+  - PWD=/Users/apple/DWSurvey123/DWSurvey/src/main/java/net/diaowen/common/utils
+  - SHELL=/bin/zsh
+  - SHLVL=2
+  - SONAR_HOME=/Library/sonarqueb/sonarqube-7.6
+  - SONAR_SCANNER_HOME=/Library/sonarqueb/sonar-scanner-3.3.0.1492-windows
+  - SSH_AUTH_SOCK=/private/tmp/com.apple.launchd.ydFGfRnbtc/Listeners
+  - TERM=xterm-256color
+  - TERM_PROGRAM=Apple_Terminal
+  - TERM_PROGRAM_VERSION=447
+  - TERM_SESSION_ID=42DC1A93-791D-4C38-BEBD-AB52A8003BF5
+  - TMPDIR=/var/folders/k2/_36ns8ns6ybcy6c73w8kv72r0000gn/T/
+  - USER=apple
+  - XPC_FLAGS=0x0
+  - XPC_SERVICE_NAME=0
+  - _=/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home/bin/java
+  - __CFBundleIdentifier=com.apple.Terminal
+  - __CF_USER_TEXT_ENCODING=0x1F5:0x19:0x34
+System properties:
+  - awt.toolkit=sun.lwawt.macosx.LWCToolkit
+  - file.encoding=UTF-8
+  - file.encoding.pkg=sun.io
+  - file.separator=/
+  - ftp.nonProxyHosts=local|*.local|169.254/16|*.169.254/16
+  - gopherProxySet=false
+  - http.nonProxyHosts=local|*.local|169.254/16|*.169.254/16
+  - http.proxyHost=127.0.0.1
+  - http.proxyPort=17890
+  - https.proxyHost=127.0.0.1
+  - https.proxyPort=17890
+  - java.awt.graphicsenv=sun.awt.CGraphicsEnvironment
+  - java.awt.headless=true
+  - java.awt.printerjob=sun.lwawt.macosx.CPrinterJob
+  - java.class.path=/Library/sonarqueb/sonar-scanner-3.3.0.1492-windows/bin/../lib/sonar-scanner-cli-3.3.0.1492.jar
+  - java.class.version=52.0
+  - java.endorsed.dirs=/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home/jre/lib/endorsed
+  - java.ext.dirs=/Users/apple/Library/Java/Extensions:/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home/jre/lib/ext:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java
+  - java.home=/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home/jre
+  - java.io.tmpdir=/var/folders/k2/_36ns8ns6ybcy6c73w8kv72r0000gn/T/
+  - java.library.path=/Users/apple/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:.
+  - java.runtime.name=Java(TM) SE Runtime Environment
+  - java.runtime.version=1.8.0_381-b09
+  - java.specification.maintenance.version=5
+  - java.specification.name=Java Platform API Specification
+  - java.specification.vendor=Oracle Corporation
+  - java.specification.version=1.8
+  - java.vendor=Oracle Corporation
+  - java.vendor.url=http://java.oracle.com/
+  - java.vendor.url.bug=http://bugreport.sun.com/bugreport/
+  - java.version=1.8.0_381
+  - java.vm.info=mixed mode
+  - java.vm.name=Java HotSpot(TM) 64-Bit Server VM
+  - java.vm.specification.name=Java Virtual Machine Specification
+  - java.vm.specification.vendor=Oracle Corporation
+  - java.vm.specification.version=1.8
+  - java.vm.vendor=Oracle Corporation
+  - java.vm.version=25.381-b09
+  - line.separator=
+
+  - os.arch=x86_64
+  - os.name=Mac OS X
+  - os.version=13.5
+  - path.separator=:
+  - project.home=/Users/apple/DWSurvey123/DWSurvey/src/main/java/net/diaowen/common/utils
+  - scanner.home=/Library/sonarqueb/sonar-scanner-3.3.0.1492-windows/bin/..
+  - socksNonProxyHosts=local|*.local|169.254/16|*.169.254/16
+  - socksProxyHost=127.0.0.1
+  - socksProxyPort=17890
+  - sun.arch.data.model=64
+  - sun.boot.class.path=/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home/jre/classes
+  - sun.boot.library.path=/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home/jre/lib
+  - sun.cpu.endian=little
+  - sun.cpu.isalist=
+  - sun.io.unicode.encoding=UnicodeBig
+  - sun.java.command=org.sonarsource.scanner.cli.Main -Dsonar.login=55424d60a50947940ff7ce8e7e584ff80daf928e -DprojectKey=DWSurvey -X
+  - sun.java.launcher=SUN_STANDARD
+  - sun.jnu.encoding=UTF-8
+  - sun.management.compiler=HotSpot 64-Bit Tiered Compilers
+  - sun.os.patch.level=unknown
+  - user.country=CN
+  - user.dir=/Users/apple/DWSurvey123/DWSurvey/src/main/java/net/diaowen/common/utils
+  - user.home=/Users/apple
+  - user.language=zh
+  - user.name=apple
+  - user.timezone=Asia/Shanghai
+SonarQube plugins:
+  - SonarPython 1.11.0.2473 (python)
+  - SonarCSS 1.0.3.724 (cssfamily)
+  - JaCoCo 1.0.1.143 (jacoco)
+  - SonarGo 1.1.0.1612 (go)
+  - SonarKotlin 1.4.0.155 (kotlin)
+  - Svn 1.9.0.1295 (scmsvn)
+  - SonarJS 5.0.0.6962 (javascript)
+  - SonarRuby 1.4.0.155 (ruby)
+  - SonarScala 1.4.0.155 (sonarscala)
+  - SonarC# 7.10.0.7896 (csharp)
+  - SonarJava 5.10.1.16922 (java)
+  - LDAP 2.2.0.608 (ldap)
+  - SonarHTML 3.1.0.1615 (web)
+  - Git 1.7.0.1491 (scmgit)
+  - SonarFlex 2.4.0.1222 (flex)
+  - SonarXML 2.0.1.2020 (xml)
+  - SonarPHP 2.16.0.4355 (php)
+  - SonarTS 1.9.0.3766 (typescript)
+  - SonarVB 7.10.0.7896 (vbnet)
+Global server settings:
+  - sonar.core.id=BF41A1F2-AYyBLElZa1QT7jW9S2IW
+  - sonar.core.startTime=2023-12-19T17:11:19+0800
+Project server settings:
+Project scanner properties:
+  - sonar.host.url=http://localhost:9000
+  - sonar.java.binaries=/Users/apple/DWSurvey123/DWSurvey/src/main/java/net/diaowen/common/utils
+  - sonar.language=java
+  - sonar.login=******
+  - sonar.projectBaseDir=/Users/apple/DWSurvey123/DWSurvey/src/main/java/net/diaowen/common/utils
+  - sonar.projectKey=DWSurvey
+  - sonar.projectName=DWSurvey
+  - sonar.projectVersion=3.3
+  - sonar.scanner.app=ScannerCli
+  - sonar.scanner.appVersion=3.3.0.1492
+  - sonar.sourceEncoding=UTF-8
+  - sonar.sources=/Users/apple/DWSurvey123/DWSurvey/src/main/java/net/diaowen/common/utils
+  - sonar.verbose=true
+  - sonar.working.directory=/Users/apple/DWSurvey123/DWSurvey/src/main/java/net/diaowen/common/utils/.scannerwork

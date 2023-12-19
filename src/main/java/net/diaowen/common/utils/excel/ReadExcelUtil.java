@@ -10,6 +10,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.logging.Logger;
 
 /**
  * 这个类提供了读取 Excel 文件的功能。
@@ -17,6 +18,10 @@ import java.text.DecimalFormat;
  * 它包含了读取文件、获取单元格值等方法。
  */
 public class ReadExcelUtil {
+	/**
+	 * 日志
+	 */
+	private static final Logger LOGGER = Logger.getLogger(ReadExcelUtil.class.getName());
 
 	/**
 	 *
@@ -36,7 +41,7 @@ public class ReadExcelUtil {
 				wb = new HSSFWorkbook(fs);
 			} catch (IOException e1) {
 				// 处理读取文件时的IO异常
-				e1.printStackTrace();
+				LOGGER.warning(e1.getMessage());
 			}
 		}
 		return wb;
@@ -47,12 +52,10 @@ public class ReadExcelUtil {
 	 * 获取给定工作簿中指定索引位置的HSSFSheet对象。
 	 *
 	 * @param wb    HSSFWorkbook对象
-	 * @param index 索引位置
 	 * @return HSSFSheet对象
 	 */
-	public static HSSFSheet getHSSFSheet(HSSFWorkbook wb, int index) {
-		HSSFSheet sheet = wb.getSheetAt(0);
-		return sheet;
+	public static HSSFSheet getHSSFSheet(HSSFWorkbook wb) {
+		return wb.getSheetAt(0);
 	}
 	/**
 	 * 根据给定行和列索引获取单元格的值。
@@ -69,8 +72,7 @@ public class ReadExcelUtil {
 		if (cell == null)
 			return "";
 		//获取单元格的字符串值
-		String msg = getCellStringValue(cell);
-		return msg;
+		return getCellStringValue(cell);
 	}
 	/**
 	 * 根据给定的单元格获取其值。
@@ -81,8 +83,7 @@ public class ReadExcelUtil {
 	//根据列获取值
 	public static String getValueByCol(Cell sfCell){
 		//获取单元格字符串值
-		String msg = getCellStringValue(sfCell);
-		return msg;
+		return getCellStringValue(sfCell);
 	}
 
 	/**
@@ -95,13 +96,9 @@ public class ReadExcelUtil {
 			// 创建POIFSFileSystem对象，用于读取文件
 			POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream(filePath));
 			// 创建HSSFWorkbook对象，用于读取文件
-			HSSFWorkbook wb = new HSSFWorkbook(fs);
-			// 获取第一个sheet
-			HSSFSheet sheet = wb.getSheetAt(0);
-
-
+			new HSSFWorkbook(fs);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.warning(e.getMessage());
 		}
 	}
 

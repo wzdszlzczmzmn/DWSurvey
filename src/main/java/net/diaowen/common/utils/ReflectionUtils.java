@@ -20,15 +20,16 @@ import java.lang.reflect.*;
  *
  */
 public abstract class ReflectionUtils {
-	private ReflectionUtils(){
-
-	}
 	private static final String ERROR_MESSAGE = "] on target [";
 	//CGLIB动态代理类的分隔符，用于获取真实的Class类型。
 	public static final String CGLIB_CLASS_SEPARATOR = "$$";
 
 	//反射工具类的日志记录器。
-	private static Logger logger = LoggerFactory.getLogger(ReflectionUtils.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReflectionUtils.class);
+
+	private ReflectionUtils(){
+
+	}
 
 	/**
 	 * 调用对象的Getter方法。
@@ -95,7 +96,7 @@ public abstract class ReflectionUtils {
 			result = field.get(obj);
 		} catch (IllegalAccessException e) {
 			// 记录异常信息
-			logger.error("不可能抛出的异常{}", e.getMessage());
+			LOGGER.error("不可能抛出的异常{}", e.getMessage());
 		}
 		//返回字段值
 		return result;
@@ -125,7 +126,7 @@ public abstract class ReflectionUtils {
 			field.set(obj, value);
 		} catch (IllegalAccessException e) {
 			//记录异常信息
-			logger.error("不可能抛出的异常:{}", e.getMessage());
+			LOGGER.error("不可能抛出的异常:{}", e.getMessage());
 		}
 
 	}
@@ -271,7 +272,7 @@ public abstract class ReflectionUtils {
 		// 如果泛型超类不是ParameterizedType类型
 		if (!(genType instanceof ParameterizedType)) {
 			// 记录警告日志，说明类的超类不是ParameterizedType类型
-			logger.warn(clazz.getSimpleName() + "'s superclass not ParameterizedType");
+			LOGGER.warn(clazz.getSimpleName() + "'s superclass not ParameterizedType");
 			// 返回object.class
 			return Object.class;
 		}
@@ -282,7 +283,7 @@ public abstract class ReflectionUtils {
 		// 如果索引超出范围，返回Object.class
 		if (index >= params.length || index < 0) {
 			//记录警告日志
-			logger.warn("Index: " + index + ", Size of " + clazz.getSimpleName() + "'s Parameterized Type: "
+			LOGGER.warn("Index: " + index + ", Size of " + clazz.getSimpleName() + "'s Parameterized Type: "
 					+ params.length);
 			// 返回Object.class
 			return Object.class;
@@ -290,7 +291,7 @@ public abstract class ReflectionUtils {
 		// 如果参数不是Class类型，返回Object.class
 		if (!(params[index] instanceof Class)) {
 			//记录警告日志
-			logger.warn(clazz.getSimpleName() + " not set the actual class on superclass generic parameter");
+			LOGGER.warn(clazz.getSimpleName() + " not set the actual class on superclass generic parameter");
 			//返回Object.class
 			return Object.class;
 		}
@@ -339,10 +340,8 @@ public abstract class ReflectionUtils {
 				Object value = field.get(fromObj);
 				//设置copyObj的属性值
 				field.set(copyObj, value);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				LOGGER.warn(e.getMessage());
 			}
 		}
 	}
