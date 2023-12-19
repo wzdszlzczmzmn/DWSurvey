@@ -24,6 +24,9 @@ import java.util.TreeMap;
  *
  */
 public abstract class ServletUtils {
+	private ServletUtils(){
+
+	}
 
 	//-- Content Type 定义 --//
 	public static final String EXCEL_TYPE = "application/vnd.ms-excel";
@@ -135,6 +138,7 @@ public abstract class ServletUtils {
 			String encodedfileName = new String(fileName.getBytes(), "ISO8859-1");
 			response.setHeader("Content-Disposition", "attachment; filename=\"" + encodedfileName + "\"");
 		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -145,7 +149,7 @@ public abstract class ServletUtils {
 	 */
 	public static Map<String, Object> getParametersStartingWith(ServletRequest request, String prefix) {
 		AssertUtils.notNull(request, "Request must not be null");
-		Enumeration paramNames = request.getParameterNames();
+		Enumeration<String> paramNames = request.getParameterNames();
 		Map<String, Object> params = new TreeMap<String, Object>();
 		if (prefix == null) {
 			prefix = "";

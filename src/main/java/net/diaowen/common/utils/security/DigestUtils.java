@@ -22,6 +22,9 @@ import java.security.MessageDigest;
  *
  */
 public abstract class DigestUtils {
+	private DigestUtils(){
+
+	}
 
 	private static final String SHA1 = "SHA-1";
 	private static final String MD5 = "MD5";
@@ -56,9 +59,12 @@ public abstract class DigestUtils {
 	 */
 	private static byte[] digest(String input, String algorithm) {
 		try {
+			//获取指定算法的消息摘要
 			MessageDigest messageDigest = MessageDigest.getInstance(algorithm);
+			//使用消息摘要算法对输入字符串进行摘要
 			return messageDigest.digest(input.getBytes());
 		} catch (GeneralSecurityException e) {
+			//抛出未检查的异常
 			throw ExceptionUtils.unchecked(e);
 		}
 	}
@@ -80,16 +86,21 @@ public abstract class DigestUtils {
 
 	private static String digest(InputStream input, String algorithm) throws IOException {
 		try {
+			// 获取MessageDigest实例
 			MessageDigest messageDigest = MessageDigest.getInstance(algorithm);
+			// 初始化缓冲区
 			int bufferLength = 1024;
 			byte[] buffer = new byte[bufferLength];
+			// 读取输入流
 			int read = input.read(buffer, 0, bufferLength);
 
+			// 循环读取输入流，并更新MessageDigest实例
 			while (read > -1) {
 				messageDigest.update(buffer, 0, read);
 				read = input.read(buffer, 0, bufferLength);
 			}
 
+			// 返回16进制字符串
 			return EncodeUtils.encodeHex(messageDigest.digest());
 
 		} catch (GeneralSecurityException e) {
