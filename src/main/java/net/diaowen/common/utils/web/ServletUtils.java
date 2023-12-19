@@ -13,20 +13,21 @@ import net.diaowen.common.utils.EncodeUtils;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
+
 
 /**
  * Http与Servlet工具类.
  *
  */
 public abstract class ServletUtils {
-	private ServletUtils(){
-
-	}
+	/**
+	 * 日志
+	 */
 
 	//-- Content Type 定义 --//
 	public static final String EXCEL_TYPE = "application/vnd.ms-excel";
@@ -40,7 +41,11 @@ public abstract class ServletUtils {
 	public static final String AUTHENTICATION_HEADER = "Authorization";
 
 	//-- 常用数值定义 --//
-	public static final long ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
+	public static final long ONE_YEAR_SECONDS = 60L * 60L * 24L * 365L;
+
+	private ServletUtils(){
+
+	}
 
 	/**
 	 * 设置客户端缓存过期时间 的Header.
@@ -133,13 +138,9 @@ public abstract class ServletUtils {
 	 * @param fileName 下载后的文件名.
 	 */
 	public static void setFileDownloadHeader(HttpServletResponse response, String fileName) {
-		try {
-			//中文文件名支持
-			String encodedfileName = new String(fileName.getBytes(), "ISO8859-1");
-			response.setHeader("Content-Disposition", "attachment; filename=\"" + encodedfileName + "\"");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
+		//中文文件名支持
+		String encodedfileName = new String(fileName.getBytes(), StandardCharsets.ISO_8859_1);
+		response.setHeader("Content-Disposition", "attachment; filename=\"" + encodedfileName + "\"");
 	}
 
 	/**
@@ -150,12 +151,12 @@ public abstract class ServletUtils {
 	public static Map<String, Object> getParametersStartingWith(ServletRequest request, String prefix) {
 		AssertUtils.notNull(request, "Request must not be null");
 		Enumeration<String> paramNames = request.getParameterNames();
-		Map<String, Object> params = new TreeMap<String, Object>();
+		Map<String, Object> params = new TreeMap<>();
 		if (prefix == null) {
 			prefix = "";
 		}
 		while (paramNames != null && paramNames.hasMoreElements()) {
-			String paramName = (String) paramNames.nextElement();
+			String paramName = paramNames.nextElement();
 			if ("".equals(prefix) || paramName.startsWith(prefix)) {
 				String unprefixed = paramName.substring(prefix.length());
 				String[] values = request.getParameterValues(paramName);

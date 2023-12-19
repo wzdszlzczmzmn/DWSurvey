@@ -3,11 +3,17 @@ package net.diaowen.common.utils;
 import net.diaowen.dwsurvey.config.DWSurveyConfig;
 
 import java.io.*;
+import java.util.logging.Logger;
 
 /**
  * 将输出流内容写到文件
  */
 public class DwWriteFile {
+	/**
+	 * 日志
+	 */
+	private static final Logger LOGGER = Logger.getLogger(DwWriteFile.class.getName());
+
 	private DwWriteFile(){
 
 	}
@@ -22,8 +28,7 @@ public class DwWriteFile {
 	 * @throws IOException 文件操作异常
 	 * @throws FileNotFoundException 文件未找到异常
 	 */
-	public static File writeOS(String fileName, String fileRealPath, final ByteArrayOutputStream os) throws IOException,
-			FileNotFoundException {
+	public static File writeOS(String fileName, String fileRealPath, final ByteArrayOutputStream os) throws IOException{
 		//从fileRealPath字符串中找到"/wjHtml"最后一次出现的位置，并返回其后面的子字符串（不包括"/wjHtml"）
 		fileRealPath = fileRealPath.substring(fileRealPath.lastIndexOf("/wjHtml")+1);
 		//根路径用写好的配置
@@ -38,7 +43,10 @@ public class DwWriteFile {
 		File newFile = new File(fileRealPath + fileName);
 		if (!newFile.exists()) {
 			//如果文件不存在，就创建相应的文件
-			newFile.createNewFile();
+			boolean isSuccess = newFile.createNewFile();
+			if (!isSuccess){
+				LOGGER.warning("Fail to create a File!");
+			}
 		}
 		//文件输出流
 		FileOutputStream fos = new FileOutputStream(newFile);

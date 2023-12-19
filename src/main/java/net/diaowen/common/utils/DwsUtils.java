@@ -9,18 +9,24 @@ import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Logger;
 
 /**
  * Created by keyuan on 2019/8/5.
  * 这个类是一个工具类，包含了获取基础URL、将字符串处理成日期、文件下载的静态方法。
  */
 public class DwsUtils {
+    /**
+     * 日志
+     */
+    private static final Logger LOGGER = Logger.getLogger(DwsUtils.class.getName());
+
+    // 默认的基础URL
+    public static final String BASEURL_DEFAULT = "http://www.surveyform.cn";
+
     private DwsUtils(){
 
     }
-
-    // 默认的基础URL
-    public static String BASEURL_DEFAULT = "http://www.surveyform.cn";
 
     /**
      * 获取基础URL
@@ -50,8 +56,8 @@ public class DwsUtils {
             //将字符串data返回指定格式的日期
             return simpleDateFormat.parse(date);
         } catch (ParseException e) {
-            // 如果日期字符串格式错误，捕获 ParseException 异常并打印异常堆栈信息
-            e.printStackTrace();
+            // 如果日期字符串格式错误，捕获 ParseException 异常并打印异常信息
+            LOGGER.warning(e.getMessage());
         }
         // 如果转换失败，则返回 null
         return null;
@@ -73,7 +79,7 @@ public class DwsUtils {
         try (FileInputStream in = new FileInputStream(downFilePath);
              OutputStream out = response.getOutputStream()) {
 
-            byte buffer[] = new byte[1024];
+            byte[] buffer = new byte[1024];
             int len;
 
             while ((len = in.read(buffer)) > 0) {
@@ -81,7 +87,7 @@ public class DwsUtils {
             }
         } catch (IOException e) {
             // 处理可能的异常
-            e.printStackTrace();
+            LOGGER.warning(e.getMessage());
         }
     }
 

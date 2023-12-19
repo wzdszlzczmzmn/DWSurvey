@@ -21,9 +21,9 @@ public class XLSXExportUtil {
 
 	// 设置cell编码解决中文高位字节截断
 	// 定制日期格式
-	private static String DATE_FORMAT = " m/d/yy "; // "m/d/yy h:mm"
+	private static String dateFormat = " m/d/yy "; // "m/d/yy h:mm"
 	// 定制浮点数格式
-	private static String NUMBER_FORMAT = " #,##0.00 ";
+	private static String numberFormat = " #,##0.00 ";
 	//定义文件名
 	private String xlsFileName;
 	//定义文件路径
@@ -66,7 +66,7 @@ public class XLSXExportUtil {
 	 * 导出Excel文件
 	 *
 	 */
-	public void exportXLS() throws Exception {
+	public void exportXLS() throws ExportException {
 		try {
 			// 判断文件夹是否存在，不存在则创建
 			File file=new File(path);
@@ -166,7 +166,7 @@ public class XLSXExportUtil {
 	public void setCell(int index, Calendar value) {
 		XSSFCell cell = this.row.createCell((short) index);
 		cell.setCellValue(value.getTime());
-		cellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat(DATE_FORMAT)); // 设置cell样式为定制的日期格式
+		cellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat(dateFormat)); // 设置cell样式为定制的日期格式
 		cell.setCellStyle(cellStyle); // 设置该cell日期的显示格式
 	}
 
@@ -198,7 +198,7 @@ public class XLSXExportUtil {
 		XSSFCell cell = this.row.createCell((short) index);
 		cell.setCellType(CellType.NUMERIC);
 		cell.setCellValue(value);
-		cellStyle.setDataFormat(dataFormat.getFormat(NUMBER_FORMAT)); // 设置cell样式为定制的浮点数格式
+		cellStyle.setDataFormat(dataFormat.getFormat(numberFormat)); // 设置cell样式为定制的浮点数格式
 		cell.setCellStyle(cellStyle); // 设置该cell浮点数的显示格式
 	}
 

@@ -7,6 +7,7 @@ import net.diaowen.dwsurvey.service.impl.SurveyAnswerManagerImpl;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 /**
  * RunAnswerUtil提供了用于获取新问题Map的工具方法。
@@ -14,6 +15,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * 它通过多线程并行处理每个问题，最终构建并返回一个完整的问题映射。
  */
 public class RunAnswerUtil {
+    /**
+     * 日志
+     */
+    private static final Logger LOGGER = Logger.getLogger(RunAnswerUtil.class.getName());
 
     /**
      * 返回新question Map
@@ -23,7 +28,7 @@ public class RunAnswerUtil {
      */
     public Map<Integer,Question> getQuestionMap(List<Question> questions,String surveyAnswerId) {
         int quIndex = 0;  // 问题索引
-        Map<Integer,Question> questionMap = new ConcurrentHashMap<Integer,Question>();  // 问题Map
+        Map<Integer,Question> questionMap = new ConcurrentHashMap<>();  // 问题Map
         for (Question question : questions) {
             new Thread(new RAnswerQuestionMap(quIndex++,questionMap,surveyAnswerId,question)).start();  // 创建并启动新线程
         }
@@ -32,7 +37,7 @@ public class RunAnswerUtil {
                 Thread.sleep(1);  // 等待1毫秒
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // 重新中断当前线程
-                e.printStackTrace();
+                LOGGER.warning(e.getMessage());
 
             }
         }

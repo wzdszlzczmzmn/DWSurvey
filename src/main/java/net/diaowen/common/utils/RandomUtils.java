@@ -3,12 +3,17 @@ package net.diaowen.common.utils;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
+import java.util.logging.Logger;
 
 /**
  * RandomUtils 类提供了各种生成随机数据和代码的方法。
  * 它包括生成随机字符串、数字、日期、订单编码、验证代码、企业编码、应用密钥和应用密钥密钥等功能。
  */
 public class RandomUtils {
+	/**
+	 * 日志
+	 */
+	private static final Logger LOGGER = Logger.getLogger(RandomUtils.class.getName());
 	private static Random random = new Random();
 	public static void main(String[] args) throws Exception{
 		//空的main方法
@@ -22,19 +27,19 @@ public class RandomUtils {
 	 */
 	public static String randomWord(int min,int max) {
 		//初始化字符串randomStr为空字符串
-		String randomStr = "";
+		StringBuilder randomStr = new StringBuilder();
 		// 在规定字符串字数区间内生成一个随机数
 		int ranNum = randomInt(min, max);
 		for (int i = 0; i < ranNum; i++) {
 			//初始化字符c为a
 			char c = 'a';
 			//将c变为26个小写英文字母中的随机1个
-			c = (char) (c + (int) (Math.random() * 26));
+			c = (char) (c + random.nextInt(26));
 			//将随机字符c加入到randomStr中
-			randomStr += c;
+			randomStr.append(c);
 		}
 		//返回最终的随机生成字符串
-		return randomStr;
+		return randomStr.toString();
 	}
 
 	/**
@@ -51,7 +56,7 @@ public class RandomUtils {
 		String randomWord=randomWord(ranWord, ranWord);
 		if(max>3){// 若目标字符串长度大于 3
 			//生成一个随机数，并转换为字符串
-			String randomNum=random(ranNum-2, ranNum)+"";
+			String randomNum=random(ranNum-2L, ranNum)+"";
 			// 返回由随机数字和随机字符串组合而成的字符串
 			return randomNum+randomWord;
 		}
@@ -104,7 +109,7 @@ public class RandomUtils {
 	           return new Date(date);
 	       } catch (Exception e) {
 			   // 打印异常信息
-	           e.printStackTrace();
+	           LOGGER.warning(e.getMessage());
 	       }
 		  // 返回空值
 	       return null;

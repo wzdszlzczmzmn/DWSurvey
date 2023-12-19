@@ -19,8 +19,7 @@ public class BuildHtml {
 	 * @throws FileNotFoundException 文件路径错误或指定文件不存在
 	 */
 	public static File writeLocal(String fileName, String fileRealPath,
-									 final ByteArrayOutputStream os) throws IOException,
-			FileNotFoundException {
+									 final ByteArrayOutputStream os) throws IOException{
 		//新建file2文件，并用传入的文件路径初始化，用来检测路径是否存在
 		File file2 = new File(fileRealPath);
 		if (!file2.exists() || !file2.isDirectory()) {
