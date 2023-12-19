@@ -13,6 +13,9 @@ import java.util.Map;
  * 向指定URL发送GET和POST请求
  */
 public class HttpRequest {
+    private HttpRequest(){
+
+    }
     /**
      * 向指定URL发送GET方法的请求
      *
@@ -26,7 +29,6 @@ public class HttpRequest {
         //初始化result为空字符串
         String result = "";
         //初始化输入流in为null
-//        BufferedReader in = null;
         try {
             //urlNameString是发送请求的url加上它请求的参数，即完整的请求网址
             String urlNameString = url + "?" + param;
@@ -69,11 +71,7 @@ public class HttpRequest {
      * @return 所代表远程资源的响应结果
      */
     public static String sendPost(String url, String param) {
-        //初始化打印流out为null
-//        PrintWriter out = null;
-        //初始化输入流in为null
-//        BufferedReader in = null;
-        //初始化字符串result为空字符串
+
         String result = "";
         try {
             //以发送请求的URL创建一个URL实体

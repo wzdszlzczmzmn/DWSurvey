@@ -28,6 +28,9 @@ import net.diaowen.common.utils.ExceptionUtils;
  *
  */
 public abstract class CryptoUtils {
+	private CryptoUtils(){
+
+	}
 
 	// 加密算法
 	private static final String DES = "DES";

@@ -67,8 +67,7 @@ public class RandomUtils {
 	 * @return 在指定范围内的随机整数
 	 */
 	public static int randomInt(int minNum, int maxNum) {
-		// 创建一个随机数生成器
-//		Random random = new Random();
+
 		// 生成一个不超过 maxNum 的随机整数
 		int randomInt = random.nextInt(maxNum);
 		// 如果生成的随机数小于最小值
@@ -144,9 +143,8 @@ public class RandomUtils {
 		  // 可用于生成随机字符串的字符集合
 		String base = "abcdefghijklmnopqrstuvwxyz0123456789";
 		//创建随机数生成器
-//		Random random = new Random();
 		  // 用于构建生成的随机字符串
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		  // 生成一个介于minLen和maxLen之间的随机长度
 		int length=random.nextInt(maxLen-minLen)+minLen;
 		  // 根据生成的长度，随机选择字符集合中的字符拼接成字符串
@@ -170,9 +168,7 @@ public class RandomUtils {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyMMddHsSSS");
 		// 格式化当前日期时间为指定格式的字符串
 		String dateFormat = simpleDateFormat.format(new Date());
-//		return dateFormat+RandomUtils.randomNum(4,4);
-//		dateFormat = RandomUtils.randomWord(5,5).toUpperCase();
-		// 返回格式化日期时间后接上一个100000到999999之间的随机数作为订单编码的一部分
+
 		return dateFormat+"-"+RandomUtils.random(100000l,999999l);
 	}
 
@@ -196,8 +192,6 @@ public class RandomUtils {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyMMddHHmmsSSS");
 		// 获取当前日期并以设定的格式进行格式化
 		String dateFormat = simpleDateFormat.format(new Date());
-//		return dateFormat+RandomUtils.randomNum(4,4);
-//		dateFormat = RandomUtils.randomWord(5,5).toUpperCase();
 		// 返回格式化后的日期字符串附加一个验证代码
 		return dateFormat+"-"+RandomUtils.getVerifyCode();
 //		20150806125346
@@ -214,8 +208,7 @@ public class RandomUtils {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyMMddHHmmssSSS");
 		// 获取当前日期时间并以设定的格式进行格式化
 		String dateFormat = simpleDateFormat.format(new Date());
-//		return dateFormat+RandomUtils.randomNum(4,4);
-//		dateFormat = RandomUtils.randomWord(5,5).toUpperCase();
+
 		// 返回格式化后的日期字符串附加一个验证代码
 		return dateFormat+"-"+RandomUtils.getVerifyCode();
 		// 返回格式类似于 yyMMddHHmmssSSS-验证代码 的字符串
@@ -234,8 +227,7 @@ public class RandomUtils {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyMMddHHmmsSSS");
 		// 获取当前日期时间并以设定的格式进行格式化
 		String dateFormat = simpleDateFormat.format(new Date());
-//		return dateFormat+RandomUtils.randomNum(4,4);
-//		dateFormat = RandomUtils.randomWord(5,5).toUpperCase();
+
 		// 返回格式化后的日期字符串附加一个验证代码
 		return dateFormat+RandomUtils.getVerifyCode();
 		// 返回格式类似于 yyMMddHHmmsSSS+验证代码 的订单号字符串
@@ -268,10 +260,7 @@ public class RandomUtils {
 	 * 返回生成的字符串作为应用密钥的密钥部分
 	 */
 	public static String buildAppSecret() {
-		// 创建一个日期格式化对象，设置日期格式为"yyyyMMddHHmmsSSS"
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmsSSS");
-		// 获取当前日期时间并以设定的格式进行格式化
-		String dateFormat = simpleDateFormat.format(new Date());
+
 		// 返回当前时间的毫秒数结合一个由8到10个字符组成的随机字符串作为应用密钥的密钥部分
 		return randomWord(8,10)+System.currentTimeMillis();
 	}

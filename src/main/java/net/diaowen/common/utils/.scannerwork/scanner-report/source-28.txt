@@ -24,6 +24,9 @@ import org.slf4j.LoggerFactory;
  *
  */
 public abstract class ReflectionUtils {
+	private ReflectionUtils(){
+
+	}
 	private static final String ERROR_MESSAGE = "] on target [";
 	//CGLIB动态代理类的分隔符，用于获取真实的Class类型。
 	public static final String CGLIB_CLASS_SEPARATOR = "$$";
@@ -121,12 +124,14 @@ public abstract class ReflectionUtils {
 		}
 
 		try {
+
 			// 设置字段值
 			field.set(obj, value);
 		} catch (IllegalAccessException e) {
 			//记录异常信息
 			logger.error("不可能抛出的异常:{}", e.getMessage());
 		}
+
 	}
 
 	/**

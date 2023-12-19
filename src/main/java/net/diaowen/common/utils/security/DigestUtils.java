@@ -22,6 +22,9 @@ import net.diaowen.common.utils.ExceptionUtils;
  *
  */
 public abstract class DigestUtils {
+	private DigestUtils(){
+
+	}
 
 	private static final String SHA1 = "SHA-1";
 	private static final String MD5 = "MD5";

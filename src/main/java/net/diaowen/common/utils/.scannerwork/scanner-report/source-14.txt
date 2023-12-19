@@ -6,6 +6,9 @@ import javax.servlet.http.HttpServletRequest;
  * 判断是手机端还是电脑端，判断是不是微信浏览器
  */
 public class HttpRequestDeviceUtils {
+	private HttpRequestDeviceUtils(){
+
+	}
 
 	/** Wap网关Via头信息中特有的描述信息 */
 	private static String mobileGateWayHeaders[] = new String[] { "ZXWAP",// 中兴提供的wap网关的via信息，例如：Via=ZXWAP
@@ -45,12 +48,12 @@ public class HttpRequestDeviceUtils {
 			"SymbianOS",// 塞班系统的，
 			"MAUI",// MTK山寨机默认ua
 			"UNTRUSTED/1.0",// 疑似山寨机的ua，基本可以确定还是手机
-			"Windows CE",// Windows CE，Mozilla/4.0 (compatible; MSIE 6.0;
+			"Windows CE",
 							// Windows CE; IEMobile 7.11)
 			"iPhone",// iPhone是否也转wap？不管它，先区分出来再说。Mozilla/5.0 (iPhone; U; CPU
 						// iPhone OS 4_1 like Mac OS X; zh-cn) AppleWebKit/532.9
 						// (KHTML like Gecko) Mobile/8B117
-			"iPad",// iPad的ua，Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X;
+			"iPad",
 					// zh-cn) AppleWebKit/531.21.10 (KHTML like Gecko)
 					// Version/4.0.4 Mobile/7B367 Safari/531.21.10
 			"Android",// Android是否也转wap？Mozilla/5.0 (Linux; U; Android

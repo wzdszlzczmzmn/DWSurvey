@@ -6,6 +6,9 @@ import java.util.regex.Pattern;
  * 	用正则表达式检查一个字符串是否为纯数字
  */
 public class NumberUtils {
+	private NumberUtils(){
+
+	}
 	// 用正则表达式检查一个字符串是否为纯数字
 	public static boolean isNumeric(String str){
 		// 创建一个匹配纯数字的正则表达式模式

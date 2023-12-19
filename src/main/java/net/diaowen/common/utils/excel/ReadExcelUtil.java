@@ -99,8 +99,7 @@ public class ReadExcelUtil {
 			HSSFWorkbook wb = new HSSFWorkbook(fs);
 			// 获取第一个sheet
 			HSSFSheet sheet = wb.getSheetAt(0);
-			// 获取第四行
-			HSSFRow row = sheet.getRow(3);
+
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -129,8 +128,7 @@ public class ReadExcelUtil {
 				break;
 			// 如果单元格是数字类型
 			case NUMERIC:
-				// 获取单元格的值
-				// cellValue = String.valueOf(cell.getNumericCellValue());
+
 				// 设置格式
 				DecimalFormat formatter = new DecimalFormat("######");
 				// 格式化单元格的值

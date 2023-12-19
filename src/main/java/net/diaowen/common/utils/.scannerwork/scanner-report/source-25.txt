@@ -15,6 +15,9 @@ import javax.servlet.http.HttpServletRequest;
  * 然后，它使用UserAgentUtils.parseUserAgentString()方法解析用户代理字符串，并根据解析结果将操作系统、浏览器和设备类型转换为整数数组。
  */
 public class UserAgentUtils {
+    private UserAgentUtils(){
+
+    }
 
     /**
      * userAgent方法接受一个HttpServletRequest对象作为参数，并从中获取"User-Agent"请求头。
@@ -23,7 +26,6 @@ public class UserAgentUtils {
      * @return UserAgent对象
      */
    public static UserAgent userAgent(HttpServletRequest request){
-//        String agent=request.getHeader("User-Agent");
 //        如下，我们获取了一个agent的字符串：
 //        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.81 Safari/537.36"
 //        由此，通过User-agent-utils解析：
@@ -32,6 +34,7 @@ public class UserAgentUtils {
         UserAgent userAgent = UserAgent.parseUserAgentString(agent);
         return userAgent;
     }
+
 
 
     /**

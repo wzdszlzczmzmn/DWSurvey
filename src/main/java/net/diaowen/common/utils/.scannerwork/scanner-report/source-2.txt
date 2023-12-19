@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
 
 
@@ -41,14 +42,21 @@ public class ZipUtil {
      *
      * @param f
      */
-   public static void clean(File f) throws Exception {
+    public class ZipFileDeleteException extends Exception {
+
+        public ZipFileDeleteException(String message) {
+            super(message);
+        }
+    }
+
+    public static void clean(File f) throws Exception {
         //获取文件夹下的文件列表
         String cs[] = f.list();
         //如果文件列表为空，则删除文件夹
         if (cs == null || cs.length <= 0) {
             boolean isDelete = f.delete();
             if (!isDelete) {
-                throw new Exception(f.getName() + ZIP_FILE_DELETE_ERROR);
+                throw new ZipException(f.getName() + ZIP_FILE_DELETE_ERROR);
             }
         //如果文件列表不为空，则遍历文件列表，删除文件
         } else {
@@ -60,7 +68,7 @@ public class ZipUtil {
                 if (f2.exists() && f2.isFile()) {
                     boolean isDelete = f2.delete();
                     if (!isDelete) {
-                        throw new Exception(f2.getName() + ZIP_FILE_DELETE_ERROR);
+                        throw new ZipException(f2.getName() + ZIP_FILE_DELETE_ERROR);
                     }
                 //如果文件存在且是文件夹，则递归调用clean方法
                 } else if (f2.exists() && f2.isDirectory()) {
@@ -70,7 +78,7 @@ public class ZipUtil {
             //删除文件夹
             boolean isDelete = f.delete();
             if (!isDelete) {
-                throw new Exception(f.getName() + ZIP_FILE_DELETE_ERROR);
+                throw new ZipException(f.getName() + ZIP_FILE_DELETE_ERROR);
             }
         }
     }
@@ -129,6 +137,5 @@ public class ZipUtil {
 
 
     public static void main(String[] args) {
-//        ZipUtil.createZip("/Users/keyuan/Documents/GIT/my-gitlab/dw/dwsurvey_b1/dwsurvey/target/dwsurvey/file/402880e864e15c150164e3917b930000", "/Users/keyuan/Documents/GIT/my-gitlab/dw/dwsurvey_b1/dwsurvey/target/dwsurvey/file/402880e864e15c150164e3917b930000.zip",false);
-    }
+   }
 }

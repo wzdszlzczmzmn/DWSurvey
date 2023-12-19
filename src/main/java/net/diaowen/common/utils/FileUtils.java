@@ -61,9 +61,8 @@ public class FileUtils {
 						'5', '6', '7', '8', '9' };
 
 				// 创建一个 StringBuffer 用于存储文件名
-				StringBuffer fileName = new StringBuffer("");
-				// 创建一个随机数生成器
-//				Random r = new Random();
+				StringBuilder fileName = new StringBuilder("");
+
 				// 初始化位置变量为 -1
 				int pos = -1;
 				// 循环15次，生成随机文件名
@@ -127,10 +126,7 @@ public class FileUtils {
 			// 如果上传的文件的名字中含有中文字符或其他非单词字符，那么就进行重命名，并将其改为英文名字
 			// 这里所说的单词字符为：[a-zA-Z_0-9]
 			Boolean rename = true;
-			// String pattern="[\u4e00-\u9fa5]+";
-			// Pattern p=Pattern.compile(pattern);
-			// Matcher result=p.matcher(file.getOriginalFilename());
-			// rename=result.find();
+
 			if (aFile != null && aFile.exists() || nameLength > 30 || rename) {
 				//如果文件不等于空并且文件已经存在或者名字长度大于30，则重命名
 				// 创建一个包含所有可能字符的数组，用于随机生成文件名
@@ -140,9 +136,8 @@ public class FileUtils {
 						'5', '6', '7', '8', '9' };
 
 				// 创建一个 StringBuffer 用于存储文件名
-				StringBuffer fileName = new StringBuffer("");
-				// 创建一个随机数生成器
-//				Random r = new Random();
+				StringBuilder fileName = new StringBuilder("");
+
 				// 初始化位置变量为-1
 				int pos = -1;
 				// 循环15次，生成随机文件名
@@ -211,9 +206,7 @@ public class FileUtils {
 
 					try (FileInputStream fis = new FileInputStream(file[i])) {
 						//创建一个用于存储文件名的 StringBuffer
-						StringBuffer fileName = new StringBuffer("");
-						// 创建一个随机数生成器
-//						Random r = new Random();
+						StringBuilder fileName = new StringBuilder("");
 						// 初始化位置变量为-1
 						int pos = -1;
 						// 生成15个随机字符组成的文件名
@@ -248,47 +241,6 @@ public class FileUtils {
 						e.printStackTrace();
 					}
 
-
-
-
-
-
-
-//					// 读取文件流
-//					FileInputStream fis = new FileInputStream(file[i]);
-//					//创建一个用于存储文件名的 StringBuffer
-//					StringBuffer fileName = new StringBuffer("");
-//					// 创建一个随机数生成器
-//					Random r = new Random();
-//					// 初始化位置变量为-1
-//					int pos = -1;
-//					// 生成15个随机字符组成的文件名
-//					for (int j = 0; j < 15; j++) {
-//						//随机数范围为0带36，且取绝对值
-//						pos = Math.abs(r.nextInt(36));
-//						// 将随机字符添加到文件名中
-//						fileName.append(str[pos]);
-//					}
-//					// 将文件后缀名添加到生成的文件名后面
-//					fileName.append(filenames[i].substring(filenames[i].lastIndexOf(".")));
-//
-//					// 写入文件流
-//					FileOutputStream fos = new FileOutputStream(path+ fileName.toString());
-//					// 创建一个缓冲区，用于存储读取的文件数据
-//					byte[] buf = new byte[1024];
-//					//初始化变量j=0
-//					int j = 0;
-//
-//					while ((j = fis.read(buf)) != -1) {
-//						// 从文件输入流读取数据到缓冲区，然后写入到文件输出流中
-//						fos.write(buf, 0, j);
-//					}
-//					//关闭文件输入流
-//					fis.close();
-//					//关闭文件输出流
-//					fos.close();
-//					// 将生成的文件名存储在临时数组中
-//					temp[i]=fileName.toString();
 				} catch (Exception e) {
 					// 捕获异常并打印堆栈信息
 					e.printStackTrace();
@@ -298,7 +250,7 @@ public class FileUtils {
 			return temp;
 		}
 		//如果文件为空或长度小于对于0，返回null
-		return null;
+		return new String[0];
 	}
 
 	/**
@@ -341,9 +293,8 @@ public class FileUtils {
 	 */
 	public static String readfile(String path, String encoding) {
 		// 用于存储文件内容的 StringBuffer
-		StringBuffer stringBuffer=new StringBuffer();
-		// 初始化reader为空
-//		BufferedReader reader = null;
+		StringBuilder stringBuffer=new StringBuilder();
+
 		// 创建相应路径文件实体
 		File inputPath = new File(path);
 		if (inputPath.exists()) {

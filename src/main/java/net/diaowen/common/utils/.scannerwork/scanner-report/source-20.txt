@@ -4,6 +4,9 @@ package net.diaowen.common.utils;
  * 包含切割ip字符串并返回ip数组、将字符串ip转化为长整数的方法
  */
 public class IpUtils {
+    private IpUtils(){
+
+    }
 
     /**
      *     // 方法用于将 IP 段字符串切割并返回IP数组

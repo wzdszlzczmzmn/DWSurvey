@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.rmi.server.ExportException;
 import java.util.Calendar;
 
 /**
@@ -54,10 +55,9 @@ public class XLSXExportUtil {
 		// 创建sheet
 		this.sheet = workbook.createSheet();
 		// 创建cell样式
-		this.cellStyle = workbook.createCellStyle(); // 建立新的cell样式;
+		this.cellStyle = workbook.createCellStyle();
 		// 创建数据格式
 		this.dataFormat = workbook.createDataFormat();
-		//		SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(workbook1, 100);
 	}
 
 
@@ -82,9 +82,9 @@ public class XLSXExportUtil {
 			// 关闭文件输出流
 			fOut.close();
 		} catch (FileNotFoundException e) {
-			throw new Exception(" 生成导出Excel文件出错! ", e);
+			throw new ExportException(" 生成导出Excel文件出错! ", e);
 		} catch (IOException e) {
-			throw new Exception(" 写入Excel文件出错! ", e);
+			throw new ExportException(" 写入Excel文件出错! ", e);
 		}
 
 	}
@@ -106,10 +106,6 @@ public class XLSXExportUtil {
 		XSSFCell cell = this.row.createCell((short) index);
 		// 设置单元格类型
 		cell.setCellType(CellType.STRING);
-//		CellStyle style = workbook.createCellStyle();
-//		Font font = workbook.createFont();
-//		font.setColor(IndexedColors.BLUE.getIndex());
-//		style.setFont(font);
 
 		// 设置单元格样式
 		cellStyle.setFillForegroundColor(HSSFColor.HSSFColorPredefined.LIME.getIndex());
@@ -126,12 +122,6 @@ public class XLSXExportUtil {
 		// 设置单元格类型
 		cell.setCellType(CellType.STRING);
 
-//		// 创建一个字体
-//		Font font = workbook.createFont();
-//		// 设置字体颜色
-//		font.setColor(IndexedColors.BLUE.getIndex());
-//		// 设置样式
-//		style.setFont(font);
 
 		// 设置单元格背景色
 		cellStyle.setFillForegroundColor(HSSFColor.HSSFColorPredefined.YELLOW.getIndex());
