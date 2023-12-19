@@ -4,8 +4,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import net.diaowen.common.utils.DiaowenProperty;
-
 public class InitAppliction implements ServletContextListener {
 
 	public  static  String contextPath = null;

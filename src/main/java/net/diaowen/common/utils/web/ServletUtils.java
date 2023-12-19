@@ -7,18 +7,17 @@
  */
 package net.diaowen.common.utils.web;
 
+import net.diaowen.common.utils.AssertUtils;
+import net.diaowen.common.utils.EncodeUtils;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
-
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import net.diaowen.common.utils.AssertUtils;
-import net.diaowen.common.utils.EncodeUtils;
 
 /**
  * Http与Servlet工具类.

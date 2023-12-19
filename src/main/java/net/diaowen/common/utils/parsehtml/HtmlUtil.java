@@ -2,9 +2,6 @@ package net.diaowen.common.utils.parsehtml;
 
 import java.util.regex.Pattern;
 
-/**
- * HTML内容解析工具类
- */
 public class HtmlUtil {
 	public static String removeTagFromText(String htmlStr) {
 		if (htmlStr == null || "".equals(htmlStr))
@@ -29,7 +26,6 @@ public class HtmlUtil {
 			htmlStr = htmlStr.replaceAll("\t", "");
 			htmlStr = htmlStr.replaceAll("\r", "");
 
-			// 过滤注释标签
 			pattern = Pattern.compile(regEx_remark);// 过滤注释标签
 			matcher = pattern.matcher(htmlStr);
 			htmlStr = matcher.replaceAll("");
