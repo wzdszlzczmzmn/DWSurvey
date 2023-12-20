@@ -67,7 +67,7 @@ public class SuperHttpDao {
 					response.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error(e.getMessage());
 				}
 			}
 		}
@@ -92,7 +92,7 @@ public class SuperHttpDao {
 			e.printStackTrace();
 			logger.error("doPost(HttpPost httpPost) ClientProtocolException : {} ", httpPost.getURI().toString());
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 			logger.error("doPost(HttpPost httpPost) IOException : {} ", httpPost.getURI().toString());
 		} finally {
 			if (response != null) {
@@ -100,7 +100,7 @@ public class SuperHttpDao {
 					response.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error(e.getMessage());
 				}
 			}
 		}
@@ -131,7 +131,7 @@ public class SuperHttpDao {
 					response.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error(e.getMessage());
 				}
 			}
 		}
@@ -163,7 +163,7 @@ public class SuperHttpDao {
 					response.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error(e.getMessage());
 				}
 			}
 		}
@@ -195,7 +195,7 @@ public class SuperHttpDao {
 					response.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.warn(e.getMessage());
 				}
 			}
 		}

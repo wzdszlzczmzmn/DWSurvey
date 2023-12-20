@@ -2,7 +2,6 @@ package net.diaowen.common.dao;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 import net.diaowen.common.plugs.page.Page;
 import net.diaowen.common.plugs.page.PageRequest;
@@ -10,7 +9,7 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
 
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
+
 /**
  * 通用 Hibernate DAO 接口，继承自 ISimpleHibernateDao。
  *

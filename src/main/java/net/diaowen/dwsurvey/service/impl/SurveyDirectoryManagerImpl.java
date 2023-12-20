@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
+
 import net.diaowen.dwsurvey.config.DWSurveyConfig;
 import net.diaowen.dwsurvey.dao.SurveyDirectoryDao;
 import net.diaowen.dwsurvey.entity.Question;
@@ -54,6 +56,10 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 	private static final String SURVEYMODEL = "surveyModel";
 	private static final String SURVEYNAME = "surveyName";
 	private static final String SURVEYSTATE = "surveyState";
+	/**
+	 * 日志
+	 */
+	private final Logger logger = Logger.getLogger(SurveyDirectoryManagerImpl.class.getName());
 
 	@Autowired
 	public SurveyDirectoryManagerImpl(SurveyDirectoryDao surveyDirectoryDao, SurveyDetailManager surveyDetailManager, QuestionManager questionManager, AccountManager accountManager) {
@@ -502,7 +508,7 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 			page=findPage(page,null,1,null);
 			result=page.getResult();
 		}catch (Exception e) {
-			e.printStackTrace();
+			logger.warning(e.getMessage());
 		}
 		return result;
 	}
@@ -797,7 +803,7 @@ public class SurveyDirectoryManagerImpl extends BaseServiceImpl<SurveyDirectory,
 
 			return savePath+fileName;
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.warning(e.getMessage());
 		}
 		return null;
 	}

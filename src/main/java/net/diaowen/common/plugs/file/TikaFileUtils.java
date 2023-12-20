@@ -9,9 +9,13 @@ import org.apache.tika.mime.MimeTypes;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class TikaFileUtils {
-
+    /**
+     * 日志
+     */
+    public static final Logger LOGGER = Logger.getLogger(TikaFileUtils.class.getName());
     public static String mimeType(byte[] bytes, String suffix) {
         try {
             Tika tika = new Tika();
@@ -28,10 +32,8 @@ public class TikaFileUtils {
             Tika tika = new Tika();
             String mimeTypeStr = tika.detect(inputStream,suffix);
             return getMimeType(mimeTypeStr, suffix);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (MimeTypeException e) {
-            e.printStackTrace();
+        } catch (IOException | MimeTypeException e) {
+            LOGGER.warning(e.getMessage());
         }
         return null;
     }
@@ -50,10 +52,8 @@ public class TikaFileUtils {
             Tika tika = new Tika();
             String mimeTypeStr = tika.detect(inputStream,suffix);
             return getMimeType(mimeTypeStr);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (MimeTypeException e) {
-            e.printStackTrace();
+        } catch (IOException | MimeTypeException e) {
+            LOGGER.warning(e.getMessage());
         }
         return null;
     }

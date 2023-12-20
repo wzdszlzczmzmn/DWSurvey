@@ -42,14 +42,7 @@ public enum YesnoOption {
 	public String getTrueValue() {
 		return trueValue;
 	}
-	/**
-	 * 设置真值
-	 *
-	 * @param trueValue 真值
-	 */
-	public void setTrueValue(String trueValue) {
-		this.trueValue = trueValue;
-	}
+
 	/**
 	 * 获取假值
 	 *
@@ -58,14 +51,7 @@ public enum YesnoOption {
 	public String getFalseValue() {
 		return falseValue;
 	}
-	/**
-	 * 设置假值
-	 *
-	 * @param falseValue 假值
-	 */
-	public void setFalseValue(String falseValue) {
-		this.falseValue = falseValue;
-	}
+
 	/**
 	 * 获取索引
 	 *
@@ -74,14 +60,4 @@ public enum YesnoOption {
 	public int getIndex() {
 		return index;
 	}
-	/**
-	 * 设置索引
-	 *
-	 * @param index 索引
-	 */
-	public void setIndex(int index) {
-		this.index = index;
-	}
-
-
 }

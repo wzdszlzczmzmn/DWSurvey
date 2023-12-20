@@ -18,6 +18,7 @@ import javax.persistence.Transient;
 import net.diaowen.common.plugs.mapper.CollectionMapper;
 
 /**
+ *	用户实体类
  *
  * @author KeYuan
  * @date 2013下午10:02:00

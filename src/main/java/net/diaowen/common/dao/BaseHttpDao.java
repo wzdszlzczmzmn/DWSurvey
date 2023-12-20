@@ -2,7 +2,6 @@ package net.diaowen.common.dao;
 
 import net.diaowen.common.plugs.httpclient.HttpClientUtils;
 import net.sf.json.JSONObject;
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.*;
@@ -29,7 +28,13 @@ import java.util.Map.Entry;
  * @date 2016年9月17日 上午11:21:41
  */
 public abstract class BaseHttpDao extends SuperHttpDao {
+    /**
+     * 字符集
+     */
     private static final String STANDRDCHARSETS = "UTF-8";
+    /**
+     * 日志
+     */
     private static Logger logger = LogManager.getLogger(BaseHttpDao.class.getName());
 
     /**
@@ -237,7 +242,7 @@ public abstract class BaseHttpDao extends SuperHttpDao {
                     response.close();
                 } catch (IOException e) {
                     // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
             }
         }
@@ -281,7 +286,7 @@ public abstract class BaseHttpDao extends SuperHttpDao {
                     response.close();
                 } catch (IOException e) {
                     // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
             }
         }
@@ -348,7 +353,7 @@ public abstract class BaseHttpDao extends SuperHttpDao {
                     response.close();
                 } catch (IOException e) {
                     // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
             }
         }

@@ -3,6 +3,7 @@ package net.diaowen.common.plugs.security.filter;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -22,11 +23,15 @@ public class FormAuthenticationWithLockFilter extends FormAuthenticationFilter {
 
     private long  maxLoginAttempts = 10;
 
-    public static ConcurrentHashMap<String, AtomicLong> accountLockMap   = new ConcurrentHashMap<String, AtomicLong>();
+    protected static final ConcurrentHashMap<String, AtomicLong> accountLockMap  = new ConcurrentHashMap<>();
 
     private String successAdminUrl;
 
     private String successAdminRole;
+    /**
+     * 日志
+     */
+    private final Logger logger = Logger.getLogger(FormAuthenticationWithLockFilter.class.getName());
 
 
     @Autowired

@@ -9,13 +9,18 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.logging.Logger;
 
 public class MyUserFilter extends UserFilter {
+    /**
+     * 日志
+     */
+    private final Logger logger = Logger.getLogger(MyUserFilter.class.getName());
 
- @Override
- protected boolean isAccessAllowed(ServletRequest request,ServletResponse response, Object mappedValue) {
-    return super.isAccessAllowed(request,response,mappedValue);
- }
+     @Override
+     protected boolean isAccessAllowed(ServletRequest request,ServletResponse response, Object mappedValue) {
+        return super.isAccessAllowed(request,response,mappedValue);
+     }
 
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
@@ -33,7 +38,7 @@ public class MyUserFilter extends UserFilter {
             JSONObject responseJSONObject = JSONObject.fromObject(httpResult);
             writer.write(responseJSONObject.toString());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warning(e.getMessage());
         } finally {
             if (writer != null) {
                 writer.close();

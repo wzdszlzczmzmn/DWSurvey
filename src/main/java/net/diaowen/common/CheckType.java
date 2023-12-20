@@ -31,7 +31,7 @@ public enum CheckType {
 	 * @param name 名称
 	 * @param index 索引
 	 */
-	private CheckType(String name,int index){
+	CheckType(String name,int index){
 		this.name=name;
 		this.index=index;
 	}
@@ -43,14 +43,7 @@ public enum CheckType {
 	public String getName() {
 		return name;
 	}
-	/**
-	 * 设置名称
-	 *
-	 * @param name 名称
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+
 	/**
 	 * 获取索引
 	 *
@@ -59,14 +52,4 @@ public enum CheckType {
 	public int getIndex() {
 		return index;
 	}
-	/**
-	 * 设置索引
-	 *
-	 * @param index 索引
-	 */
-	public void setIndex(int index) {
-		this.index = index;
-	}
-
-
 }

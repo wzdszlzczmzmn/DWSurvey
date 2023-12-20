@@ -2,6 +2,7 @@ package net.diaowen.dwsurvey.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import net.diaowen.dwsurvey.dao.QuestionBankDao;
 import net.diaowen.dwsurvey.entity.Question;
@@ -36,7 +37,12 @@ public class QuestionBankManagerImpl extends BaseServiceImpl<QuestionBank, Strin
 	private AccountManager accountManager;
 	@Autowired
 	private QuestionManager questionManager;
-	
+
+	/**
+	 * 日志
+	 */
+	private final Logger logger = Logger.getLogger(QuestionBankManagerImpl.class.getName());
+
 	@Override
 	public void setBaseDao() {
 		this.baseDao=questionBankDao;
@@ -179,7 +185,7 @@ public class QuestionBankManagerImpl extends BaseServiceImpl<QuestionBank, Strin
 			page=findPage(page,entity);
 			result=page.getResult();
 		}catch (Exception e) {
-			e.printStackTrace();
+			logger.warning(e.getMessage());
 		}
 		return result;
 	}

@@ -60,14 +60,7 @@ public enum QuType {
 	public String getCnName() {
 		return cnName;
 	}
-	/**
-	 * 设置名称
-	 *
-	 * @param cnName 名称
-	 */
-	public void setCnName(String cnName) {
-		this.cnName = cnName;
-	}
+
 	/**
 	 * 获取操作名称
 	 *
@@ -76,14 +69,7 @@ public enum QuType {
 	public String getActionName() {
 		return actionName;
 	}
-	/**
-	 * 设置操作名称
-	 *
-	 * @param actionName 操作名称
-	 */
-	public void setActionName(String actionName) {
-		this.actionName = actionName;
-	}
+
 	/**
 	 * 获取索引
 	 *
@@ -92,13 +78,4 @@ public enum QuType {
 	public int getIndex() {
 		return index;
 	}
-	/**
-	 * 设置索引
-	 *
-	 * @param index 索引
-	 */
-	public void setIndex(int index) {
-		this.index = index;
-	}
-
 }

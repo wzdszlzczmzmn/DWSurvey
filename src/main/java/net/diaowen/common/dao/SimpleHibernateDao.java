@@ -109,7 +109,7 @@ public class SimpleHibernateDao<T, ID extends Serializable> implements ISimpleHi
 			getSession().saveOrUpdate(entity);
 			logger.debug("save entity: {}", entity);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 		}
 	}
 

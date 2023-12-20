@@ -5,8 +5,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Logger;
 
 public class FileMagicUtils {
+    /**
+     * 日志
+     */
+    private static final Logger LOGGER = Logger.getLogger(FileMagicUtils.class.getName());
 
     //非登录用户能够上传的文件类型
     public static FileMagic[] anonUpFileType() {
@@ -69,7 +74,7 @@ public class FileMagicUtils {
             FileMagic fileMagic = getFileMagic(bytes,suffix);
             if (isUserUpFileMagic(fileMagic)) return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.warning(e.getMessage());
         }
         return false;
     }
@@ -79,7 +84,7 @@ public class FileMagicUtils {
             FileMagic fileMagic = getFileMagic(file,suffix);
             if (isUserUpFileMagic(fileMagic)) return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.warning(e.getMessage());
         }
         return false;
     }
@@ -89,7 +94,7 @@ public class FileMagicUtils {
             FileMagic fileMagic = getFileMagic(inputStream,suffix);
             if (isUserUpFileMagic(fileMagic)) return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.warning(e.getMessage());
         }
         return false;
     }

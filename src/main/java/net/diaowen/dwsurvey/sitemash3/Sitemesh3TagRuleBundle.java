@@ -8,7 +8,7 @@ import org.sitemesh.tagprocessor.State;
 
 public class Sitemesh3TagRuleBundle implements TagRuleBundle {
 
-    public static String SITEMESH_TAG_CONTENT = "content";
+    public static final String SITEMESH_TAG_CONTENT = "content";
 
     @Override
     public void install(State state, ContentProperty contentProperty, SiteMeshContext siteMeshContext) {

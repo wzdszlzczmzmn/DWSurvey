@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.logging.Logger;
+
 /**
  * 包含了处理登录和注销请求的方法。
  */
@@ -34,6 +36,11 @@ public class SecurityController {
     private UserManager userManager;
     @Autowired
     private FormAuthenticationWithLockFilter formAuthFilter;
+    /**
+     * 日志
+     */
+    private final Logger logger = Logger.getLogger(SecurityController.class.getName());
+
     /**
      * 处理注销请求。
      * @param request HttpServletRequest对象。
@@ -123,7 +130,7 @@ public class SecurityController {
                 error = "登录名userName不能为空";
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.warning(e.getMessage());
             error = e.getMessage();
         }
         return LoginRegisterResult.FAILURE(HttpResult.FAILURE_MSG(error));

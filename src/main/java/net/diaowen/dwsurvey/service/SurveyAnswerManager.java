@@ -7,7 +7,7 @@ import net.diaowen.common.service.BaseService;
 import net.diaowen.dwsurvey.entity.*;
 
 /**
- * 问卷回答
+ * 问卷回答业务逻辑相关接口
  * @author keyuan(keyuan258@gmail.com)
  *
  * https://github.com/wkeyuan/DWSurvey

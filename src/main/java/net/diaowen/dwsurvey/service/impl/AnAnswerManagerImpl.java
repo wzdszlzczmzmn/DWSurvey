@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import net.diaowen.common.service.BaseServiceImpl;
 
 /**
+ * 答卷数据相关业务逻辑的服务组件
+ *
  * @author keyuan
  * keyuan258@gmail.com
  *

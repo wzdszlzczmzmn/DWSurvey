@@ -9,17 +9,13 @@ import java.util.regex.Pattern;
 
 import net.diaowen.common.exception.HibernateExecption;
 import net.diaowen.common.plugs.page.PageRequest;
-import net.diaowen.dwsurvey.entity.Question;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Disjunction;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projection;
 import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.internal.CriteriaImpl;
 import org.hibernate.transform.ResultTransformer;
 
@@ -28,10 +24,7 @@ import net.diaowen.common.utils.AssertUtils;
 import net.diaowen.common.utils.ReflectionUtils;
 
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 /**
  * 封装SpringSide扩展功能的Hibernat DAO泛型基类.
@@ -46,6 +39,11 @@ import javax.persistence.criteria.Root;
 public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao<T, ID> implements IHibernateDao<T, ID> {
 	public static final String DEFAULT_ALIAS = "x";
 	private static final String LIST_NAME = "orderEntries";
+	/**
+	 * 日志
+	 */
+
+
 	/**
 	 * 通过子类的泛型定义取得对象类型Class.
 	 * eg.
@@ -319,12 +317,9 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 			if (t == null) {
 				t = entityClass.newInstance();
 			}
-		} catch (InstantiationException e) {
+		} catch (InstantiationException | IllegalAccessException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage());
 		}
 		return t;
 	}

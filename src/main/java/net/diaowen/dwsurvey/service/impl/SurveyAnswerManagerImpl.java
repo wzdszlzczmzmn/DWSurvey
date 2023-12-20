@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Logger;
 
 
 /**
@@ -54,6 +55,10 @@ public class SurveyAnswerManagerImpl extends
 	private static final String SURVEYID = "surveyId";
 	private static final String ENDANDATE = "endAnDate";
 	private static final String NBSP = "&nbsp;";
+	/**
+	 * 日志
+	 */
+	private final Logger logger = Logger.getLogger(SurveyAnswerManagerImpl.class.getName());
 
 	public SurveyAnswerManagerImpl(SurveyAnswerDao surveyAnswerDao, QuestionManager questionManager, SurveyDirectoryManager directoryManager, AnYesnoManager anYesnoManager, AnRadioManager anRadioManager, AnFillblankManager anFillblankManager, AnEnumquManager anEnumquManager, AnDFillblankManager anDFillblankManager, AnCheckboxManager anCheckboxManager, AnAnswerManager anAnswerManager, AnScoreManager anScoreManager, AnOrderManager anOrderManager, AnUploadFileManager anUploadFileManager) {
 		this.surveyAnswerDao = surveyAnswerDao;
@@ -277,7 +282,7 @@ public class SurveyAnswerManagerImpl extends
 			}
 			exportUtil.exportXLS();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.warning(e.getMessage());
 		}
 		return urlPath + fileName;
 	}
@@ -487,7 +492,7 @@ public class SurveyAnswerManagerImpl extends
 							try {
 								FileUtil.copyFile(fromFile, toFile);
 							} catch (IOException e) {
-								e.printStackTrace();
+								logger.warning(e.getMessage());
 							}
 						}
 					}
