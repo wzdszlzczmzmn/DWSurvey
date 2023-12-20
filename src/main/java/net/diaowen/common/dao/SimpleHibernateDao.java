@@ -16,7 +16,6 @@ import net.diaowen.common.utils.AssertUtils;
 import net.diaowen.common.utils.ReflectionUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
-//import org.hibernate.Query;
 import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -54,27 +53,33 @@ public class SimpleHibernateDao<T, ID extends Serializable> implements ISimpleHi
 
 	/**
 	 * 通过子类的泛型定义取得对象类型Class.
-	 * eg.
 	 * public class UserDao extends SimpleHibernateDao<User, Long>
 	 */
 	public SimpleHibernateDao() {
 		this.entityClass = ReflectionUtils.getSuperClassGenricType(getClass());
 	}
 
+	/**
+	 * 设置实体类型
+	 * @param entityClass
+	 */
 	public SimpleHibernateDao(Class<T> entityClass) {
 		this.entityClass = entityClass;
 	}
-
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#getSessionFactory()
+	/**
+	 * 取得sessionFactory.
+	 *
+	 * @return SessionFactory
 	 */
 	@Override
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#setSessionFactory(org.hibernate.SessionFactory)
+	/**
+	 * 采用@Autowired按类型注入SessionFactory, 当有多个SesionFactory的时候在子类重载本函数.
+	 *
+	 * @param sessionFactory sessionFactory
 	 */
 	@Override
 	@Autowired
@@ -82,16 +87,20 @@ public class SimpleHibernateDao<T, ID extends Serializable> implements ISimpleHi
 		this.sessionFactory = sessionFactory;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#getSession()
+	/**
+	 * 取得当前Session.
+	 *
+	 * @return session
 	 */
 	@Override
 	public Session getSession() {
 		return sessionFactory.getCurrentSession();
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#save(T)
+	/**
+	 * 保存新增或修改的对象.
+	 *
+	 * @param entity 对象必须是session中的对象或含id属性的transient对象
 	 */
 	@Override
 	public void save(final T entity) {
@@ -104,8 +113,10 @@ public class SimpleHibernateDao<T, ID extends Serializable> implements ISimpleHi
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#delete(T)
+	/**
+	 * 删除对象.
+	 *
+	 * @param entity 对象必须是session中的对象或含id属性的transient对象.
 	 */
 	@Override
 	public void delete(final T entity) {
@@ -114,8 +125,10 @@ public class SimpleHibernateDao<T, ID extends Serializable> implements ISimpleHi
 		logger.debug("delete entity: {}", entity);
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#delete(ID)
+	/**
+	 * 按id删除对象.
+	 *
+	 * @param id 对象id
 	 */
 	@Override
 	public void delete(final ID id) {
@@ -124,8 +137,11 @@ public class SimpleHibernateDao<T, ID extends Serializable> implements ISimpleHi
 		logger.debug("delete entity {},id is {}", entityClass.getSimpleName(), id);
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#get(ID)
+	/**
+	 * 按id获取对象.
+	 *
+	 * @param id 对象id
+	 * @return 对象
 	 */
 	@Override
 	public T get(final ID id) {
@@ -133,24 +149,33 @@ public class SimpleHibernateDao<T, ID extends Serializable> implements ISimpleHi
 		return (T) getSession().load(entityClass, id);
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#get(java.util.Collection)
+	/**
+	 * 按id列表获取对象列表.
+	 *
+	 * @param  ids id列表
+	 * @return List<T>
 	 */
 	@Override
 	public List<T> get(final Collection<ID> ids) {
 		return find(Restrictions.in(getIdName(), ids));
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#getAll()
+	/**
+	 *	获取全部对象.
+	 *
+	 * @return List<T>
 	 */
 	@Override
 	public List<T> getAll() {
 		return find();
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#getAll(java.lang.String, boolean)
+	/**
+	 *	获取全部对象, 支持按属性行序.
+	 *
+	 * @param orderByProperty 属性
+	 * @param isAsc 是否升序
+	 * @return List<T>
 	 */
 	@Override
 	public List<T> getAll(String orderByProperty, boolean isAsc) {
@@ -163,8 +188,12 @@ public class SimpleHibernateDao<T, ID extends Serializable> implements ISimpleHi
 		return c.list();
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#findBy(java.lang.String, java.lang.Object)
+	/**
+	 * 按属性查找对象列表, 匹配方式为相等.
+	 *
+	 * @param propertyName 属性名
+	 * @param value 值
+	 * @return List<T>
 	 */
 	@Override
 	public List<T> findBy(final String propertyName, final Object value) {
@@ -173,8 +202,12 @@ public class SimpleHibernateDao<T, ID extends Serializable> implements ISimpleHi
 		return find(criterion);
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#findUniqueBy(java.lang.String, java.lang.Object)
+	/**
+	 * 按属性查找唯一对象, 匹配方式为相等.
+	 *
+	 * @param propertyName 属性名
+	 * @param value 值
+	 * @return T 对象
 	 */
 	@Override
 	public T findUniqueBy(final String propertyName, final Object value) {
@@ -183,56 +216,72 @@ public class SimpleHibernateDao<T, ID extends Serializable> implements ISimpleHi
 		return (T) createCriteria(criterion).uniqueResult();
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#find(java.lang.String, java.lang.Object)
+	/**
+	 * 按HQL查询对象列表.
+	 *
+	 * @param values 数量可变的参数,按顺序绑定.
 	 */
 	@Override
 	public <X> List<X> find(final String hql, final Object... values) {
 		return createQuery(hql, values).list();
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#find(java.lang.String, java.util.Map)
+	/**
+	 * 按HQL查询对象列表.
+	 *
+	 * @param values 命名参数,按名称绑定.
 	 */
 	@Override
 	public <X> List<X> find(final String hql, final Map<String, ?> values) {
 		return createQuery(hql, values).list();
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#findUnique(java.lang.String, java.lang.Object)
+	/**
+	 * 按HQL查询唯一对象.
+	 *
+	 * @param values 数量可变的参数,按顺序绑定.
 	 */
 	@Override
 	public <X> X findUnique(final String hql, final Object... values) {
 		return (X) createQuery(hql, values).uniqueResult();
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#findUnique(java.lang.String, java.util.Map)
+	/**
+	 * 按HQL查询唯一对象.
+	 *
+	 * @param values 命名参数,按名称绑定.
 	 */
 	@Override
 	public <X> X findUnique(final String hql, final Map<String, ?> values) {
 		return (X) createQuery(hql, values).uniqueResult();
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#batchExecute(java.lang.String, java.lang.Object)
+	/**
+	 * 执行HQL进行批量修改/删除操作.
+	 *
+	 * @param values 数量可变的参数,按顺序绑定.
+	 * @return 更新记录数.
 	 */
 	@Override
 	public int batchExecute(final String hql, final Object... values) {
 		return createQuery(hql, values).executeUpdate();
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#batchExecute(java.lang.String, java.util.Map)
+	/**
+	 * 执行HQL进行批量修改/删除操作.
+	 *
+	 * @param values 命名参数,按名称绑定.
+	 * @return 更新记录数.
 	 */
 	@Override
 	public int batchExecute(final String hql, final Map<String, ?> values) {
 		return createQuery(hql, values).executeUpdate();
 	}
-
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#createQuery(java.lang.String, java.lang.Object)
+	/**
+	 * 根据查询HQL与参数列表创建Query对象.
+	 * 与find()函数可进行更加灵活的操作.
+	 *
+	 * @param values 数量可变的参数,按顺序绑定.
 	 */
 	@Override
 	public Query createQuery(final String queryString, final Object... values) {
@@ -246,8 +295,11 @@ public class SimpleHibernateDao<T, ID extends Serializable> implements ISimpleHi
 		return query;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#createQuery(java.lang.String, java.util.Map)
+	/**
+	 * 根据查询HQL与参数列表创建Query对象.
+	 * 与find()函数可进行更加灵活的操作.
+	 *
+	 * @param values 命名参数,按名称绑定.
 	 */
 	@Override
 	public Query createQuery(final String queryString, final Map<String, ?> values) {
@@ -259,24 +311,31 @@ public class SimpleHibernateDao<T, ID extends Serializable> implements ISimpleHi
 		return query;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#find(org.hibernate.criterion.Criterion)
+	/**
+	 * 按Criteria查询对象列表.
+	 *
+	 * @param criterions 数量可变的Criterion.
 	 */
 	@Override
 	public List<T> find(final Criterion... criterions) {
 		return createCriteria(criterions).list();
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#findUnique(org.hibernate.criterion.Criterion)
+	/**
+	 * 按Criteria查询唯一对象.
+	 *
+	 * @param criterions 数量可变的Criterion.
 	 */
 	@Override
 	public T findUnique(final Criterion... criterions) {
 		return (T) createCriteria(criterions).uniqueResult();
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#createCriteria(org.hibernate.criterion.Criterion)
+	/**
+	 * 根据Criterion条件创建Criteria.
+	 * 与find()函数可进行更加灵活的操作.
+	 *
+	 * @param criterions 数量可变的Criterion.
 	 */
 	@Override
 	public Criteria createCriteria(final Criterion... criterions) {
@@ -287,8 +346,9 @@ public class SimpleHibernateDao<T, ID extends Serializable> implements ISimpleHi
 		return criteria;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#createCriteria(org.hibernate.criterion.Criterion)
+	/**
+	 * @param criterions
+	 * @return criteria
 	 */
 	@Override
 	public Criteria createCriteria(List<Criterion> criterions) {
@@ -299,24 +359,31 @@ public class SimpleHibernateDao<T, ID extends Serializable> implements ISimpleHi
 		return criteria;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#initProxyObject(java.lang.Object)
+	/**
+	 * 初始化对象.
+	 * 使用load()方法得到的仅是对象Proxy, 在传到View层前需要进行初始化.
+	 * 如果传入entity, 则只初始化entity的直接属性,但不会初始化延迟加载的关联集合和属性.
+	 * 如需初始化关联属性,需执行:
+	 * Hibernate.initialize(user.getRoles())，初始化User的直接属性和关联集合.
+	 * Hibernate.initialize(user.getDescription())，初始化User的直接属性和延迟加载的Description属性.
 	 */
 	@Override
 	public void initProxyObject(Object proxy) {
 		Hibernate.initialize(proxy);
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#flush()
+	/**
+	 * Flush当前Session.
 	 */
 	@Override
 	public void flush() {
 		getSession().flush();
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#distinct(org.hibernate.Query)
+	/**
+	 * 为Query添加distinct transformer.
+	 * 预加载关联对象的HQL会引起主对象重复, 需要进行distinct处理.
+	 *
 	 */
 	@Override
 	public Query distinct(Query query) {
@@ -324,8 +391,10 @@ public class SimpleHibernateDao<T, ID extends Serializable> implements ISimpleHi
 		return query;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#distinct(org.hibernate.Criteria)
+	/**
+	 * 为Criteria添加distinct transformer.
+	 * 预加载关联对象的HQL会引起主对象重复, 需要进行distinct处理.
+	 *
 	 */
 	@Override
 	public Criteria distinct(Criteria criteria) {
@@ -333,8 +402,10 @@ public class SimpleHibernateDao<T, ID extends Serializable> implements ISimpleHi
 		return criteria;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#getIdName()
+	/**
+	 * 取得对象的主键名.
+	 *
+	 * @return Name 名字
 	 */
 	@Override
 	public String getIdName() {
@@ -342,8 +413,14 @@ public class SimpleHibernateDao<T, ID extends Serializable> implements ISimpleHi
 		return meta.getIdentifierPropertyName();
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.ISimpleHibernateDao#isPropertyUnique(java.lang.String, java.lang.Object, java.lang.Object)
+	/**
+	 * 判断对象的属性值在数据库内是否唯一.
+	 *
+	 * 在修改对象的情景下,如果属性新修改的值(value)等于属性原来的值(orgValue)则不作比较.
+	 * @param propertyName 属性名
+	 * @param newValue 新值
+	 * @param oldValue 旧值
+	 * @return 布尔值
 	 */
 	@Override
 	public boolean isPropertyUnique(final String propertyName, final Object newValue, final Object oldValue) {

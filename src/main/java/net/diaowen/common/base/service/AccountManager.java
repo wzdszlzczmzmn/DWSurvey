@@ -21,18 +21,15 @@ import net.diaowen.common.utils.security.DigestUtils;
  *
  * @author KeYuan
  * @date 2013下午10:22:04
- *
+ *用户管理类
  */
 @Service
 public class AccountManager {
 
 	private static Logger logger = LoggerFactory.getLogger(AccountManager.class);
-
+	private static final String LOGINNAME = "loginName";
 	@Autowired
 	private UserDao userDao;
-
-//	@Autowired
-//	private NotifyMessageProducer notifyMessageProducer;//JMS消息推送
 
 	private ShiroDbRealm shiroRealm;
 
@@ -53,18 +50,16 @@ public class AccountManager {
 		//判断是否有重复用户
 		String shaPassword = DigestUtils.sha1Hex(user.getPlainPassword());
 		user.setShaPassword(shaPassword);
-		boolean bool=user.getId()==null?true:false;
 		userDao.save(user);
 		if (shiroRealm != null) {
 			shiroRealm.clearCachedAuthorizationInfo(user.getLoginName());
 		}
-		/*if(bool){
-//			Email email=new Email();
-//			sendNotifyMessage(email);	使用jms辅助 发送邮件
-			simpleMailService.sendRegisterMailByAsync(user);
-		}*/
 	}
 
+	/**
+	 * 保存用户
+	 * @param user user
+	 */
 	@Transactional
 	public void saveUp(User user){
 		if (isSupervisor(user)) {
@@ -74,11 +69,16 @@ public class AccountManager {
 		userDao.save(user);
 	}
 
+	/**
+	 * 修改密码
+	 * @param curpwd 现在的密码
+	 * @param newPwd 想要修改的密码
+	 * @return 修改成功或失败
+	 */
 	@Transactional
 	public boolean updatePwd(String curpwd, String newPwd) {
 		User user = getCurUser();
-		if(user!=null){
-			if(curpwd!=null && newPwd!=null){
+		if(user!=null&&curpwd!=null && newPwd!=null){
 				//判断是否有重复用户
 				String curShaPassword = DigestUtils.sha1Hex(curpwd);
 				if(user.getShaPassword().equals(curShaPassword)){
@@ -87,45 +87,52 @@ public class AccountManager {
 					userDao.save(user);
 					return true;
 				}
-			}
 		}
 		return false;
 	}
-	/*public User getByUid(String userSource,String uid){
-		Criterion cri1=Restrictions.eq("thirdSource", userSource);
-		Criterion cri2=Restrictions.eq("thirdUid", uid);
-		return userDao.findUnique(cri1,cri2);
-	}*/
-	//新注册用户，注册后
-//	private void sendNotifyMessage(Email email) {
-//		notifyMessageProducer.sendQueue(email);
-//	}
 
 
 	/**
 	 * 判断是否超级管理员.
+	 *
+	 * @param user 用户
+	 * @return 真假
 	 */
 	private boolean isSupervisor(User user) {
-//		return (user.getId() != null && user.getId() == 1L);
-		return false;
+
+		return (user.getId() != null && user.getId() == "1");
 	}
 
+	/**
+	 * 通过ID获取用户
+	 * @param id Userid
+	 * @return 用户
+	 */
 	@Transactional(readOnly = true)
 	public User getUser(String id) {
 		return userDao.get(id);
 	}
 
-
+	/**
+	 * 通过LoginName获取用户
+	 * @param loginName 用户登录名
+	 * @return 用户
+	 */
 	@Transactional(readOnly = true)
 	public User findUserByLoginName(String loginName) {
-		return userDao.findUniqueBy("loginName", loginName);
+		return userDao.findUniqueBy(LOGINNAME, loginName);
 	}
 
+	/**
+	 * 通过email或loginName获取用户
+	 * @param loginName email或loginName
+	 * @return 用户
+	 */
 	@Transactional(readOnly = true)
 	public User findUserByLoginNameOrEmail(String loginName) {
 		User user = null;
 		if(loginName!=null){
-			user = userDao.findUniqueBy("loginName", loginName);
+			user = userDao.findUniqueBy(LOGINNAME, loginName);
 			if(user==null && loginName.contains("@")){
 				//是邮箱账号
 				user = userDao.findUniqueBy("email", loginName);
@@ -134,6 +141,11 @@ public class AccountManager {
 		return user;
 	}
 
+	/**
+	 * 通过邮箱获取用户
+	 * @param email 邮箱
+	 * @return 用户
+	 */
 	/*验证邮箱是否存在*/
 	@Transactional(readOnly = true)
 	public User findUserByEmail(String email){
@@ -151,11 +163,13 @@ public class AccountManager {
 	 */
 	@Transactional(readOnly = true)
 	public boolean isLoginNameUnique(String newLoginName, String oldLoginName) {
-		return userDao.isPropertyUnique("loginName", newLoginName, oldLoginName);
+		return userDao.isPropertyUnique(LOGINNAME, newLoginName, oldLoginName);
 	}
 
 	/**
 	 * 取出当前登陆用户
+	 *
+	 * @return 用户
 	 */
 	public User getCurUser(){
 		Subject subject=SecurityUtils.getSubject();

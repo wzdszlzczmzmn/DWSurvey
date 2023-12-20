@@ -33,6 +33,11 @@ public abstract class IdEntity {//implements Serializable
 	// 生成器名称，uuid生成类
 	@GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(length = 55)
+	/**
+	 * 获取ID。
+	 *
+	 * @return ID
+	 */
 	public String getId() {
 		return id;
 	}

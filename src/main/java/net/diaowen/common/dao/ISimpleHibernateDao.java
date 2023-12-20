@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.Criteria;
-//import org.hibernate.Query;
 import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -17,22 +16,30 @@ public interface ISimpleHibernateDao<T, ID extends Serializable> {
 
 	/**
 	 * 取得sessionFactory.
+	 *
+	 * @return SessionFactory
 	 */
 	public abstract SessionFactory getSessionFactory();
 
 	/**
 	 * 采用@Autowired按类型注入SessionFactory, 当有多个SesionFactory的时候在子类重载本函数.
+	 *
+	 * @param sessionFactory sessionFactory
 	 */
 	@Autowired
 	public abstract void setSessionFactory(final SessionFactory sessionFactory);
 
 	/**
 	 * 取得当前Session.
+	 *
+	 * @return session
 	 */
 	public abstract Session getSession();
 
 	/**
 	 * 保存新增或修改的对象.
+	 *
+	 * @param entity 对象必须是session中的对象或含id属性的transient对象
 	 */
 	public abstract void save(final T entity);
 
@@ -45,36 +52,58 @@ public interface ISimpleHibernateDao<T, ID extends Serializable> {
 
 	/**
 	 * 按id删除对象.
+	 *
+	 * @param id 对象id
 	 */
 	public abstract void delete(final ID id);
 
 	/**
 	 * 按id获取对象.
+	 *
+	 * @param id 对象id
+	 * @return 对象
 	 */
 	public abstract T get(final ID id);
 
 	/**
 	 * 按id列表获取对象列表.
+	 *
+	 * @param  ids id列表
+	 * @return List<T>
 	 */
 	public abstract List<T> get(final Collection<ID> ids);
 
 	/**
 	 *	获取全部对象.
+	 *
+	 * @return List<T>
 	 */
 	public abstract List<T> getAll();
 
 	/**
 	 *	获取全部对象, 支持按属性行序.
+	 *
+	 * @param orderByProperty 属性
+	 * @param isAsc 是否升序
+	 * @return List<T>
 	 */
 	public abstract List<T> getAll(String orderByProperty, boolean isAsc);
 
 	/**
 	 * 按属性查找对象列表, 匹配方式为相等.
+	 *
+	 * @param propertyName 属性名
+	 * @param value 值
+	 * @return List<T>
 	 */
 	public abstract List<T> findBy(final String propertyName, final Object value);
 
 	/**
 	 * 按属性查找唯一对象, 匹配方式为相等.
+	 *
+	 * @param propertyName 属性名
+	 * @param value 值
+	 * @return T 对象
 	 */
 	public abstract T findUniqueBy(final String propertyName, final Object value);
 
@@ -167,7 +196,7 @@ public interface ISimpleHibernateDao<T, ID extends Serializable> {
 
 	/**
 	 * @param criterions
-	 * @return
+	 * @return criteria
 	 */
 	public Criteria createCriteria(List<Criterion> criterions);
 
@@ -189,17 +218,21 @@ public interface ISimpleHibernateDao<T, ID extends Serializable> {
 	/**
 	 * 为Query添加distinct transformer.
 	 * 预加载关联对象的HQL会引起主对象重复, 需要进行distinct处理.
+	 *
 	 */
 	public abstract Query distinct(Query query);
 
 	/**
 	 * 为Criteria添加distinct transformer.
 	 * 预加载关联对象的HQL会引起主对象重复, 需要进行distinct处理.
+	 *
 	 */
 	public abstract Criteria distinct(Criteria criteria);
 
 	/**
 	 * 取得对象的主键名.
+	 *
+	 * @return Name 名字
 	 */
 	public abstract String getIdName();
 
@@ -207,6 +240,10 @@ public interface ISimpleHibernateDao<T, ID extends Serializable> {
 	 * 判断对象的属性值在数据库内是否唯一.
 	 *
 	 * 在修改对象的情景下,如果属性新修改的值(value)等于属性原来的值(orgValue)则不作比较.
+	 * @param propertyName 属性名
+	 * @param newValue 新值
+	 * @param oldValue 旧值
+	 * @return 布尔值
 	 */
 	public abstract boolean isPropertyUnique(final String propertyName,
                                              final Object newValue, final Object oldValue);

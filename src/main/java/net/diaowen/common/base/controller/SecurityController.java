@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
-
+/**
+ * 包含了处理登录和注销请求的方法。
+ */
 @Controller
 @RequestMapping("/api/dwsurvey/anon/security")
 public class SecurityController {
@@ -32,24 +34,29 @@ public class SecurityController {
     private UserManager userManager;
     @Autowired
     private FormAuthenticationWithLockFilter formAuthFilter;
-
+    /**
+     * 处理注销请求。
+     * @param request HttpServletRequest对象。
+     * @param response HttpServletResponse对象。
+     * @return HttpResult对象。
+     */
     @RequestMapping("/logout.do")
     @ResponseBody
-    public HttpResult logout(HttpServletRequest request,HttpServletResponse response) throws Exception {
+    public HttpResult logout(HttpServletRequest request,HttpServletResponse response) {
         if (SecurityUtils.getSubject() != null) {
-            User curUser = accountManager.getCurUser();
-            String userId = "";
-            String loginName = "";
-            if(curUser!=null){
-                userId = curUser.getId();
-                loginName = curUser.getLoginName();
-            }
             SecurityUtils.getSubject().logout();
         }
         request.getSession().invalidate();
         return HttpResult.SUCCESS();
     }
-
+    /**
+     * 处理登录请求。
+     * @param request HttpServletRequest对象。
+     * @param response HttpServletResponse对象。
+     * @param userName 用户名。
+     * @param password 密码。
+     * @return LoginRegisterResult对象。
+     */
     @RequestMapping("/login.do")
     @ResponseBody
     public LoginRegisterResult login(HttpServletRequest request, HttpServletResponse response, String userName, String password) {
@@ -68,6 +75,14 @@ public class SecurityController {
         return loginPwd(request,response,userName,password);
     }
 
+    /**
+     * 验证用户的登录信息并返回结果
+     * @param request HttpServletRequest对象。
+     * @param response HttpServletResponse对象。
+     * @param userName 用户名
+     * @param password 密码
+     * @return LoginRegisterResult对象。
+     */
     @RequestMapping("/login-pwd.do")
     @ResponseBody
     public LoginRegisterResult loginPwd(HttpServletRequest request, HttpServletResponse response, @RequestParam String userName, @RequestParam String password) {
@@ -114,10 +129,15 @@ public class SecurityController {
         return LoginRegisterResult.FAILURE(HttpResult.FAILURE_MSG(error));
     }
 
-
+    /**
+     * 检查邮箱是否已经被注册。
+     * @param id 用户id。
+     * @param email 邮箱。
+     * @return 如果邮箱已经被注册，返回false；否则返回true。
+     */
     @RequestMapping("/checkEmail.do")
     @ResponseBody
-    public boolean checkEmailUn(String id,String email) throws Exception{
+    public boolean checkEmailUn(String id,String email) {
         User user=userManager.findEmailUn(id,email);
         boolean result=true;
         if(user!=null){
@@ -127,10 +147,15 @@ public class SecurityController {
     }
 
 
-
+    /**
+     * 检查登录名是否已经被注册。
+     * @param id 用户id。
+     * @param loginName 登录名。
+     * @return 如果登录名已经被注册，返回false；否则返回true。
+     */
     @RequestMapping("/checkLoginNamelUn.do")
     @ResponseBody
-    public boolean checkLoginNamelUn(String id,String loginName) throws Exception{
+    public boolean checkLoginNamelUn(String id,String loginName){
         User user=userManager.findNameUn(id,loginName);
         boolean result=true;
         if(user!=null){

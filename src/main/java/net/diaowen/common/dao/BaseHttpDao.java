@@ -21,7 +21,6 @@ import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-//import org.springframework.http.HttpEntity;
 
 /**
  * @author keyuan
@@ -30,9 +29,15 @@ import java.util.Map.Entry;
  * @date 2016年9月17日 上午11:21:41
  */
 public abstract class BaseHttpDao extends SuperHttpDao {
-
+    private static final String STANDRDCHARSETS = "UTF-8";
     private static Logger logger = LogManager.getLogger(BaseHttpDao.class.getName());
 
+    /**
+     * 处理GET请求
+     *
+     * @param url 请求地址
+     * @return 响应结果
+     */
     @Override
     public String doGet(String url) {
         try {
@@ -45,7 +50,13 @@ public abstract class BaseHttpDao extends SuperHttpDao {
         }
         return null;
     }
-
+    /**
+     * 处理GET请求
+     *
+     * @param url    请求地址
+     * @param params 请求参数
+     * @return 响应结果
+     */
     public String doGet(String url, Map<String, String> params) {
         try {
             HttpGet httpGet = HttpClientUtils.buildHttpGet(
@@ -56,24 +67,33 @@ public abstract class BaseHttpDao extends SuperHttpDao {
         }
         return null;
     }
-
+    /**
+     * 处理POST请求
+     *
+     * @param url 请求地址
+     * @return 响应结果
+     */
     public String doPost(String url) {
         try {
             HttpPost httpPost = HttpClientUtils.buildHttpPost(
                     HttpClientUtils.buildHttpUrl(url), null, null);
             return this.doPost(httpPost);
         } catch (URISyntaxException e) {
-            //logger.error(message, params);
             logger.error("doPost(String url) URISyntaxException : {} ", url);
         }
         return null;
     }
 
+    /**
+     * 处理POST请求
+     * @param url 请求地址
+     * @param params 请求参数
+     * @return 响应结果
+     */
     public String doPost(String url, Map<String, String> params) {
         try {
             HttpPost httpPost = HttpClientUtils.buildHttpPost(
                     HttpClientUtils.buildHttpUrl(url), params, null);
-//			httpPost.addHeader("Content-Type","text/html;charset=UTF-8");
             return this.doPost(httpPost);
         } catch (URISyntaxException e) {
             logger.error("doPost(String url, Map<String, String> params) URISyntaxException : {} ", url);
@@ -81,18 +101,27 @@ public abstract class BaseHttpDao extends SuperHttpDao {
         return null;
     }
 
+    /**
+     * 处理put请求
+     * @param url 请求地址
+     * @return 响应结果
+     */
     public String doPut(String url) {
         try {
             HttpPut httpPost = HttpClientUtils.buildHttpPut(HttpClientUtils.buildHttpUrl(url), null, null);
             return this.doPut(httpPost);
         } catch (URISyntaxException e) {
-            //logger.error(message, params);
             logger.error("doPost(String url) URISyntaxException : {} ", url);
         }
         return null;
     }
 
-
+    /**
+     * 处理put请求
+     * @param url 请求地址
+     * @param params 请求参数
+     * @return 响应结果
+     */
     public String doPut(String url, Map<String, String> params) {
         try {
             HttpPut httpPost = HttpClientUtils.buildHttpPut(HttpClientUtils.buildHttpUrl(url), params, null);
@@ -103,6 +132,12 @@ public abstract class BaseHttpDao extends SuperHttpDao {
         return null;
     }
 
+    /**
+     * 处理patch请求
+     * @param url 请求地址
+     * @param params 请求参数
+     * @return 响应结果
+     */
     public String doPatch(String url, Map<String, String> params) {
         try {
             HttpPatch httpPatch = HttpClientUtils.buildHttpPatch(HttpClientUtils.buildHttpUrl(url), params, null);
@@ -113,6 +148,11 @@ public abstract class BaseHttpDao extends SuperHttpDao {
         return null;
     }
 
+    /**
+     * 处理delete请求
+     * @param url 请求地址
+     * @return 响应结果
+     */
 
     public String doDelete(String url) {
         try {
@@ -124,6 +164,12 @@ public abstract class BaseHttpDao extends SuperHttpDao {
         return null;
     }
 
+    /**
+     * 处理delete请求
+     * @param url 请求地址
+     * @param params 请求参数
+     * @return 响应结果
+     */
     public String doDelete(String url, Map<String, String> params) {
         try {
             HttpDelete httpDelete = HttpClientUtils.buildHttpDelete(HttpClientUtils.buildHttpUrl(url), params, null);
@@ -134,16 +180,34 @@ public abstract class BaseHttpDao extends SuperHttpDao {
         }
         return null;
     }
+    /**
 
+     * 执行HTTP GET请求。
+     * @param url 请求的URL。
+     * @param params 请求参数的映射。
+     * @return 如果请求成功，则为true；否则为false。
+     */
     protected boolean executeGet(String url, Map<String, String> params) {
         return executeGet(url, params, null);
     }
 
+    /**
+     * 执行HTTP Post请求
+     * @param url 请求的URL。
+     * @param params 请求参数的映射。
+     * @return 如果请求成功，则为true；否则为false。
+     */
     protected boolean executePost(String url, Map<String, String> params) {
         return executePost(url, params, null);
     }
 
-
+    /**
+     * 执行HTTP GET请求
+     * @param url 请求的URL
+     * @param params 请求参数的映射。
+     * @param headers 请求头的映射。
+     * @return 如果请求成功，则为true；否则为false。
+     */
     protected boolean executeGet(String url, Map<String, String> params,
                                  Map<String, String> headers) {
         CloseableHttpResponse response = null;
@@ -180,6 +244,13 @@ public abstract class BaseHttpDao extends SuperHttpDao {
         return false;
     }
 
+    /**
+     * 执行HTTP Post请求
+     * @param url 请求的URL
+     * @param params 请求参数的映射。
+     * @param headers 请求头的映射。
+     * @return 如果请求成功，则为true；否则为false。
+     */
     protected boolean executePost(String url, Map<String, String> params,
                                   Map<String, String> headers) {
         CloseableHttpResponse response = null;
@@ -217,10 +288,18 @@ public abstract class BaseHttpDao extends SuperHttpDao {
         return false;
     }
 
+    /**
+     * 向指定的 URL 发送 HTTP POST 请求，并附带给定的数据和文件。
+     *
+     * @param url   要发送请求的 URL
+     * @param datas 要在请求中发送的数据
+     * @param files 要在请求中发送的文件
+     * @return 服务器的响应
+     */
     public String doPostFile(String url, Map<String, String> datas, Map<String, String> files) {
         MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
         multipartEntityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-        multipartEntityBuilder.setCharset(Charset.forName("UTF-8"));
+        multipartEntityBuilder.setCharset(Charset.forName(STANDRDCHARSETS));
 
         Iterator<Entry<String, String>> iterator = null;
         if (datas != null) {
@@ -228,7 +307,7 @@ public abstract class BaseHttpDao extends SuperHttpDao {
             // 发送的数据
             while (iterator.hasNext()) {
                 Entry<String, String> entry = (Entry<String, String>) iterator.next();
-                multipartEntityBuilder.addTextBody(entry.getKey(), entry.getValue(), ContentType.create("text/plain", Charset.forName("UTF-8")));
+                multipartEntityBuilder.addTextBody(entry.getKey(), entry.getValue(), ContentType.create("text/plain", Charset.forName(STANDRDCHARSETS)));
             }
         }
 
@@ -240,8 +319,6 @@ public abstract class BaseHttpDao extends SuperHttpDao {
                 String path = entry.getValue();
                 if ("".equals(path) || path == null)
                     continue;
-//				File file = new File(entry.getValue());
-//				multipartEntityBuilder.addBinaryBody(entry.getKey(), file);
                 FileBody bin = new FileBody(new File(entry.getValue()));
                 multipartEntityBuilder.addPart(entry.getKey(), bin);
             }
@@ -255,10 +332,9 @@ public abstract class BaseHttpDao extends SuperHttpDao {
             // 设置 POST 请求的实体部分
             httpPost.setEntity(httpEntity);
             // 发送 HTTP 请求
-//			return doPost(httpPost);
             response = httpClient.execute(httpPost);
             if (response.getStatusLine().getStatusCode() == 200) {
-                return EntityUtils.toString(response.getEntity(), "UTF-8");
+                return EntityUtils.toString(response.getEntity(), STANDRDCHARSETS);
             }
         } catch (ClientProtocolException e) {
             logger.error("doPostFile(String url, Map<String, String> datas, Map<String, String> files)  ClientProtocolException : {} ", url);

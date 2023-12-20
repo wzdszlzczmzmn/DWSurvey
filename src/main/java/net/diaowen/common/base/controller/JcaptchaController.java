@@ -4,14 +4,18 @@ import com.octo.captcha.service.image.ImageCaptchaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-
+import net.diaowen.common.exception.JcaptchaException;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
+/**
+ * 处理生成和渲染 CAPTCHA 图像请求的控制器。
+ */
 @Controller
 //@RequestMapping("/jcap")
 @RequestMapping("/api/dwsurvey/anon/jcap")
@@ -19,9 +23,16 @@ public class JcaptchaController {
 
 	@Autowired
     private ImageCaptchaService imageCaptchaService;
-
+    /**
+     * Generates a new CAPTCHA image and renders it as a JPEG image.
+     *
+     * @param request  the HTTP servlet request
+     * @param response the HTTP servlet response
+     * @return null
+     * @throws IOException if an I/O error occurs
+     */
     @RequestMapping("/jcaptcha.do")
-	public String execute(HttpServletRequest request,HttpServletResponse response) throws Exception {
+	public String execute(HttpServletRequest request,HttpServletResponse response)throws IOException {
         byte[] captchaChallengeAsJpeg = null;
         // the output stream to render the captcha image as jpeg into
         ByteArrayOutputStream jpegOutputStream = new ByteArrayOutputStream();
@@ -33,15 +44,10 @@ public class JcaptchaController {
             // call the ImageCaptchaService getChallenge method
             BufferedImage challenge = imageCaptchaService.getImageChallengeForID(captchaId, request.getLocale());
             // a jpeg encoder
-            /*
-            JPEGImageEncoder jpegEncoder = JPEGCodec.createJPEGEncoder(jpegOutputStream);
-            jpegEncoder.encode(challenge);
-            */
             jpegOutputStream = new ByteArrayOutputStream();
             ImageIO.write(challenge,"jpg",jpegOutputStream);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new JcaptchaException("验证码错误");
         }
         captchaChallengeAsJpeg = jpegOutputStream.toByteArray();
         // flush it in the response
