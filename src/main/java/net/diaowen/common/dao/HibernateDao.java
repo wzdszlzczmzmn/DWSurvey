@@ -509,6 +509,7 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 		return page;
 	}
 
+
 	/**
 	 * 查询所有数据。
 	 *
@@ -520,6 +521,7 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 		return query.getResultList();
 
 	}
+
 	/**
 	 * 通过条件查找
 	 * @param pageRequest 分页请求

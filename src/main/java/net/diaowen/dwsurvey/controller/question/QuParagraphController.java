@@ -17,6 +17,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * 分段题 action
@@ -30,6 +31,11 @@ import java.util.Map;
 @RequestMapping("/api/dwsurvey/app/design/qu-paragraph")
 public class QuParagraphController{
 	private final QuestionManager questionManager;
+
+	/**
+	 * 日志
+	 */
+	private final Logger logger = Logger.getLogger(QuParagraphController.class.getName());
 
 	@Autowired
 	public QuParagraphController(QuestionManager questionManager) {
@@ -51,7 +57,7 @@ public class QuParagraphController{
 			String resultJson=buildResultJson(entity);
 			response.getWriter().write(resultJson);
 		}catch (Exception e) {
-			e.printStackTrace();
+			logger.warning(e.getMessage());
 			response.getWriter().write("error");
 		}
 		return null;

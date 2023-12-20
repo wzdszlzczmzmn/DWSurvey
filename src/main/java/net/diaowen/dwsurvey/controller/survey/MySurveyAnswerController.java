@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/dwsurvey/app/answer")
@@ -34,6 +35,11 @@ public class MySurveyAnswerController {
     private final SurveyAnswerManager surveyAnswerManager;
     private final AccountManager accountManager;
     private final AnUploadFileManager anUploadFileManager;
+
+    /**
+     * 日志
+     */
+    private final Logger logger = Logger.getLogger(MySurveyAnswerController.class.getName());
 
     @Autowired
     public MySurveyAnswerController(SurveyDirectoryManager surveyDirectoryManager, SurveyAnswerManager surveyAnswerManager, AccountManager accountManager, AnUploadFileManager anUploadFileManager) {
@@ -97,7 +103,7 @@ public class MySurveyAnswerController {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warning(e.getMessage());
         }
         return HttpResult.FAILURE();
     }
@@ -119,7 +125,7 @@ public class MySurveyAnswerController {
                 }
             return HttpResult.SUCCESS();
         }catch (Exception e){
-            e.printStackTrace();
+           logger.warning(e.getMessage());
         }
         return HttpResult.FAILURE();
     }
@@ -168,7 +174,7 @@ public class MySurveyAnswerController {
                     }
                 }
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.warning(e.getMessage());
         }
         return null;
     }

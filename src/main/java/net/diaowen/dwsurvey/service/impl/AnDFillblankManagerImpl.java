@@ -6,6 +6,7 @@ import net.diaowen.common.plugs.page.Page;
 import net.diaowen.dwsurvey.dao.AnDFillblankDao;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import net.diaowen.common.service.BaseServiceImpl;
@@ -23,6 +24,7 @@ import net.diaowen.dwsurvey.service.AnDFillblankManager;
 @Service
 public class AnDFillblankManagerImpl extends BaseServiceImpl<AnDFillblank, String> implements AnDFillblankManager{
 
+	@Autowired
 	private AnDFillblankDao anDFillblankDao;
 
 	@Override

@@ -21,9 +21,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -41,6 +44,11 @@ public class QuUploadFileController {
 	private final QuestionManager questionManager;
 	private final AnUploadFileManager anUploadFileManager;
 	private final SurveyDirectoryManager surveyDirectoryManager;
+
+	/**
+	 * 日志
+	 */
+	private final Logger logger = Logger.getLogger(QuUploadFileController.class.getName());
 
 	public QuUploadFileController(QuestionManager questionManager, AnUploadFileManager anUploadFileManager, SurveyDirectoryManager surveyDirectoryManager) {
 		this.questionManager = questionManager;
@@ -64,7 +72,7 @@ public class QuUploadFileController {
 			response.getWriter().write(resultJson);
 			//返回各部分ID
 		}catch (Exception e) {
-			e.printStackTrace();
+			logger.warning(e.getMessage());
 			response.getWriter().write("error");
 		}
 		return null;
@@ -161,9 +169,6 @@ public class QuUploadFileController {
 			String quLogicIdValue=(quLogicId!=null)?quLogicId.toString():"";
 
 			QuestionLogic quLogic=new QuestionLogic();
-			if("".equals(quLogic)){
-				quLogic=null;
-			}
 			quLogic.setId(quLogicIdValue);
 			quLogic.setCgQuItemId(cgQuItemId);
 			quLogic.setSkQuId(skQuId);
@@ -259,22 +264,25 @@ public class QuUploadFileController {
 		//设置响应头，控制浏览器下载该文件
 		response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
 		//读取要下载的文件，保存到文件输入流
-		FileInputStream in = new FileInputStream(file);
-		//创建输出流
-		OutputStream out = response.getOutputStream();
-		//创建缓冲区
-		byte buffer[] = new byte[1024];
-		int len = 0;
-		//循环将输入流中的内容读取到缓冲区当中
-		while((len=in.read(buffer))>0){
-			//输出缓冲区的内容到浏览器，实现文件下载
-			out.write(buffer, 0, len);
+		try (FileInputStream in = new FileInputStream(file)){
+			//创建输出流
+			OutputStream out = response.getOutputStream();
+			//创建缓冲区
+			byte[] buffer = new byte[1024];
+			int len = 0;
+			//循环将输入流中的内容读取到缓冲区当中
+			while((len=in.read(buffer))>0){
+				//输出缓冲区的内容到浏览器，实现文件下载
+				out.write(buffer, 0, len);
+			}
+			out.flush();
+			//关闭文件输入流
+			in.close();
+			//关闭输出流
+			out.close();
 		}
-		out.flush();
-		//关闭文件输入流
-		in.close();
-		//关闭输出流
-		out.close();
+
+
 		return null;
 	}
 
@@ -306,46 +314,42 @@ public class QuUploadFileController {
 			dir.mkdirs();
 		}
 		String strZipPath = request.getServletContext().getRealPath("/upload/work/"+tmpFileName);
-		try {
-			//创建压缩文件并向其中添加文件内容
-			ZipOutputStream out = new ZipOutputStream(new FileOutputStream(strZipPath));
+		//创建压缩文件并向其中添加文件内容
+		try(ZipOutputStream out = new ZipOutputStream(Files.newOutputStream(Paths.get(strZipPath)))) {
 			List<AnUplodFile> result = anPage.getResult();
 			// 下载的文件集合
 			for (int i = 0; i < result.size(); i++) {
 				AnUplodFile anUplodFile = result.get(i);
-				FileInputStream fis = new FileInputStream(request.getServletContext().getRealPath(anUplodFile.getFilePath()));
-				out.putNextEntry(new ZipEntry(anUplodFile.getRandomCode()+"-"+anUplodFile.getFileName()));
-				//设置压缩文件内的字符编码，不然会变成乱码
-				int len;
-				// 读入需要下载的文件的内容，打包到zip文件
-				while ((len = fis.read(buffer)) > 0) {
-					out.write(buffer, 0, len);
+				try(FileInputStream fis = new FileInputStream(request.getServletContext().getRealPath(anUplodFile.getFilePath()))) {
+					out.putNextEntry(new ZipEntry(anUplodFile.getRandomCode()+"-"+anUplodFile.getFileName()));
+					//设置压缩文件内的字符编码，不然会变成乱码
+					int len;
+					// 读入需要下载的文件的内容，打包到zip文件
+					while ((len = fis.read(buffer)) > 0) {
+						out.write(buffer, 0, len);
+					}
+					out.closeEntry();
 				}
-				out.closeEntry();
-				fis.close();
 			}
 			//下载压缩文件
 			out.close();
 			//设置响应头，控制浏览器下载该文件
 			response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(tmpFileName, "UTF-8"));
 			//读取要下载的文件，保存到文件输入流
-			FileInputStream in = new FileInputStream(new File(strZipPath));
-			//创建输出流
-			OutputStream respOut = response.getOutputStream();
-			//创建缓冲区
-			int len = 0;
-			//循环将输入流中的内容读取到缓冲区当中
-			while((len=in.read(buffer))>0){
-				//输出缓冲区的内容到浏览器，实现文件下载
-				respOut.write(buffer, 0, len);
+			try(FileInputStream in = new FileInputStream(new File(strZipPath))) {
+				//创建输出流
+				OutputStream respOut = response.getOutputStream();
+				//创建缓冲区
+				int len = 0;
+				//循环将输入流中的内容读取到缓冲区当中
+				while((len=in.read(buffer))>0){
+					//输出缓冲区的内容到浏览器，实现文件下载
+					respOut.write(buffer, 0, len);
+				}
+				respOut.flush();
 			}
-			respOut.flush();
-			//关闭文件输入流
-			in.close();
-			//关闭输出流
-			out.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.warning(e.getMessage());
 			response.setContentType("text/html;charset=utf-8");
 			response.getWriter().write("批量导出异常！");
 		}

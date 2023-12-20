@@ -37,6 +37,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * 答卷 action
@@ -50,6 +51,11 @@ import java.util.*;
 @RequestMapping("/api/dwsurvey/anon/response")
 public class ResponseController {
 	private static final long serialVersionUID = -2289729314160067840L;
+
+	/**
+	 * 日志
+	 */
+	private final Logger logger = Logger.getLogger(ResponseController.class.getName());
 	@Autowired
 	private SurveyAnswerManager surveyAnswerManager;
 	@Autowired
@@ -84,7 +90,7 @@ public class ResponseController {
 			answerAfterUpData(request,response,surveyId,entity.getId());
 			return answerRedirect(directory,6, entity.getId());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.warning(e.getMessage());
 			return answerRedirect(directory,5);
 		}
 	}
@@ -446,10 +452,8 @@ public class ResponseController {
 			String jsonPath = "/file/survey/"+sid+"/"+sid+".json";
 			surveyJsonExists(sid, jsonPath);
 			request.getRequestDispatcher(jsonPath).forward(request,response);
-		} catch (ServletException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (ServletException | IOException e) {
+			logger.warning(e.getMessage());
 		}
 		return null;
 	}
@@ -461,10 +465,8 @@ public class ResponseController {
 		try {
 			surveyJsonExists(sid, jsonPath);
 			request.getRequestDispatcher(jsonPath).forward(request,response);
-		} catch (ServletException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (ServletException | IOException e) {
+			logger.warning(e.getMessage());
 		}
 		return null;
 	}

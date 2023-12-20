@@ -4,16 +4,28 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Random;
+import java.util.logging.Logger;
 
 /**
  * 文件转移、保存到指定路径、数据传送到指定路径、删除、读文件
  */
 public class FileUtils {
+
+
+	/**
+	 * 日志
+	 */
+	private static final Logger LOGGER = Logger.getLogger(FileUtils.class.getName());
+
+	private static Random r = new Random();
+
 	private FileUtils(){
 
 	}
-	private static Random r = new Random();
+
 	/**
 	 * 将上传的文件转移到指定路径
 	 *
@@ -24,7 +36,7 @@ public class FileUtils {
 	 * @throws IOException
 	 */
 	public static File transferFile(String path, MultipartFile file)
-			throws IllegalStateException, IOException {
+			throws IOException {
 		//创建相应路径的File实体
 		File dir = new File(path);
 		if (!dir.exists() || !dir.isDirectory()) {
@@ -44,9 +56,8 @@ public class FileUtils {
 					+ 1 + aFile.getName().length();
 			// 如果上传的文件的名字中含有中文字符或其他非单词字符，那么就进行重命名，并将其改为英文名字
 			// 这里所说的单词字符为：[a-zA-Z_0-9]
-			Boolean rename = true;
 			//// 检查文件是否存在或者是否已命名，或者文件名长度是否大于30个字符，如果是，则进入重命名流程
-			if (aFile != null && aFile.exists() || nameLength > 30 || rename) {
+			if (aFile.exists() || nameLength > 30) {
 				// 创建一个包含所有可能字符的数组，用于随机生成文件名
 				char[] str = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
 						'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
@@ -96,7 +107,7 @@ public class FileUtils {
 	 * @throws IOException           输入输出异常
 	 */
 	public static File transferFile1(String path, MultipartFile file)
-			throws IllegalStateException, IOException {
+			throws IOException {
 		//创建相应路径的File实例
 		File dir = new File(path);
 		if (!dir.exists() || !dir.isDirectory()) {
@@ -118,9 +129,8 @@ public class FileUtils {
 					+ 1 + aFile.getName().length();
 			// 如果上传的文件的名字中含有中文字符或其他非单词字符，那么就进行重命名，并将其改为英文名字
 			// 这里所说的单词字符为：[a-zA-Z_0-9]
-			Boolean rename = true;
 
-			if (aFile != null && aFile.exists() || nameLength > 30 || rename) {
+			if (aFile.exists() || nameLength > 30) {
 				//如果文件不等于空并且文件已经存在或者名字长度大于30，则重命名
 				// 创建一个包含所有可能字符的数组，用于随机生成文件名
 				char[] str = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
@@ -170,7 +180,7 @@ public class FileUtils {
 	 * @throws IOException           输入输出异常
 	 */
 	public static String[] transferFile2(String path, File[] file,String[] filenames)
-			throws IllegalStateException, IOException {
+			{
 		// 创建指定路径的File实例
 		File file2=new File(path);
 		if (!file2.exists() || !file2.isDirectory()) {
@@ -210,7 +220,7 @@ public class FileUtils {
 							fileName.append(str[pos]);
 						}
 						// 将文件后缀名添加到生成的文件名后面
-						fileName.append(filenames[i].substring(filenames[i].lastIndexOf(".")));
+						fileName.append(filenames[i].substring(filenames[i].lastIndexOf('.')));
 
 						// 写入文件流
 						try (FileOutputStream fos = new FileOutputStream(path + fileName.toString())) {
@@ -226,17 +236,17 @@ public class FileUtils {
 							// 将生成的文件名存储在临时数组中
 							temp[i]=fileName.toString();
 						} catch (IOException e) {
-							e.printStackTrace();
+							LOGGER.warning(e.getMessage());
 						}
 
 						temp[i] = fileName.toString();
 					} catch (Exception e) {
-						e.printStackTrace();
+						LOGGER.warning(e.getMessage());
 					}
 
 				} catch (Exception e) {
 					// 捕获异常并打印堆栈信息
-					e.printStackTrace();
+					LOGGER.warning(e.getMessage());
 				}
 			}
 			// 返回保存后的文件名数组
@@ -256,9 +266,19 @@ public class FileUtils {
 	public static boolean deleteFile(File f) {
 		// 如果文件存在
 		if (f.exists()) {
-			if (f.isFile())
+			if (f.isFile()) {
 				// 如果是文件，直接删除
-				return f.delete();
+				Path path = f.toPath();
+
+				try {
+					return Files.deleteIfExists(path);
+				} catch (IOException e) {
+					LOGGER.severe("Unable to delete the file: " + e.getMessage());
+
+				}
+
+				return false;
+			}
 			else if (f.isDirectory()) {
 				// 如果是目录，获取目录下的文件
 				File[] files = f.listFiles();
@@ -269,13 +289,23 @@ public class FileUtils {
 						return false;
 				}
 				// 删除目录本身
-				return f.delete();
-			} else
+				Path path = f.toPath();
+
+				try {
+					return Files.deleteIfExists(path);
+				} catch (IOException e) {
+					LOGGER.severe("Unable to delete the file: " + e.getMessage());
+				}
+
+				return false;
+			} else{
 				// 既不是文件也不是目录，返回false
 				return false;
-		} else
+			}
+		} else{
 			// 文件或目录不存在，返回false
 			return false;
+		}
 	}
 
 	/**
@@ -304,7 +334,7 @@ public class FileUtils {
 				}
 			} catch (IOException e) {
 				// 捕获异常并打印堆栈信息
-				e.printStackTrace();
+				LOGGER.warning(e.getMessage());
 			}
 		}
 		// 返回读取到的文件内容字符串

@@ -1,4 +1,5 @@
 package net.diaowen.common.exception;
+
 /**
  * RuntimeException的子类，用于表示HibernateDao类异常。
  */

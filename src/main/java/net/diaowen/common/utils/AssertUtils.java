@@ -376,7 +376,7 @@ public abstract class AssertUtils {
 	 * @param message 若Map没有键值对，所抛出的异常信息
 	 * @throws IllegalArgumentException 若Map没有键值对，抛出IllegalArgumentException异常
 	 */
-	public static <k,V> void notEmpty(Map<k,V> map, String message) {
+	public static <K,V> void notEmpty(Map<K,V> map, String message) {
 		if (CollectionUtils.isEmpty(map)) {
 			//若Map没有键值对，抛出IllegalArgumentException异常，并使用给定的信息
 			throw new IllegalArgumentException(message);

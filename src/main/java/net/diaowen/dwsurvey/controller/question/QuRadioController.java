@@ -19,6 +19,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * 单选题 action
@@ -35,6 +36,11 @@ public class QuRadioController{
 	private final QuRadioManager quRadioManager;
 
 	public static final String ID="{id:'";
+
+	/**
+	 * 日志
+	 */
+	private final Logger logger = Logger.getLogger(QuRadioController.class.getName());
 
 	@Autowired
 	public QuRadioController(QuestionManager questionManager, QuRadioManager quRadioManager) {
@@ -57,7 +63,7 @@ public class QuRadioController{
 			String resultJson=buildResultJson(entity);
 			response.getWriter().write(resultJson);
 		}catch (Exception e) {
-			e.printStackTrace();
+			logger.warning(e.getMessage());
 			response.getWriter().write("error");
 		}
 		return null;
@@ -210,7 +216,7 @@ public class QuRadioController{
 			quRadioManager.ajaxDelete(quItemId);
 			response.getWriter().write("true");
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.warning(e.getMessage());
 			response.getWriter().write("error");
 		}
 		return null;

@@ -1,6 +1,7 @@
 package net.diaowen.common.exception;
 
 import java.io.IOException;
+
 /**
  * IOException的子类，用于表示JcaptchaController类异常。
  */

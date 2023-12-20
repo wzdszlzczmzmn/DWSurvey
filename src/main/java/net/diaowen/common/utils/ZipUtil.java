@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
@@ -31,16 +33,12 @@ public class ZipUtil {
 
           writeZip(new File(sourcePath), "", zos, isDrop);
 
-      } catch (FileNotFoundException e) {
-          log.error(ZIP_FILE_CREATION_ERROR, e);
       } catch (IOException e) {
           log.error(ZIP_FILE_CREATION_ERROR, e);
       }
-    }
+  }
     /**
      * 清空文件和文件目录
-     *
-     * @param f
      */
     public class ZipFileDeleteException extends Exception {
 
@@ -51,10 +49,20 @@ public class ZipUtil {
 
     public static void clean(File f) throws Exception {
         //获取文件夹下的文件列表
-        String cs[] = f.list();
+        String[] cs = f.list();
         //如果文件列表为空，则删除文件夹
         if (cs == null || cs.length <= 0) {
-            boolean isDelete = f.delete();
+
+            Path path = f.toPath();
+
+
+                boolean isDelete = false;
+
+
+            if (Files.deleteIfExists(path)){
+                isDelete = true;
+            }
+
             if (!isDelete) {
                 throw new ZipException(f.getName() + ZIP_FILE_DELETE_ERROR);
             }
@@ -66,7 +74,10 @@ public class ZipUtil {
                 File f2 = new File(cp);
                 //如果文件存在且是文件，则删除
                 if (f2.exists() && f2.isFile()) {
-                    boolean isDelete = f2.delete();
+
+                    Path path = f.toPath();
+                    boolean isDelete = Files.deleteIfExists(path);
+
                     if (!isDelete) {
                         throw new ZipException(f2.getName() + ZIP_FILE_DELETE_ERROR);
                     }
@@ -76,7 +87,8 @@ public class ZipUtil {
                 }
             }
             //删除文件夹
-            boolean isDelete = f.delete();
+            Path path = f.toPath();
+            boolean isDelete = Files.deleteIfExists(path);
             if (!isDelete) {
                 throw new ZipException(f.getName() + ZIP_FILE_DELETE_ERROR);
             }
@@ -103,8 +115,7 @@ public class ZipUtil {
                     try {
                         zos.putNextEntry(new ZipEntry(parentPath));
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        log.error(e.getMessage());
                     }
                 }
             } else {
@@ -125,7 +136,7 @@ public class ZipUtil {
                     try {
                         clean(file);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        log.error(e.getMessage());
                     }
                 } catch (IOException e) {
                     log.error(ZIP_FILE_CREATION_ERROR, e);
@@ -137,5 +148,6 @@ public class ZipUtil {
 
 
     public static void main(String[] args) {
+        //空的main方法
    }
 }

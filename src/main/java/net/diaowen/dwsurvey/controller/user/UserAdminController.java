@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Map;
+import java.util.logging.Logger;
 
 @Controller
 @RequestMapping("/api/dwsurvey/admin/user")
@@ -25,6 +26,11 @@ public class UserAdminController {
     private UserManager userManager;
     @Autowired
     private FormAuthenticationWithLockFilter formAuthFilter;
+
+    /**
+     * 日志
+     */
+    private final Logger logger = Logger.getLogger(UserAdminController.class.getName());
 
     @RequestMapping(value = "/list.do",method = RequestMethod.GET)
     @ResponseBody
@@ -48,7 +54,7 @@ public class UserAdminController {
             User result = userManager.adminSave(user);
             if(result!=null) return HttpResult.SUCCESS();
         }catch (Exception e){
-            e.printStackTrace();
+            logger.warning(e.getMessage());
         }
         return HttpResult.FAILURE();
     }
@@ -66,7 +72,7 @@ public class UserAdminController {
             HttpResult httpResult = userManager.upData(user);
             return httpResult;
         }catch (Exception e){
-            e.printStackTrace();
+            logger.warning(e.getMessage());
             return HttpResult.FAILURE(e.getMessage());
         }
     }
@@ -90,7 +96,7 @@ public class UserAdminController {
             }
             return HttpResult.SUCCESS();
         }catch (Exception e){
-            e.printStackTrace();
+            logger.warning(e.getMessage());
         }
         return HttpResult.FAILURE();
     }
@@ -108,7 +114,7 @@ public class UserAdminController {
             formAuthFilter.resetAccountLock(user.getLoginName());
             return HttpResult.SUCCESS();
         }catch (Exception e){
-            e.printStackTrace();
+            logger.warning(e.getMessage());
             return HttpResult.FAILURE(e.getMessage());
         }
     }

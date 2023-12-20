@@ -19,7 +19,7 @@ public class IpUtils {
         // 提取IP的第一段，即aaa.bbb.ccc.ddd中的aaa
         String ip0 = ip2[0];
         // 组装新的IP，取IP的第一段和第四段组成一个新的IP
-        String ip1 = ip0.substring(0,ip0.lastIndexOf(".")+1)+ip2[1];
+        String ip1 = ip0.substring(0,ip0.lastIndexOf('.')+1)+ip2[1];
         // 返回IP数组，包含原始IP和拼接后的IP
         return new String[]{ip0,ip1};
     }

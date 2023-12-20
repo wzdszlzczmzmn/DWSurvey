@@ -16,6 +16,7 @@ import net.diaowen.dwsurvey.service.SurveyStatsManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/dwsurvey/app/survey")
@@ -26,6 +27,11 @@ public class MySurveyController {
     private final SurveyDetailManager surveyDetailManager;
     private final SurveyAnswerManager surveyAnswerManager;
     private final SurveyStatsManager surveyStatsManager;
+
+    /**
+     * 日志
+     */
+    private final Logger logger = Logger.getLogger(MySurveyController.class.getName());
 
     @Autowired
     public MySurveyController(AccountManager accountManager, SurveyDirectoryManager surveyDirectoryManager, SurveyDetailManager surveyDetailManager, SurveyAnswerManager surveyAnswerManager, SurveyStatsManager surveyStatsManager) {
@@ -73,7 +79,7 @@ public class MySurveyController {
                 return HttpResult.buildResult(HttpStatus.NOLOGIN);
             }
         }catch (Exception e){
-            e.printStackTrace();
+            logger.warning(e.getMessage());
         }
         return HttpResult.FAILURE();
     }
@@ -92,7 +98,7 @@ public class MySurveyController {
             surveyDirectoryManager.save(surveyDirectory);
             return HttpResult.SUCCESS(surveyDirectory);
         }catch (Exception e){
-            e.printStackTrace();
+            logger.warning(e.getMessage());
         }
         return HttpResult.FAILURE();
     }
@@ -108,8 +114,8 @@ public class MySurveyController {
      */
     @PostMapping(value = "/copy.do")
     public HttpResult copy(String fromSurveyId, String surveyName, String tag) {
-        tag="2";
-        SurveyDirectory directory=surveyDirectoryManager.createBySurvey(fromSurveyId,surveyName,tag);
+        String newTag = "2";
+        SurveyDirectory directory=surveyDirectoryManager.createBySurvey(fromSurveyId,surveyName,newTag);
         return HttpResult.SUCCESS(directory);
     }
 
@@ -150,7 +156,7 @@ public class MySurveyController {
             surveyDirectoryManager.upSurveyState(surveyId,surveyState);
             return HttpResult.SUCCESS();
         }catch (Exception e){
-            e.printStackTrace();
+            logger.warning(e.getMessage());
         }
         return HttpResult.FAILURE();
     }
@@ -167,7 +173,7 @@ public class MySurveyController {
             surveyDetailManager.saveBaseUp(surveyDetail);
             return HttpResult.SUCCESS();
         }catch (Exception e){
-            e.printStackTrace();
+            logger.warning(e.getMessage());
         }
         return HttpResult.FAILURE();
     }

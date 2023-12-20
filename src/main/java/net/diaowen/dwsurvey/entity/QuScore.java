@@ -81,7 +81,7 @@ public class QuScore extends IdEntity {
 		this.anCount = anCount;
 	}
 
-	public float avgScore=0f;
+	private float avgScore=0f;
 	@Transient
 	public float getAvgScore() {
 		return avgScore;

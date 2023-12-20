@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.logging.Logger;
 
 
 /**
@@ -29,6 +30,11 @@ public class UEditorController {
     @Autowired
     private AccountManager accountManager;
 
+    /**
+     * 日志
+     */
+    private final Logger logger = Logger.getLogger(UEditorController.class.getName());
+
     @RequestMapping(value="/config")
     public void config(HttpServletRequest request, HttpServletResponse response) {
         response.setContentType("application/json");
@@ -44,7 +50,7 @@ public class UEditorController {
                 writer.close();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.warning(e.getMessage());
         }
     }
 }
