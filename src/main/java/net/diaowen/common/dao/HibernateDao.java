@@ -55,23 +55,32 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 	public HibernateDao() {
 		super();
 	}
-
+	/**
+	 * 设置实体类型
+	 * @param entityClass
+	 */
 	public HibernateDao(Class<T> entityClass) {
 		super(entityClass);
 	}
 
-	//-- 分页查询函数 --//
-
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.IHibernateDao#getAll(net.diaowen.common.orm.PageRequest)
+	/**
+	 * 分页获取全部对象.
+	 * @param pageRequest 分页参数.
+	 * @return page<T>
 	 */
 	@Override
 	public Page<T> getAll(final PageRequest pageRequest) {
 		return findPage(pageRequest);
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.IHibernateDao#findPage(net.diaowen.common.orm.PageRequest, java.lang.String, java.lang.Object)
+	/**
+	 * 按HQL分页查询.
+	 *
+	 * @param pageRequest 分页参数.
+	 * @param hql hql语句.
+	 * @param values 数量可变的查询参数,按顺序绑定.
+	 *
+	 * @return 分页查询结果, 附带结果列表及所有查询输入参数.
 	 */
 	@Override
 	public Page<T> findPage(final PageRequest pageRequest, String hql, final Object... values) {
@@ -96,8 +105,13 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 		return page;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.IHibernateDao#findPage(net.diaowen.common.orm.PageRequest, java.lang.String)
+	/**
+	 * 按HQL分页查询.
+	 *
+	 * @param pageRequest 分页参数.
+	 * @param hql hql语句.
+	 *
+	 * @return 分页查询结果, 附带结果列表及所有查询输入参数.
 	 */
 	@Override
 	public Page<T> findPage(final PageRequest pageRequest, String hql) {
@@ -117,8 +131,12 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 		return page;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.common.orm.hibernate.IHibernateDao#findPage(net.diaowen.common.orm.PageRequest, org.hibernate.criterion.Criterion)
+	/**
+	 * 分页查询。
+	 *
+	 * @param pageRequest 分页请求
+	 * @param criterions  查询条件
+	 * @return 分页结果
 	 */
 	@Override
 	public Page<T> findPage(final PageRequest pageRequest, final Criterion... criterions) {
@@ -207,16 +225,31 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 		}
 	}
 
+	/**
+	 * 获取orgHql查询语句返回的记录数
+	 * @param orgHql hql语句
+	 * @return 记录数
+	 */
 	private String prepareCountHql(String orgHql) {
 		String countHql = "select count (*) " + removeSelect(removeOrders(orgHql));
 		return countHql;
 	}
 
+	/**
+	 * 从hql查询语句中提取的“from”子句。
+	 * @param hql hql查询语句
+	 * @return 子句
+	 */
 	private static String removeSelect(String hql) {
 		int beginPos = hql.toLowerCase().indexOf("from");
 		return hql.substring(beginPos);
 	}
 
+	/**
+	 * 从hql查询语句中删除了“order by”子句的新查询语句。
+	 * @param hql hql查询语句
+	 * @return 新的hql语句
+	 */
 	private static String removeOrders(String hql) {
 		Pattern p = Pattern.compile("order\\s*by[\\w|\\W|\\s|\\S]*", Pattern.CASE_INSENSITIVE);
 		Matcher m = p.matcher(hql);
@@ -271,7 +304,11 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 		return totalCount;
 	}
 
-
+	/**
+	 * action转入id得到模型
+	 * @param id
+	 * @return 模型
+	 */
 	@Override
 	public T getModel(ID id) {
 		T t = null;
@@ -291,7 +328,14 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 		}
 		return t;
 	}
-
+	/**
+	 * 排序并取出一列数据。
+	 *
+	 * @param orderByProperty 排序属性
+	 * @param isAsc           是否升序
+	 * @param criterions      查询条件
+	 * @return 数据列表
+	 */
 	@Override
 	public List<T> findByOrder(String orderByProperty, boolean isAsc,
 			Criterion... criterions) {
@@ -303,7 +347,12 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 		}
 		return c.list();
 	}
-
+	/**
+	 * 取出第一条数据。
+	 *
+	 * @param criterions 查询条件
+	 * @return 第一条数据
+	 */
 	@Override
 	public T findFirst(String orderByProperty, boolean isAsc,
 			Criterion... criterions) {
@@ -316,7 +365,12 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 		c.setMaxResults(1);
 		return (T) c.uniqueResult();
 	}
-
+	/**
+	 * 取出第一条数据。
+	 *
+	 * @param criterions 查询条件
+	 * @return 第一条数据
+	 */
 	@Override
 	public T findFirst(String orderByProperty, boolean isAsc,
 			List<Criterion> criterions) {
@@ -329,32 +383,60 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 		c.setMaxResults(1);
 		return (T) c.uniqueResult();
 	}
-
+	/**
+	 * 执行一条 HQL 查询并返回一个 Object 数组。
+	 *
+	 * @param hql    HQL 查询语句
+	 * @param values 查询参数
+	 * @return Object 数组
+	 */
 	@Override
 	public Object findUniObjs(String hql,Object... values ) {
 		Query q = createQuery(hql, values);
 		return q.uniqueResult();
 	}
-
+	/**
+	 * 执行一条 HQL 查询并返回一个 List<Object[]>。
+	 *
+	 * @param hql    HQL 查询语句
+	 * @param values 查询参数
+	 * @return List<Object[]>
+	 */
 	@Override
 	public List<Object[]> findList(String hql, Object... values) {
 		Query q = createQuery(hql, values);
 		return q.list();
 	}
-
+	/**
+	 * 取出第一条数据。
+	 *
+	 * @param criterions 查询条件
+	 * @return 第一条数据
+	 */
 	@Override
 	public T findFirst(Criterion... criterions) {
 		Criteria c = createCriteria(criterions);
 		c.setMaxResults(1);
 		return (T) c.uniqueResult();
 	}
-
+	/**
+	 * 取出第一条数据。
+	 *
+	 * @param criterions 查询条件
+	 * @return 第一条数据
+	 */
 	public T findFirst(List<Criterion> criterions) {
 		Criteria c = createCriteria(criterions);
 		c.setMaxResults(1);
 		return (T) c.uniqueResult();
 	}
-
+	/**
+	 * 分页查询。
+	 *
+	 * @param pageRequest 分页请求
+	 * @param criterions  查询条件
+	 * @return 分页结果
+	 */
 	@Override
 	public Page<T> findPageList(PageRequest pageRequest,
 			List<Criterion> criterions) {
@@ -364,19 +446,38 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 		}
 		return findPage(pageRequest);
 	}
-
+	/**
+	 * 分页查询。
+	 *
+	 * @param pageRequest 分页请求
+	 * @param c           查询条件
+	 * @return 分页结果
+	 */
 	public Page<T> findPageCriteria(PageRequest pageRequest,Criteria c){
 		Page<T> page = findPageByCriteria(pageRequest,c);
 		return page;
 	}
-
+	/**
+	 * 根据查询条件分页查询。
+	 *
+	 * @param pageRequest  分页请求
+	 * @param criterions   查询条件
+	 * @return 分页结果
+	 */
 	public Page<T> findPageByCri(Page<T> pageRequest, List<Criterion> criterions){
 		Criteria c = createCriteria(criterions);
 		Page<T> page = findPageByCriteria(pageRequest,c);
 		return page;
 	}
 
-
+	/**
+	 * 按序查找
+	 * @param pageRequest 分页请求
+	 * @param orderByProperty 属性
+	 * @param isAsc 是否升序
+	 * @param criterions criterion列表，查询条件
+	 * @return 查询结果
+	 */
 	public Page<T> findPageOderBy(Page<T> pageRequest,String orderByProperty, boolean isAsc, List<Criterion> criterions) {
 		Criteria c = createCriteria(criterions);
 		if (isAsc) {
@@ -388,7 +489,14 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 		Page<T> page = findPageByCriteria(pageRequest,c);
 		return page;
 	}
-
+	/**
+	 * 按序查找
+	 * @param pageRequest 分页请求
+	 * @param orderByProperty 属性
+	 * @param isAsc 是否升序
+	 * @param criterions 查询条件
+	 * @return 查询结果
+	 */
 	public Page<T> findPageOderBy(Page<T> pageRequest,String orderByProperty, boolean isAsc, Criterion... criterions) {
 		Criteria c = createCriteria(criterions);
 		if (isAsc) {
@@ -402,12 +510,24 @@ public class HibernateDao<T, ID extends Serializable> extends SimpleHibernateDao
 	}
 
 
+	/**
+	 * 查询所有数据。
+	 *
+	 * @param criteriaQuery 查询条件
+	 * @return 数据列表
+	 */
 	public List<T> findAll(CriteriaQuery criteriaQuery) {
 		TypedQuery query = getSession().createQuery(criteriaQuery);
 		return query.getResultList();
 
 	}
 
+	/**
+	 * 通过条件查找
+	 * @param pageRequest 分页请求
+	 * @param c 查询条件
+	 * @return 查询结果
+	 */
 	public Page<T> findPageByCriteria(final PageRequest pageRequest, Criteria c) {
 		Page<T> page = new Page<T>(pageRequest);
 		if (pageRequest.isCountTotal()) {

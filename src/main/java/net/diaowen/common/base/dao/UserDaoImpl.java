@@ -16,6 +16,11 @@ import org.springframework.stereotype.Repository;
  *
  * https://github.com/wkeyuan/DWSurvey
  * http://dwsurvey.net
+ * 用户数据访问对象实现类，继承自BaseDaoImpl。
+ *
+ * @param User 用户类型
+ * @param String 字符串类型
+ *
  */
 @Repository
 public class UserDaoImpl extends BaseDaoImpl<User, String> implements UserDao{
@@ -25,5 +30,5 @@ public class UserDaoImpl extends BaseDaoImpl<User, String> implements UserDao{
 		String sql="UPDATE t_user SET user_group_id = '' WHERE id = id";
 		this.getSession().createSQLQuery(sql).executeUpdate();
 	}
-	
+
 }

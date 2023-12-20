@@ -21,11 +21,14 @@ import java.util.Map;
 
 /**
  *
-* @ClassName: SuperHttpDao
-* @Description: TODO(http请求超类，http请求更高级原始的封装)
-* @author keyuan
-* @date 2016年9月17日 上午11:22:21
-*
+ * @ClassName: SuperHttpDao
+ * @Description: TODO(http请求超类，http请求更高级原始的封装)
+ * @author keyuan
+ * @date 2016年9月17日 上午11:22:21
+ *
+ * SuperHttpDao类是一个DAO类，提供HTTP GET请求。
+ * 它用于执行HTTP GET请求并将响应作为字符串返回。
+ * 此类是线程安全的，可在多线程环境中使用。
  */
 @Component
 public class SuperHttpDao {
@@ -38,7 +41,12 @@ public class SuperHttpDao {
 	@Autowired
 	protected RequestConfig requestConfig;
 
-
+	/**
+	 * 执行HTTP GET请求并将响应作为字符串返回。
+	 *
+	 * @param httpGet 要执行的HTTP GET请求
+	 * @return 响应作为字符串
+	 */
 	public String doGet(HttpGet httpGet) {
 		CloseableHttpResponse response = null;
 		try {
@@ -65,7 +73,12 @@ public class SuperHttpDao {
 		}
 		return null;
 	}
-
+	/**
+	 * 执行HTTP POST请求并将响应作为字符串返回。
+	 *
+	 * @param httpPost 要执行的HTTP POST请求
+	 * @return 响应作为字符串
+	 */
 	public String doPost(HttpPost httpPost) {
 		CloseableHttpResponse response = null;
 		try {
@@ -93,7 +106,12 @@ public class SuperHttpDao {
 		}
 		return null;
 	}
-
+	/**
+	 * 执行HTTP DELETE请求并将响应作为字符串返回。
+	 *
+	 * @param httpDelete 要执行的HTTP DELETE请求
+	 * @return 响应作为字符串
+	 */
 	public String doDelete(HttpDelete httpDelete) {
 		CloseableHttpResponse response = null;
 		try {
@@ -119,7 +137,12 @@ public class SuperHttpDao {
 		}
 		return null;
 	}
-
+	/**
+	 * 执行HTTP PATCH请求并将响应作为字符串返回。
+	 *
+	 * @param httpPatch 要执行的HTTP PATCH请求
+	 * @return 响应作为字符串
+	 */
 	public String doPatch(HttpPatch httpPatch) {
 		CloseableHttpResponse response = null;
 		try {
@@ -147,7 +170,12 @@ public class SuperHttpDao {
 		return null;
 	}
 
-
+	/**
+	 * 执行HTTP PUT请求。
+	 *
+	 * @param httpPut HTTP PUT请求
+	 * @return 响应字符串
+	 */
 	public String doPut(HttpPut httpPut) {
 		CloseableHttpResponse response = null;
 		try {
@@ -174,8 +202,11 @@ public class SuperHttpDao {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.youwe.dao.impl.SuperHttpDao#doGet(java.lang.String)
+	/**
+	 * 执行HTTP GET请求。
+	 *
+	 * @param url 请求URL
+	 * @return 响应字符串
 	 */
 	public String doGet(String url) {
 		// 创建http GET请求
@@ -184,8 +215,12 @@ public class SuperHttpDao {
 		return doGet(httpGet);
 	}
 
-	/* (non-Javadoc)
-	 * @see net.diaowen.youwe.dao.impl.SuperHttpDao#doGet(java.lang.String, java.util.Map)
+	/**
+	 * 执行HTTP GET请求。
+	 *
+	 * @param url    请求URL
+	 * @param params 请求参数
+	 * @return 响应字符串
 	 */
 	public String doGet(String url, Map<String, String> params) {
 		try {
@@ -201,7 +236,12 @@ public class SuperHttpDao {
 		return null;
 	}
 
-
+	/**
+	 *
+	 * @param url 请求URL
+	 * @param params 请求参数
+	 * @return 生成的URL字符串
+	 */
 	public String buildUrl(String url, Map<String, String> params) {
 		try {
 			URIBuilder uriBuilder = new URIBuilder(url);

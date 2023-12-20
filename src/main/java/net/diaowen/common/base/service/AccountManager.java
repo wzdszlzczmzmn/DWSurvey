@@ -21,7 +21,7 @@ import net.diaowen.common.utils.security.DigestUtils;
  *
  * @author KeYuan
  * @date 2013下午10:22:04
- *
+ *用户管理类
  */
 @Service
 public class AccountManager {
@@ -56,6 +56,10 @@ public class AccountManager {
 		}
 	}
 
+	/**
+	 * 保存用户
+	 * @param user user
+	 */
 	@Transactional
 	public void saveUp(User user){
 		if (isSupervisor(user)) {
@@ -65,6 +69,12 @@ public class AccountManager {
 		userDao.save(user);
 	}
 
+	/**
+	 * 修改密码
+	 * @param curpwd 现在的密码
+	 * @param newPwd 想要修改的密码
+	 * @return 修改成功或失败
+	 */
 	@Transactional
 	public boolean updatePwd(String curpwd, String newPwd) {
 		User user = getCurUser();
@@ -84,23 +94,40 @@ public class AccountManager {
 
 	/**
 	 * 判断是否超级管理员.
+	 *
+	 * @param user 用户
+	 * @return 真假
 	 */
 	private boolean isSupervisor(User user) {
 
 		return (user.getId() != null && user.getId() == "1");
 	}
 
+	/**
+	 * 通过ID获取用户
+	 * @param id Userid
+	 * @return 用户
+	 */
 	@Transactional(readOnly = true)
 	public User getUser(String id) {
 		return userDao.get(id);
 	}
 
-
+	/**
+	 * 通过LoginName获取用户
+	 * @param loginName 用户登录名
+	 * @return 用户
+	 */
 	@Transactional(readOnly = true)
 	public User findUserByLoginName(String loginName) {
 		return userDao.findUniqueBy(LOGINNAME, loginName);
 	}
 
+	/**
+	 * 通过email或loginName获取用户
+	 * @param loginName email或loginName
+	 * @return 用户
+	 */
 	@Transactional(readOnly = true)
 	public User findUserByLoginNameOrEmail(String loginName) {
 		User user = null;
@@ -114,6 +141,11 @@ public class AccountManager {
 		return user;
 	}
 
+	/**
+	 * 通过邮箱获取用户
+	 * @param email 邮箱
+	 * @return 用户
+	 */
 	/*验证邮箱是否存在*/
 	@Transactional(readOnly = true)
 	public User findUserByEmail(String email){
@@ -136,6 +168,8 @@ public class AccountManager {
 
 	/**
 	 * 取出当前登陆用户
+	 *
+	 * @return 用户
 	 */
 	public User getCurUser(){
 		Subject subject=SecurityUtils.getSubject();

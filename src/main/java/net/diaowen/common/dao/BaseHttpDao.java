@@ -32,6 +32,12 @@ public abstract class BaseHttpDao extends SuperHttpDao {
     private static final String STANDRDCHARSETS = "UTF-8";
     private static Logger logger = LogManager.getLogger(BaseHttpDao.class.getName());
 
+    /**
+     * 处理GET请求
+     *
+     * @param url 请求地址
+     * @return 响应结果
+     */
     @Override
     public String doGet(String url) {
         try {
@@ -44,7 +50,13 @@ public abstract class BaseHttpDao extends SuperHttpDao {
         }
         return null;
     }
-
+    /**
+     * 处理GET请求
+     *
+     * @param url    请求地址
+     * @param params 请求参数
+     * @return 响应结果
+     */
     public String doGet(String url, Map<String, String> params) {
         try {
             HttpGet httpGet = HttpClientUtils.buildHttpGet(
@@ -55,7 +67,12 @@ public abstract class BaseHttpDao extends SuperHttpDao {
         }
         return null;
     }
-
+    /**
+     * 处理POST请求
+     *
+     * @param url 请求地址
+     * @return 响应结果
+     */
     public String doPost(String url) {
         try {
             HttpPost httpPost = HttpClientUtils.buildHttpPost(
@@ -67,6 +84,12 @@ public abstract class BaseHttpDao extends SuperHttpDao {
         return null;
     }
 
+    /**
+     * 处理POST请求
+     * @param url 请求地址
+     * @param params 请求参数
+     * @return 响应结果
+     */
     public String doPost(String url, Map<String, String> params) {
         try {
             HttpPost httpPost = HttpClientUtils.buildHttpPost(
@@ -78,6 +101,11 @@ public abstract class BaseHttpDao extends SuperHttpDao {
         return null;
     }
 
+    /**
+     * 处理put请求
+     * @param url 请求地址
+     * @return 响应结果
+     */
     public String doPut(String url) {
         try {
             HttpPut httpPost = HttpClientUtils.buildHttpPut(HttpClientUtils.buildHttpUrl(url), null, null);
@@ -88,7 +116,12 @@ public abstract class BaseHttpDao extends SuperHttpDao {
         return null;
     }
 
-
+    /**
+     * 处理put请求
+     * @param url 请求地址
+     * @param params 请求参数
+     * @return 响应结果
+     */
     public String doPut(String url, Map<String, String> params) {
         try {
             HttpPut httpPost = HttpClientUtils.buildHttpPut(HttpClientUtils.buildHttpUrl(url), params, null);
@@ -99,6 +132,12 @@ public abstract class BaseHttpDao extends SuperHttpDao {
         return null;
     }
 
+    /**
+     * 处理patch请求
+     * @param url 请求地址
+     * @param params 请求参数
+     * @return 响应结果
+     */
     public String doPatch(String url, Map<String, String> params) {
         try {
             HttpPatch httpPatch = HttpClientUtils.buildHttpPatch(HttpClientUtils.buildHttpUrl(url), params, null);
@@ -109,6 +148,11 @@ public abstract class BaseHttpDao extends SuperHttpDao {
         return null;
     }
 
+    /**
+     * 处理delete请求
+     * @param url 请求地址
+     * @return 响应结果
+     */
 
     public String doDelete(String url) {
         try {
@@ -120,6 +164,12 @@ public abstract class BaseHttpDao extends SuperHttpDao {
         return null;
     }
 
+    /**
+     * 处理delete请求
+     * @param url 请求地址
+     * @param params 请求参数
+     * @return 响应结果
+     */
     public String doDelete(String url, Map<String, String> params) {
         try {
             HttpDelete httpDelete = HttpClientUtils.buildHttpDelete(HttpClientUtils.buildHttpUrl(url), params, null);
@@ -130,16 +180,34 @@ public abstract class BaseHttpDao extends SuperHttpDao {
         }
         return null;
     }
+    /**
 
+     * 执行HTTP GET请求。
+     * @param url 请求的URL。
+     * @param params 请求参数的映射。
+     * @return 如果请求成功，则为true；否则为false。
+     */
     protected boolean executeGet(String url, Map<String, String> params) {
         return executeGet(url, params, null);
     }
 
+    /**
+     * 执行HTTP Post请求
+     * @param url 请求的URL。
+     * @param params 请求参数的映射。
+     * @return 如果请求成功，则为true；否则为false。
+     */
     protected boolean executePost(String url, Map<String, String> params) {
         return executePost(url, params, null);
     }
 
-
+    /**
+     * 执行HTTP GET请求
+     * @param url 请求的URL
+     * @param params 请求参数的映射。
+     * @param headers 请求头的映射。
+     * @return 如果请求成功，则为true；否则为false。
+     */
     protected boolean executeGet(String url, Map<String, String> params,
                                  Map<String, String> headers) {
         CloseableHttpResponse response = null;
@@ -176,6 +244,13 @@ public abstract class BaseHttpDao extends SuperHttpDao {
         return false;
     }
 
+    /**
+     * 执行HTTP Post请求
+     * @param url 请求的URL
+     * @param params 请求参数的映射。
+     * @param headers 请求头的映射。
+     * @return 如果请求成功，则为true；否则为false。
+     */
     protected boolean executePost(String url, Map<String, String> params,
                                   Map<String, String> headers) {
         CloseableHttpResponse response = null;
@@ -213,6 +288,14 @@ public abstract class BaseHttpDao extends SuperHttpDao {
         return false;
     }
 
+    /**
+     * 向指定的 URL 发送 HTTP POST 请求，并附带给定的数据和文件。
+     *
+     * @param url   要发送请求的 URL
+     * @param datas 要在请求中发送的数据
+     * @param files 要在请求中发送的文件
+     * @return 服务器的响应
+     */
     public String doPostFile(String url, Map<String, String> datas, Map<String, String> files) {
         MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
         multipartEntityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);

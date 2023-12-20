@@ -3,7 +3,7 @@ package net.diaowen.common;
 /**
  * QuType
  * @author keyuan(keyuan258@gmail.com)
- *
+ *一个枚举类，包含了各种题目类型
  * https://github.com/wkeyuan/DWSurvey
  * http://dwsurvey.net
  */
@@ -40,32 +40,63 @@ public enum QuType {
 	private String actionName;
 	private int index;
 
+	/**
+	 * 构造函数
+	 *
+	 * @param cnName 名称
+	 * @param actionName 操作名称
+	 * @param index 索引
+	 */
 	QuType(String cnName,String actionName,int index){
 		this.cnName=cnName;
 		this.actionName=actionName;
 		this.index=index;
 	}
-
+	/**
+	 * 获取名称
+	 *
+	 * @return 名称
+	 */
 	public String getCnName() {
 		return cnName;
 	}
-
+	/**
+	 * 设置名称
+	 *
+	 * @param cnName 名称
+	 */
 	public void setCnName(String cnName) {
 		this.cnName = cnName;
 	}
-
+	/**
+	 * 获取操作名称
+	 *
+	 * @return 操作名称
+	 */
 	public String getActionName() {
 		return actionName;
 	}
-
+	/**
+	 * 设置操作名称
+	 *
+	 * @param actionName 操作名称
+	 */
 	public void setActionName(String actionName) {
 		this.actionName = actionName;
 	}
-
+	/**
+	 * 获取索引
+	 *
+	 * @return 索引
+	 */
 	public int getIndex() {
 		return index;
 	}
-
+	/**
+	 * 设置索引
+	 *
+	 * @param index 索引
+	 */
 	public void setIndex(int index) {
 		this.index = index;
 	}

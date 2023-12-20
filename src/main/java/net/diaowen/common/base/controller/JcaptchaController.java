@@ -13,6 +13,9 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+/**
+ * 处理生成和渲染 CAPTCHA 图像请求的控制器。
+ */
 @Controller
 //@RequestMapping("/jcap")
 @RequestMapping("/api/dwsurvey/anon/jcap")
@@ -20,7 +23,14 @@ public class JcaptchaController {
 
 	@Autowired
     private ImageCaptchaService imageCaptchaService;
-
+    /**
+     * Generates a new CAPTCHA image and renders it as a JPEG image.
+     *
+     * @param request  the HTTP servlet request
+     * @param response the HTTP servlet response
+     * @return null
+     * @throws IOException if an I/O error occurs
+     */
     @RequestMapping("/jcaptcha.do")
 	public String execute(HttpServletRequest request,HttpServletResponse response)throws IOException {
         byte[] captchaChallengeAsJpeg = null;
