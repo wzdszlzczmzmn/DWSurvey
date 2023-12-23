@@ -53,6 +53,15 @@ public interface UserManager extends BaseService<User, String>{
 	public User findEmailUn(String id, String email);
 
 	/**
+	 * 判断用户的电话号码是否唯一
+	 *
+	 * @param id 用户ID
+	 * @param cellPhone 用户的电话号码
+	 * @return 若该电话号码已被使用，则返回使用该电话号码的用户对象
+	 */
+	User findCellPhoneUn(String id, String cellPhone);
+
+	/**
 	 * 根据密码编码查询用户
 	 *
 	 * @param code 密码的编码

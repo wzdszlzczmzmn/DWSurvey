@@ -55,6 +55,7 @@ public class SurveyAnswerManagerImpl extends
 	private static final String SURVEYID = "surveyId";
 	private static final String ENDANDATE = "endAnDate";
 	private static final String NBSP = "&nbsp;";
+	private static final String USER_ID = "userId";
 	/**
 	 * 日志
 	 */
@@ -643,6 +644,24 @@ public class SurveyAnswerManagerImpl extends
 		page.setOrderBy(ENDANDATE);
 		page.setOrderDir("desc");
 		page=findPage(page, cri1, cri2);
+		return page;
+	}
+
+	/**
+	 * 根据用户ID获取该用户的所有答卷数据
+	 *
+	 * @param page 封装了答卷分页查询结果的对象
+	 * @param userId 用户ID
+	 * @return 封装了答卷分页查询结果的对象
+	 */
+	@Override
+	public Page<SurveyAnswer> getAnswerPageByUserId(Page<SurveyAnswer> page, String userId) {
+		Criterion criterion1 = Restrictions.eq(USER_ID, userId);
+		Criterion criterion2 = Restrictions.lt("handleState", 2);
+		page.setOrderBy(ENDANDATE);
+		page.setOrderDir("desc");
+		page = findPage(page, criterion1, criterion2);
+
 		return page;
 	}
 

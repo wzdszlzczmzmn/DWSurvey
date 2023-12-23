@@ -58,8 +58,8 @@ public class FormAuthenticationWithLockFilter extends FormAuthenticationFilter {
 
     public boolean checkIfAccountLocked(ServletRequest request) {
         String username = getUsername(request);
-        if (username!=null && accountLockMap.get((String) username) != null) {
-            long remainLoginAttempts = accountLockMap.get((String) username).get();
+        if (username!=null && accountLockMap.get(username) != null) {
+            long remainLoginAttempts = accountLockMap.get(username).get();
             if (remainLoginAttempts <= 0) {
                 return true;
             }

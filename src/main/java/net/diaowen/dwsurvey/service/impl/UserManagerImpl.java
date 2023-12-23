@@ -147,12 +147,29 @@ public class UserManagerImpl extends BaseServiceImpl<User, String> implements Us
 	 */
 	@Override
 	public User findEmailUn(String id, String email) {
-		List<Criterion> criterions=new ArrayList<Criterion>();
+		List<Criterion> criterions=new ArrayList<>();
 		criterions.add(Restrictions.eq("email", email));
 		if(id!=null && !"".equals(id)){
 			criterions.add(Restrictions.ne("id", id));
 		}
 		return userDao.findFirst(criterions);
+	}
+
+	/**
+	 * 判断用户的电话号码是否唯一
+	 *
+	 * @param id 用户ID
+	 * @param cellPhone 用户的电话号码
+	 * @return 若该电话号码已被使用，则返回使用该电话号码的用户
+	 */
+	@Override
+	public User findCellPhoneUn(String id, String cellPhone) {
+		List<Criterion> criteriaList = new ArrayList<>();
+		criteriaList.add(Restrictions.eq("cellphone", cellPhone));
+		if (id != null && ! "".equals(id)){
+			criteriaList.add(Restrictions.ne("id", id));
+		}
+		return userDao.findFirst(criteriaList);
 	}
 
 	/**

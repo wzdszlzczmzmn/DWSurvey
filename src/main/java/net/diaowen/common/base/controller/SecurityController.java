@@ -4,6 +4,8 @@ import net.diaowen.common.base.entity.User;
 import net.diaowen.common.base.service.AccountManager;
 import net.diaowen.common.plugs.httpclient.HttpResult;
 import net.diaowen.common.plugs.security.filter.FormAuthenticationWithLockFilter;
+import net.diaowen.common.utils.DwsUtils;
+import net.diaowen.common.utils.security.DigestUtils;
 import net.diaowen.dwsurvey.common.RoleCode;
 import net.diaowen.dwsurvey.service.UserManager;
 import org.apache.commons.lang.StringUtils;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
 
@@ -80,6 +84,74 @@ public class SecurityController {
         //账号密码
         request.setAttribute("username",userName);
         return loginPwd(request,response,userName,password);
+    }
+
+    /**
+     * 处理用户注册请求
+     *
+     * @param userName 用户名
+     * @param password 用户密码
+     * @param birth 用户生日
+     * @param sex 用户性别
+     * @param email 用户邮箱
+     * @param phone 用户电话号码
+     * @return 注册的结果
+     */
+    @RequestMapping("/register.do")
+    @ResponseBody
+    public LoginRegisterResult register(@RequestParam String userName, @RequestParam String password,
+                                        @RequestParam String birth, @RequestParam String sex,
+                                        @RequestParam String email, @RequestParam String phone){
+        // 验证当前系统是否有用户已经登录
+        Subject subject = SecurityUtils.getSubject();
+        boolean isAuth = subject.isAuthenticated();
+        // 日期转换
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String error = "";
+        if (isAuth){
+            subject.logout();
+        }
+        // 校验当前用户名是否已被注册
+        User user = accountManager.findUserByLoginNameOrEmail(userName);
+        if (user == null){ // 用户名未被注册
+            // 判断用户的邮箱是否已被注册
+            if (userManager.findEmailUn(null, email) == null){ // 邮箱未被注册
+                // 判断用户的电话号码是否已被注册
+                if (userManager.findCellPhoneUn(null, phone) == null){ // 电话号码未被注册
+                    User newUser = new User();
+                    newUser.setLoginName(userName);
+                    newUser.setShaPassword(DigestUtils.sha1Hex(password));// 对密码进行加密
+                    try {
+                        newUser.setBirthday(sdf.parse(birth));
+                    } catch (ParseException e) {
+                        logger.warning(e.getMessage());
+                    }
+                    // 前端已对输入做了相应的限制，仅能输入男或女
+                    newUser.setSex(sex.equals("男") ? 1 : 0);
+                    newUser.setEmail(email);
+                    newUser.setCellphone(phone);
+                    newUser.setStatus(2);
+                    // 将新注册的用户写入数据库中
+                    userManager.save(newUser);
+                    // 新用户登录系统
+                    UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(userName, password);
+                    subject.login(usernamePasswordToken);
+                    subject.getSession().setAttribute("loginUserName", userName);
+                    newUser.setLastLoginTime(new Date());
+                    accountManager.saveUp(newUser);
+                    // 由于注册用户不可能为管理员，因此权限信息默认为null
+                    return LoginRegisterResult.SUCCESS((String[]) null);
+                }else { // 电话号码已被注册
+                    error = "电话号码已被注册";
+                }
+            }else { // 邮箱已被注册
+                error = "邮箱已被注册";
+            }
+        }else { // 用户名已被注册
+            error = "用户名已被注册";
+        }
+
+        return LoginRegisterResult.FAILURE(HttpResult.FAILURE_MSG(error));
     }
 
     /**
