@@ -23,7 +23,7 @@ public class SurveyDetail extends IdEntity {
      */
     private String dirId;
     /**
-     * 设置问卷有效性的限制, 1(默认) 表示不限制, 2 表示实验cookie技术限制, 3 采用来源IP检测限制, 4 限制每台电脑或手机只能答一次
+     * 设置问卷有效性的限制, 1(默认) 表示不限制, 2 表示使用cookie技术限制, 3 采用来源IP检测限制, 4 限制每台电脑或手机只能答一次
      */
     private Integer effective = 1;
     /**

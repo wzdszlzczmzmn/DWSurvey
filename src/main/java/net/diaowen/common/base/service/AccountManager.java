@@ -1,6 +1,5 @@
 package net.diaowen.common.base.service;
 
-import java.util.Date;
 import java.util.List;
 
 import net.diaowen.common.base.entity.User;
@@ -18,6 +17,7 @@ import net.diaowen.common.plugs.security.ShiroDbRealm;
 import net.diaowen.common.utils.security.DigestUtils;
 
 /**
+ * 与用户管理相关的业务逻辑的服务组件
  *
  * @author KeYuan
  * @date 2013下午10:22:04

@@ -1,6 +1,7 @@
 package net.diaowen.dwsurvey.service.impl;
 
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import net.diaowen.common.QuType;
@@ -45,6 +46,11 @@ public class SurveyStatsManagerImpl extends
 	private final AnScoreManager anScoreManager;
 	private final AnOrderManager anOrderManager;
 	private final AnUploadFileManager anUploadFileManager;
+	/**
+	 * 日志
+	 */
+	private final Logger logger = Logger.getLogger(SurveyStatsManagerImpl.class.getName());
+
 	@Autowired
 	public SurveyStatsManagerImpl(SurveyStatsDao surveyStatsDao, SurveyAnswerManager surveyAnswerManager, QuestionManager questionManager, AnYesnoManager anYesnoManager, AnRadioManager anRadioManager, AnFillblankManager anFillblankManager, AnEnumquManager anEnumquManager, AnDFillblankManager anDFillblankManager, AnCheckboxManager anCheckboxManager, AnAnswerManager anAnswerManager, AnScoreManager anScoreManager, AnOrderManager anOrderManager, AnUploadFileManager anUploadFileManager) {
 		this.surveyStatsDao = surveyStatsDao;
@@ -389,7 +395,7 @@ public class SurveyStatsManagerImpl extends
 
 			textStr = htmlStr.trim();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.warning(e.getMessage());
 		}
 		return textStr;// 返回文本字符串
 	}

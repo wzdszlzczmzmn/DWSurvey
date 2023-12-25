@@ -2,7 +2,13 @@ package net.diaowen.common.plugs.httpclient;
 
 import org.apache.http.conn.HttpClientConnectionManager;
 
+import java.util.logging.Logger;
+
 public class IdleConnectionEvictor extends Thread {
+	/**
+	 * 日志
+	 */
+	private final Logger logger = Logger.getLogger(IdleConnectionEvictor.class.getName());
 
 	private final HttpClientConnectionManager connMgr;
 
@@ -25,6 +31,8 @@ public class IdleConnectionEvictor extends Thread {
 				}
 			}
 		} catch (InterruptedException ex) {
+			logger.warning(ex.getMessage());
+			Thread.currentThread().interrupt();
 			// 结束
 		}
 	}

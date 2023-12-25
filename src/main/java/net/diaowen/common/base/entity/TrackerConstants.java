@@ -15,8 +15,8 @@ public class TrackerConstants {
 	private TrackerConstants() {
 		throw new IllegalStateException("Utility class");
 	}
-	public static String OPERATION_ADD = "add";
-	public static String OPERATION_DELETE = "delete";
-	public static String OPERATION_UPDATE = "update";
-	public static String OPERATION_SAVE = "save";
+	public static final String OPERATION_ADD = "add";
+	public static final String OPERATION_DELETE = "delete";
+	public static final String OPERATION_UPDATE = "update";
+	public static final String OPERATION_SAVE = "save";
 }
