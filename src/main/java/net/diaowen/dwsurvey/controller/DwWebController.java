@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Logger;
 
 @Controller
 @RequestMapping("/api/dwsurvey/anon/web")
@@ -24,6 +25,12 @@ public class DwWebController {
 
     @Autowired
     private AccountManager accountManager;
+
+    /**
+     * 日志
+     */
+    private final Logger logger = Logger.getLogger(DwWebController.class.getName());
+
     /**
      * 获取问卷详情
      * @return
@@ -52,7 +59,7 @@ public class DwWebController {
                 return HttpResult.SUCCESS(footerInfo);
             }
         }catch (Exception e){
-            e.printStackTrace();
+            logger.warning(e.getMessage());
         }
         return HttpResult.FAILURE();
     }

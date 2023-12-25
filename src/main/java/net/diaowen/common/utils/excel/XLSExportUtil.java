@@ -16,9 +16,9 @@ import java.util.Calendar;
 public class XLSExportUtil {
 	// 设置cell编码解决中文高位字节截断
 	// 定制日期格式
-	private static String DATE_FORMAT = " m/d/yy "; // "m/d/yy h:mm"
+	private static String dateFormat = " m/d/yy "; // "m/d/yy h:mm"
 	// 定制浮点数格式
-	private static String NUMBER_FORMAT = " #,##0.00 ";
+	private static String numberFormat = " #,##0.00 ";
 	// 定义文件名
 	private String xlsFileName;
 	// 定义文件路径
@@ -52,7 +52,15 @@ public class XLSExportUtil {
 	 * 导出Excel文件
 	 *
 	 */
-	public void exportXLS() throws Exception {
+// 自定义生成Excel文件异常类
+	public class ExcelGenerationException extends Exception {
+		public ExcelGenerationException(String message, Throwable cause) {
+			super(message, cause);
+		}
+	}
+
+
+	public void exportXLS() throws ExcelGenerationException {
 		try {
 			// 创建文件对象
 			File file=new File(path);
@@ -70,10 +78,10 @@ public class XLSExportUtil {
 			fOut.close();
 		} catch (FileNotFoundException e) {
 			// 抛出异常
-			throw new Exception(" 生成导出Excel文件出错! ", e);
+			throw new ExcelGenerationException(" 生成导出Excel文件出错! ", e);
 		} catch (IOException e) {
 			// 抛出异常
-			throw new Exception(" 写入Excel文件出错! ", e);
+			throw new ExcelGenerationException(" 写入Excel文件出错! ", e);
 		}
 
 	}
@@ -123,7 +131,7 @@ public class XLSExportUtil {
 		HSSFCell cell = this.row.createCell((short) index);
 		cell.setCellValue(value.getTime());
 		HSSFCellStyle cellStyle = workbook.createCellStyle(); // 建立新的cell样式
-		cellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat(DATE_FORMAT)); // 设置cell样式为定制的日期格式
+		cellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat(dateFormat)); // 设置cell样式为定制的日期格式
 		cell.setCellStyle(cellStyle); // 设置该cell日期的显示格式
 	}
 
@@ -161,7 +169,7 @@ public class XLSExportUtil {
 		cell.setCellValue(value);
 		HSSFCellStyle cellStyle = workbook.createCellStyle(); // 建立新的cell样式
 		HSSFDataFormat format = workbook.createDataFormat();
-		cellStyle.setDataFormat(format.getFormat(NUMBER_FORMAT)); // 设置cell样式为定制的浮点数格式
+		cellStyle.setDataFormat(format.getFormat(numberFormat)); // 设置cell样式为定制的浮点数格式
 		cell.setCellStyle(cellStyle); // 设置该cell浮点数的显示格式
 	}
 

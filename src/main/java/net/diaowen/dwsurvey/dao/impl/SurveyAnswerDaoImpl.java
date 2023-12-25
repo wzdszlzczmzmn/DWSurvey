@@ -11,6 +11,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import java.util.Date;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * 问卷回答 dao
@@ -22,6 +23,10 @@ import java.util.Map;
 
 @Repository
 public class SurveyAnswerDaoImpl extends BaseDaoImpl<SurveyAnswer, String> implements SurveyAnswerDao {
+	/**
+	 * 日志
+	 */
+	private final Logger logger = Logger.getLogger(SurveyAnswerDaoImpl.class.getName());
 
 	/**
 	 * 保存回答
@@ -471,7 +476,7 @@ public class SurveyAnswerDaoImpl extends BaseDaoImpl<SurveyAnswer, String> imple
 			surveyStats.setMobileNum(Integer.parseInt(objects[12].toString()));
 			surveyStats.setImportNum(Integer.parseInt(objects[13].toString()));
 		}catch (Exception e) {
-			e.printStackTrace();
+			logger.warning(e.getMessage());
 		}
 //		0网调  1录入数据 2移动数据 3导入数据
 		return surveyStats;

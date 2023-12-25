@@ -11,7 +11,7 @@ public class HttpRequestDeviceUtils {
 	}
 
 	/** Wap网关Via头信息中特有的描述信息 */
-	private static String mobileGateWayHeaders[] = new String[] { "ZXWAP",// 中兴提供的wap网关的via信息，例如：Via=ZXWAP
+	private static String[] mobileGateWayHeaders = new String[] { "ZXWAP",// 中兴提供的wap网关的via信息，例如：Via=ZXWAP
 																			// GateWayZTE
 																			// Technologies，
 			"chinamobile.com",// 中国移动的诺基亚wap网关，例如：Via=WTP/1.1
@@ -152,7 +152,7 @@ public class HttpRequestDeviceUtils {
 				break;
 			}
 		}
-		if (mobileFlag == true && pcFlag == false) {
+		if (mobileFlag && !pcFlag) {
 			// 若判定为手机端特征，并且非PC端，则标记为手机终端
 			b = true;
 		}
@@ -166,7 +166,6 @@ public class HttpRequestDeviceUtils {
 	 * 是否微信浏览器
 	 * @Title: isWechat
 	 * @author: pk
-	 * @Description: TODO
 	 * @param request
 	 * @return
 	 * @return: boolean
@@ -174,10 +173,7 @@ public class HttpRequestDeviceUtils {
 	public static boolean isWechat(HttpServletRequest request) {
 		//获取请求头信息
 		String ua = request.getHeader("User-Agent").toLowerCase();
-		if (ua!=null && ua.indexOf("micromessenger") > -1) {
-			return true;//微信
-		}
-		return false;//非微信手机浏览器
+		return ua != null && ua.indexOf("micromessenger") > -1; // 为微信时返回true，非微信手机浏览器返回false
 
 	}
 

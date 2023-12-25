@@ -19,6 +19,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * 填空题 action
@@ -31,7 +32,10 @@ import java.util.Map;
 @Controller
 @RequestMapping("/api/dwsurvey/app/design/qu-fillblank")
 public class QuFillblankController{
-
+	/**
+	 * 日志
+	 */
+	private final Logger logger = Logger.getLogger(QuFillblankController.class.getName());
 	private final QuestionManager questionManager;
 	public final AnFillblankManager anFillblankManager;
 
@@ -56,7 +60,7 @@ public class QuFillblankController{
 			String resultJson=buildResultJson(entity);
 			response.getWriter().write(resultJson);
 		}catch (Exception e) {
-			e.printStackTrace();
+			logger.warning(e.getMessage());
 			response.getWriter().write("error");
 		}
 		return null;

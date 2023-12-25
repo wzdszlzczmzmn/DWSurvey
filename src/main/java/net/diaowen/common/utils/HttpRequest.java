@@ -6,16 +6,22 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.List;
-import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * 向指定URL发送GET和POST请求
  */
 public class HttpRequest {
+
+    /**
+     * 日志
+     */
+    private static final Logger LOGGER = Logger.getLogger(HttpRequest.class.getName());
+
     private HttpRequest(){
 
     }
+
     /**
      * 向指定URL发送GET方法的请求
      *
@@ -27,7 +33,7 @@ public class HttpRequest {
      */
     public static String sendGet(String url, String param) {
         //初始化result为空字符串
-        String result = "";
+        StringBuilder result = new StringBuilder();
         //初始化输入流in为null
         try {
             //urlNameString是发送请求的url加上它请求的参数，即完整的请求网址
@@ -46,19 +52,17 @@ public class HttpRequest {
             // 建立实际的连接
             connection.connect();
 
-            // 获取所有响应头字段
-            Map<String, List<String>> map = connection.getHeaderFields();
             // 定义 BufferedReader输入流来读取URL的响应
             try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
                 String line;
                 while ((line = in.readLine()) != null) {
-                    result += line;
+                    result.append(line);
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.warning(e.getMessage());
         }
-        return result;
+        return result.toString();
     }
 
     /**
@@ -72,7 +76,7 @@ public class HttpRequest {
      */
     public static String sendPost(String url, String param) {
 
-        String result = "";
+        StringBuilder result = new StringBuilder();
         try {
             //以发送请求的URL创建一个URL实体
             URL realUrl = new URL(url);
@@ -98,12 +102,12 @@ public class HttpRequest {
             try (BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
                 String line;
                 while ((line = in.readLine()) != null) {
-                    result += line;
+                    result.append(line);
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.warning(e.getMessage());
         }
-        return result;
+        return result.toString();
     }
 }

@@ -215,6 +215,7 @@ public class User extends IdEntity {
 	public void setCellphone(String cellphone) {
 		this.cellphone = cellphone;
 	}
+
 	/**
 	 * 获取生日
 	 *

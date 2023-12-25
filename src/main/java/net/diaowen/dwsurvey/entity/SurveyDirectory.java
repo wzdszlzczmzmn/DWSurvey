@@ -104,7 +104,7 @@ public class SurveyDirectory extends IdEntity{
 	/**
 	 * 问卷的分组名称
 	 */
-	public String groupName;
+	private String groupName;
 	/**
 	 * 问卷的设置的详细信息
 	 */

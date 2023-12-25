@@ -181,6 +181,7 @@ public interface IHibernateDao<T, ID extends Serializable> extends ISimpleHibern
 	 */
 	public Page<T> findPageOderBy(Page<T> pageRequest,String orderByProperty, boolean isAsc, Criterion... criterions);
 
+
 	/**
 	 * 通过条件查找
 	 * @param pageRequest 分页请求

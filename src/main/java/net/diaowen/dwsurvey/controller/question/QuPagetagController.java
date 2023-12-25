@@ -18,6 +18,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * 分页题 action
@@ -30,6 +31,10 @@ import java.util.Map;
 @Controller
 @RequestMapping("/api/dwsurvey/app/design/qu-pagetag")
 public class QuPagetagController{
+	/**
+	 * 日志
+	 */
+	private final Logger logger = Logger.getLogger(QuPagetagController.class.getName());
 	private final QuestionManager questionManager;
 
 	@Autowired
@@ -53,7 +58,7 @@ public class QuPagetagController{
 			String resultJson=buildResultJson(entity);
 			response.getWriter().write(resultJson);
 		}catch (Exception e) {
-			e.printStackTrace();
+			logger.warning(e.getMessage());
 			response.getWriter().write("error");
 		}
 		return null;

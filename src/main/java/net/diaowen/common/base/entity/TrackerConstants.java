@@ -7,6 +7,7 @@ package net.diaowen.common.base.entity;
  *
  */
 public class TrackerConstants {
+
 	/**
 	 * 无参构造函数
 	 * @throws IllegalStateException

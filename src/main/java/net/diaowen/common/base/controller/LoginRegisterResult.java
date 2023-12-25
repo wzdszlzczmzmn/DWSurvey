@@ -12,6 +12,7 @@ public class LoginRegisterResult {
     private String[] currentAuthority;//当前用户权限
     private HttpResult httpResult;//表示http请求的结果
     private static final String TYPEA = "account";
+
     /**
      * 获取登录和注册的状态
      * @return status

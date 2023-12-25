@@ -6,6 +6,7 @@ import eu.bitwalker.useragentutils.OperatingSystem;
 import eu.bitwalker.useragentutils.UserAgent;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.logging.Logger;
 
 /**
  * UserAgentUtils类包含两个方法：userAgent和userAgentInt。
@@ -15,6 +16,11 @@ import javax.servlet.http.HttpServletRequest;
  * 然后，它使用UserAgentUtils.parseUserAgentString()方法解析用户代理字符串，并根据解析结果将操作系统、浏览器和设备类型转换为整数数组。
  */
 public class UserAgentUtils {
+    /**
+     * 日志
+     */
+    private static final Logger LOGGER = Logger.getLogger(UserAgentUtils.class.getName());
+
     private UserAgentUtils(){
 
     }
@@ -31,8 +37,7 @@ public class UserAgentUtils {
 //        由此，通过User-agent-utils解析：
         String agent=request.getHeader("User-Agent");
         //解析agent字符串
-        UserAgent userAgent = UserAgent.parseUserAgentString(agent);
-        return userAgent;
+       return UserAgent.parseUserAgentString(agent);
     }
 
 
@@ -101,7 +106,7 @@ public class UserAgentUtils {
                 result[2] = dt;
             }
         }catch (Exception e){
-            e.printStackTrace();
+            LOGGER.warning(e.getMessage());
         }
         return result;
     }
