@@ -11,6 +11,7 @@ import net.diaowen.dwsurvey.dao.SurveyAnswerDao;
 import net.diaowen.dwsurvey.entity.*;
 import net.diaowen.dwsurvey.service.*;
 import org.aspectj.util.FileUtil;
+import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,7 @@ public class SurveyAnswerManagerImpl extends
 	private static final String SURVEYID = "surveyId";
 	private static final String ENDANDATE = "endAnDate";
 	private static final String NBSP = "&nbsp;";
+	private static final String USER_ID = "userId";
 	/**
 	 * 日志
 	 */
@@ -643,6 +645,28 @@ public class SurveyAnswerManagerImpl extends
 		page.setOrderBy(ENDANDATE);
 		page.setOrderDir("desc");
 		page=findPage(page, cri1, cri2);
+		return page;
+	}
+
+	/**
+	 * 根据用户ID获取该用户的所有答卷数据
+	 *
+	 * @param page 封装了答卷分页查询结果的对象
+	 * @param userId 用户ID
+	 * @return 封装了答卷分页查询结果的对象
+	 */
+	@Override
+	public Page<SurveyAnswer> getAnswerPageByUserId(Page<SurveyAnswer> page, String userId) {
+		Criterion criterion1 = Restrictions.eq(USER_ID, userId);
+		Criterion criterion2 = Restrictions.lt("handleState", 2);
+		page.setOrderBy(ENDANDATE);
+		page.setOrderDir("desc");
+		page = findPage(page, criterion1, criterion2);
+		// 由于原项目数据库设计的缺陷，需增加以下代码将答卷与问卷关联起来
+		for (SurveyAnswer surveyAnswer : page.getResult()){
+			surveyAnswer.setSurveyDirectory(directoryManager.getSurvey(surveyAnswer.getSurveyId()));
+		}
+
 		return page;
 	}
 

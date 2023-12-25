@@ -9,10 +9,7 @@ import net.diaowen.common.plugs.page.Page;
 import net.diaowen.common.utils.UserAgentUtils;
 import net.diaowen.common.utils.ZipUtil;
 import net.diaowen.dwsurvey.config.DWSurveyConfig;
-import net.diaowen.dwsurvey.entity.AnUplodFile;
-import net.diaowen.dwsurvey.entity.Question;
-import net.diaowen.dwsurvey.entity.SurveyAnswer;
-import net.diaowen.dwsurvey.entity.SurveyDirectory;
+import net.diaowen.dwsurvey.entity.*;
 import net.diaowen.dwsurvey.service.AnUploadFileManager;
 import net.diaowen.dwsurvey.service.SurveyAnswerManager;
 import net.diaowen.dwsurvey.service.SurveyDirectoryManager;
@@ -70,7 +67,26 @@ public class MySurveyAnswerController {
             pageResult = ResultUtils.getPageResultByPage(page,pageResult);
         }
         return pageResult;
+    }
 
+    /**
+     * 根据当前登录用户，获取当前登录用户所填写过的所有实名问卷
+     *
+     * @param pageResult 封装了答卷分页查询结果的对象
+     * @return 所有该用户填写过的实名问卷列表
+     */
+    @GetMapping(path = "/answered-list.do")
+    public PageResult<SurveyAnswer> getSurveyResultByUserId(PageResult<SurveyAnswer> pageResult){
+        // 获取当前系统的登录用户
+        User user = accountManager.getCurUser();
+        if (user != null){
+            Page<SurveyAnswer> page = ResultUtils.getPageByPageResult(pageResult);
+            // 查询该用户的回答过的所有答卷
+            page = surveyAnswerManager.getAnswerPageByUserId(page, user.getId());
+            pageResult = ResultUtils.getPageResultByPage(page, pageResult);
+        }
+
+        return pageResult;
     }
 
     /**

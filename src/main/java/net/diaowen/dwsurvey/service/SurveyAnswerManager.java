@@ -65,11 +65,20 @@ public interface SurveyAnswerManager extends BaseService<SurveyAnswer, String>{
 
 	/**
 	 * 取出某份问卷的答卷数据
-	 * @param page
-	 * @param surveyId
-	 * @return
+	 * @param page 封装了答卷分页查询结果的对象
+	 * @param surveyId 问卷ID
+	 * @return 封装了答卷分页查询结果的对象
 	 */
 	public Page<SurveyAnswer> answerPage(Page<SurveyAnswer> page, String surveyId);
+
+	/**
+	 * 获取某一个用户的所有答卷数据
+	 *
+	 * @param page 封装了答卷分页查询结果的对象
+	 * @param userId 用户ID
+	 * @return 封装了答卷分页查询结果的对象
+	 */
+	Page<SurveyAnswer> getAnswerPageByUserId(Page<SurveyAnswer> page, String userId);
 	/**
 	 * 删除指定id 的数据
 	 * @param ids
