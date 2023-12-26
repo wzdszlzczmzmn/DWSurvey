@@ -5,6 +5,7 @@ import org.apache.tomcat.util.scan.StandardJarScanner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.ComponentScan;
  * SpringBoot应用程序的启动类，用于启动SpringBoot应用程序
  */
 @SpringBootApplication
+@ServletComponentScan
 @ComponentScan(basePackages = {"net.diaowen.common","net.diaowen.dwsurvey"})
 public class DwsurveyApplication {
 

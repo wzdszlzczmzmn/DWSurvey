@@ -34,7 +34,9 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -164,6 +166,8 @@ public class ResponseController {
 		Integer effective = surveyDetail.getEffective();
 		// 获取问卷的调查规则,是否使用令牌、公开或私有
 		Integer rule = surveyDetail.getRule();
+		// 获取问卷是否是实名问卷的设置
+		Integer isRealName = surveyDetail.getIsRealName();
 		// 获取防刷新设置是否启用
 		Integer refresh = surveyDetail.getRefresh();
 		// 获取防刷新次数限制设置
@@ -297,20 +301,23 @@ public class ResponseController {
 				}
 			}
 
-			// 设置entity的数据
-			if(answerCheckData.isAnswerCheck()){
+			if (isRealName == 1){ // 实名问卷，记录填写用户的信息
 				// 获取当前登录用户
 				User user = accountManager.getCurUser();
 				if (user != null) {
 					// 设置问卷填写的用户
 					entity.setUserId(user.getId());
+				}else {
+					answerCheckData.setAnswerCheck(false);
+					answerCheckData.setAnswerCheckCode(11); // 问卷为实名问卷，用户未登录回答无效
+					return answerCheckData;
 				}
-
-				// 设置问卷提交的IP地址
-				entity.setIpAddr(ip);
-				// 设置该填写结果对应的问卷ID
-				entity.setSurveyId(surveyId);
 			}
+
+			// 设置问卷提交的IP地址
+			entity.setIpAddr(ip);
+			// 设置该填写结果对应的问卷ID
+			entity.setSurveyId(surveyId);
 		}
 		return answerCheckData;
 	}

@@ -1,18 +1,19 @@
 package net.diaowen.dwsurvey.service.impl;
 
-import java.util.List;
-
+import net.diaowen.common.service.BaseServiceImpl;
+import net.diaowen.common.utils.ReflectionUtils;
 import net.diaowen.dwsurvey.dao.SurveyDetailDao;
+import net.diaowen.dwsurvey.dao.SurveyDirectoryDao;
 import net.diaowen.dwsurvey.entity.SurveyDetail;
+import net.diaowen.dwsurvey.entity.SurveyDirectory;
+import net.diaowen.dwsurvey.service.SurveyDetailManager;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.diaowen.common.service.BaseServiceImpl;
-import net.diaowen.common.utils.ReflectionUtils;
-import net.diaowen.dwsurvey.service.SurveyDetailManager;
+import java.util.List;
 
 
 /**
@@ -24,11 +25,19 @@ import net.diaowen.dwsurvey.service.SurveyDetailManager;
  */
 @Service
 public class SurveyDetailManagerImpl extends BaseServiceImpl<SurveyDetail, String> implements SurveyDetailManager{
-
+	/**
+	 * 问卷配置信息Dao
+	 */
 	private final SurveyDetailDao surveyDetailDao;
+	/**
+	 * 问卷信息Dao
+	 */
+	private final SurveyDirectoryDao surveyDirectoryDao;
+
 	@Autowired
-	public SurveyDetailManagerImpl(SurveyDetailDao surveyDetailDao) {
+	public SurveyDetailManagerImpl(SurveyDetailDao surveyDetailDao, SurveyDirectoryDao surveyDirectoryDao) {
 		this.surveyDetailDao = surveyDetailDao;
+		this.surveyDirectoryDao = surveyDirectoryDao;
 	}
 
 	@Override
@@ -76,6 +85,14 @@ public class SurveyDetailManagerImpl extends BaseServiceImpl<SurveyDetail, Strin
 		 return findUn(surveyId);
 	}
 
+	@Override
+	public SurveyDetail getSurveyDetailBySid(String sid) {
+		Criterion criterion=Restrictions.eq("sid", sid);
+		SurveyDirectory surveyDirectory = surveyDirectoryDao.findUnique(criterion);
+
+		return getBySurveyId(surveyDirectory.getId());
+	}
+
 	/**
 	 * 保存问卷配置的详细信息
 	 * @param t
@@ -92,11 +109,11 @@ public class SurveyDetailManagerImpl extends BaseServiceImpl<SurveyDetail, Strin
 			surveyDetail.setRefresh(t.getRefresh());
 			surveyDetail.setRule(t.getRule());
 			surveyDetail.setRuleCode(t.getRuleCode());
+			surveyDetail.setIsRealName(t.getIsRealName());
 			surveyDetail.setYnEndTime(t.getYnEndTime());
 			surveyDetail.setYnEndNum(t.getYnEndNum());
 			surveyDetail.setEndNum(t.getEndNum());
 			surveyDetail.setEndTime(t.getEndTime());
-
 
 			super.save(surveyDetail);
 		}

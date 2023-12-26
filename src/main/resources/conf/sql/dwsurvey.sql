@@ -555,6 +555,7 @@ CREATE TABLE `t_survey_detail` (
   `refresh_num` int(11) DEFAULT NULL,
   `rule` int(11) DEFAULT NULL,
   `rule_code` varchar(255) DEFAULT NULL,
+  `is_real_name` int(11) DEFAULT NULL,
   `show_answer_da` int(11) DEFAULT NULL,
   `show_share_survey` int(11) DEFAULT NULL,
   `survey_note` text,
@@ -568,7 +569,7 @@ CREATE TABLE `t_survey_detail` (
 --  Records of `t_survey_detail`
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_survey_detail` VALUES ('d78e1615-7b60-4751-bfc3-659e6dbbb550', '0', '0', '58960016-ff92-4de7-9585-9ac27f961247', '1', '0', '5', '1000', null, '1', '0', '1', '3', '1', '令牌', '0', '1', '非常感谢您的参与！如有涉及个人信息，我们将严格保密。', '0', '0', '0');
+INSERT INTO `t_survey_detail` VALUES ('d78e1615-7b60-4751-bfc3-659e6dbbb550', '0', '0', '58960016-ff92-4de7-9585-9ac27f961247', '1', '0', '5', '1000', null, '1', '0', '1', '3', '1', '令牌', '0', '0', '1', '非常感谢您的参与！如有涉及个人信息，我们将严格保密。', '0', '0', '0');
 COMMIT;
 
 -- ----------------------------

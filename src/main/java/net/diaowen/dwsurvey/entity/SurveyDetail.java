@@ -1,11 +1,10 @@
 package net.diaowen.dwsurvey.entity;
 
-import java.util.Date;
+import net.diaowen.common.base.entity.IdEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
-
-import net.diaowen.common.base.entity.IdEntity;
+import java.util.Date;
 
 /**
  * 问卷配置的详细信息
@@ -50,6 +49,10 @@ public class SurveyDetail extends IdEntity {
      * 问卷的令牌密码,默认为"令牌"
      */
     private String ruleCode = "令牌";
+    /**
+     * 是否为实名问卷, 0表示匿名， 1表示实名
+     */
+    private Integer isRealName = 0;
     /**
      * 设置问卷的结束方式 —— 1 表示手动结束问卷收集, 2 表示根据收集的截止时间结束问卷收集, 3 表示根据收集到的份数结束问卷的收集
      */
@@ -241,6 +244,24 @@ public class SurveyDetail extends IdEntity {
      */
     public void setRuleCode(String ruleCode) {
         this.ruleCode = ruleCode;
+    }
+
+    /**
+     * isRealName的GET方法
+     *
+     * @return isRealName
+     */
+    public Integer getIsRealName() {
+        return isRealName;
+    }
+
+    /**
+     * isRealName的Set方法
+     *
+     * @param isRealName isRealName
+     */
+    public void setIsRealName(Integer isRealName) {
+        this.isRealName = isRealName;
     }
 
     /**
