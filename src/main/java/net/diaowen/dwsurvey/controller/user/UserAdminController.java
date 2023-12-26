@@ -1,6 +1,7 @@
 package net.diaowen.dwsurvey.controller.user;
 
 import net.diaowen.common.base.entity.User;
+import net.diaowen.common.base.service.AccountManager;
 import net.diaowen.common.plugs.httpclient.HttpResult;
 import net.diaowen.common.plugs.httpclient.PageResult;
 import net.diaowen.common.plugs.httpclient.ResultUtils;
@@ -15,6 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -64,17 +69,29 @@ public class UserAdminController {
     /**
      * 管理员添加新用户
      *
-     * @param user 新用户对象
+
      * @return 添加是否成功的结果
      */
-    @RequestMapping(value = "/add.do",method = RequestMethod.POST)
+    @RequestMapping(value="/add.do", method = RequestMethod.POST)
     @ResponseBody
     public HttpResult add(@RequestBody User user) {
         try{
             if("demo".equals(DWSurveyConfig.DWSURVEY_SITE)) return HttpResult.FAILURE("DEMO环境不允许操作");
-            // 添加用户
-            User result = userManager.adminSave(user);
-            if(result!=null) return HttpResult.SUCCESS();
+            // 检查用户名是否已存在
+            User existingUserByLoginName = userManager.findNameUn(null, user.getLoginName());
+            if (existingUserByLoginName != null) {
+                //return HttpResult.FAILURE_MSG("用户名已存在");
+                HttpResult.FAILURE(HttpResult.FAILURE_MSG("用户名已存在"));
+            }
+
+            // 检查邮箱是否已存在
+            User existingUserByEmail = userManager.findEmailUn(null, user.getEmail());
+            if (existingUserByEmail != null) {
+                //return HttpResult.FAILURE_MSG("邮箱已存在");
+                return HttpResult.FAILURE(HttpResult.FAILURE_MSG("邮箱已存在"));
+            }
+                User result = userManager.adminSave(user);
+                if(result!=null) return HttpResult.SUCCESS();
         }catch (Exception e){
             logger.warning(e.getMessage());
         }
