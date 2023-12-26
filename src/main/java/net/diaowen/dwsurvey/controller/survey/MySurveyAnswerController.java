@@ -90,6 +90,23 @@ public class MySurveyAnswerController {
     }
 
     /**
+     * 根据答卷填写用户的ID获取该用户的个人信息
+     *
+     * @param id 用户ID
+     * @return 用户个人信息
+     */
+    @PostMapping(path = "/user-info.do")
+    @ResponseBody
+    public UserInfoForm getAnswerInfo(@RequestParam String id){
+        User user = accountManager.getUser(id);
+        // 构造用户个人信息的表单对象
+        UserInfoForm userInfoForm = new UserInfoForm(user.getId(), user.getLoginName(), user.getBirthday(),
+                user.getSex(), user.getEmail(), user.getCellphone());
+
+        return userInfoForm; // 返回表单对象到前端展示用户基本信息
+    }
+
+    /**
      * 根据回答 id 返回包含回答和问题的问卷
      * @param answerId 回答id
      * @return  是否查找成功
