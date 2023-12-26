@@ -13,7 +13,7 @@ import org.springframework.context.annotation.ComponentScan;
  * SpringBoot应用程序的启动类，用于启动SpringBoot应用程序
  */
 @SpringBootApplication
-@ServletComponentScan
+@ServletComponentScan(basePackages = "net.diaowen.dwsurvey.filter")
 @ComponentScan(basePackages = {"net.diaowen.common","net.diaowen.dwsurvey"})
 public class DwsurveyApplication {
 

@@ -85,14 +85,6 @@ public class SurveyDetailManagerImpl extends BaseServiceImpl<SurveyDetail, Strin
 		 return findUn(surveyId);
 	}
 
-	@Override
-	public SurveyDetail getSurveyDetailBySid(String sid) {
-		Criterion criterion=Restrictions.eq("sid", sid);
-		SurveyDirectory surveyDirectory = surveyDirectoryDao.findUnique(criterion);
-
-		return getBySurveyId(surveyDirectory.getId());
-	}
-
 	/**
 	 * 保存问卷配置的详细信息
 	 * @param t

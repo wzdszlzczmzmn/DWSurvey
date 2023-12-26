@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.WebUtils;
@@ -624,6 +625,34 @@ public class ResponseController {
 	public AnswerCheckData answerCheckData(HttpServletRequest request, String surveyId){
 		SurveyDirectory directory = directoryManager.getSurvey(surveyId);
 		return answerCheckData(request,directory, false, null);
+	}
+
+	/**
+	 * 该方法判断问卷的填写连接是否允许访问，当为匿名问卷时，该问卷的访问不受限制，返回true表示允许访问问卷填写页面，当为实名问卷时，该问卷的访问
+	 * 受到限制，用户需要先登录系统才能填写文件，该方法判断当前系统是否存在登录用户，若不存在返回false，提醒前端跳转到提示页面，若存在登录用户，
+	 * 则允许该用户访问并填写该问卷
+	 *
+	 * @param sid 问卷的sid
+	 * @return 是否允许访问该问卷填写页面，true表示允许，false表示不允许
+	 */
+	@RequestMapping("/isAccessible")
+	@ResponseBody
+	public boolean isAccessible(@RequestParam String sid){
+		// 获取sid对应的问卷
+		SurveyDirectory surveyDirectory = directoryManager.getSurveyBySid(sid);
+		directoryManager.getSurveyDetail(surveyDirectory.getId(), surveyDirectory);
+		// 获取是否实名问卷
+		int isRealName = surveyDirectory.getSurveyDetail().getIsRealName();
+		if (isRealName == 1){ // 实名问卷
+			User user = accountManager.getCurUser();
+			if (user != null){ // 用户已登录系统
+				return true;
+			}else { // 用户未登录系统
+				return false;
+			}
+		}else { // 匿名问卷
+			return true;
+		}
 	}
 
 

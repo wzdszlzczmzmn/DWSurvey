@@ -19,13 +19,6 @@ public interface SurveyDetailManager extends BaseService<SurveyDetail, String>{
 	public SurveyDetail getBySurveyId(String surveyId);
 
 	/**
-	 * 根据问卷的sid获取问卷的配置信息
-	 *
-	 * @param sid 问卷的sid
-	 * @return 问卷的配置信息
-	 */
-	SurveyDetail getSurveyDetailBySid(String sid);
-	/**
 	 * 保存问卷配置的详细信息
 	 * @param t
 	 */

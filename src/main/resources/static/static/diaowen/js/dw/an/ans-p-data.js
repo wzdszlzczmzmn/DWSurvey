@@ -9,7 +9,24 @@ function querySurveyAll(callback) {
     var ctxApp = $("#ctxApp").val();
     url = ctxApp+"/design/survey-design/surveyAll.do";
   }
+  console.log(sid);
   var data = "surveyId="+surveyId+"&sid="+sid;
+  // 验证当前问卷填写页面是否允许访问的路由，将sid在URL中以参数传递
+  let isAccessibleURL = '/api/dwsurvey/anon/response/isAccessible?sid=' + sid;
+
+  // 当sid为'null'时是问卷预览功能在复用该页面，此时访问的URL中不携带sid参数，且预览时无需进行实名的限制，因此不需要进行是否允许访问的校验
+  if (sid !== 'null'){
+    // ajax请求获取当前页面是否允许访问
+    $.ajax({
+      url: isAccessibleURL,
+      success: function (data) {
+        if (data === false){ // 当前页面不允许访问,重定向到提示页面
+          window.location.href = window.location.origin + '/#/avoid';
+        }
+      }
+    })
+  }
+
   $.ajax({
     url:url,
     data:data,
@@ -207,8 +224,7 @@ function parseRadio(item,pageNo){
     quCoItem.append("<ul></ul>");
     var quCoItemUl = quCoItem.find("ul");
     $.each(quRadios,function(i,item_2){
-      // quCoItemUl.append("<li class='quCoItemUlLi'>"+quRadioItemHtml+"</li>");
-      quCoItemUl.append(quRadioItemHtml);
+      quCoItemUl.append("<li class='quCoItemUlLi'>"+quRadioItemHtml+"</li>");
       var itemLast = quCoItemUl.find("li:last");
       itemLast.find(".editAble").html(item_2.optionName);
       if(item_2.isNote === 1) itemLast.find(".optionInpText").show();
